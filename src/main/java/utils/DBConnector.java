@@ -3,33 +3,52 @@ package utils;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DBConnector {
 
-    // Database connection details
+    private static final Logger LOGGER = Logger.getLogger(DBConnector.class.getName());
+
     private static final String DB_URL = "jdbc:mysql://mysql-omniride-1412-omniride.i.aivencloud.com:24112/defaultdb?ssl-mode=REQUIRED";
     private static final String DB_USER = "avnadmin";
 
-    public static Connection getConnection() throws SQLException {
-        // Retrieve the password from the system environment variable
-        String dbPassword = System.getenv("DB_PASSWORD");
-        
-
-        if (dbPassword == null) {
-        	throw new SQLException("Database password not found in environment variables.");
-        }
-        
-        // Print Password for debugging (remove in production)
-        
-        
-        
+    static {
         try {
-            // Load the JDBC driver
             Class.forName("com.mysql.cj.jdbc.Driver");
+            LOGGER.info("JDBC Driver è stato caricato con successo.");
         } catch (ClassNotFoundException e) {
-            throw new SQLException("JDBC Driver not found", e);
+            LOGGER.log(Level.SEVERE, "JDBC Driver non trovato", e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    
+    public static Connection getConnection() throws SQLException {
+        String dbPassword = System.getenv("DB_PASSWORD");
+
+        if (dbPassword == null || dbPassword.isEmpty()) {
+            LOGGER.severe("La variabile ambientale sul tuo compute :(DB_PASSWORD) non è stata trovata, inserirla o cantattare Arjel.");
+            throw new SQLException("Database password not set.");
         }
 
-        return DriverManager.getConnection(DB_URL, DB_USER, dbPassword);
+        Connection conn = DriverManager.getConnection(DB_URL, DB_USER, dbPassword);
+        LOGGER.fine("Connessione riuscita con successo.");
+        return conn;
     }
+
+    
+    
+    
+    public boolean testConnection() {
+        try (Connection connection = getConnection()) {
+            boolean success = connection != null && !connection.isClosed();
+            LOGGER.info("Database connection test: " + (success ? "SUCCESS" : "FAILED"));
+            return success;
+        } catch (SQLException e) {
+            LOGGER.log(Level.WARNING, "Database connection test failed", e);
+            return false;
+        }
+    }
+
 }
