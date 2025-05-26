@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 public class DBConnector {
 
     private static final Logger LOGGER = Logger.getLogger(DBConnector.class.getName());
-
     private static final String DB_URL = "jdbc:mysql://mysql-omniride-1412-omniride.i.aivencloud.com:24112/defaultdb?ssl-mode=REQUIRED";
     private static final String DB_USER = "avnadmin";
 
@@ -23,12 +22,11 @@ public class DBConnector {
         }
     }
 
-    
     public static Connection getConnection() throws SQLException {
         String dbPassword = System.getenv("DB_PASSWORD");
 
         if (dbPassword == null || dbPassword.isEmpty()) {
-            LOGGER.severe("La variabile ambientale sul tuo compute :(DB_PASSWORD) non è stata trovata, inserirla o cantattare Arjel.");
+            LOGGER.severe("La variabile ambientale DB_PASSWORD non è stata trovata, inserirla o contattare Arjel.");
             throw new SQLException("Database password not set.");
         }
 
@@ -36,19 +34,4 @@ public class DBConnector {
         LOGGER.fine("Connessione riuscita con successo.");
         return conn;
     }
-
-    
-    
-    
-    public boolean testConnection() {
-        try (Connection connection = getConnection()) {
-            boolean success = connection != null && !connection.isClosed();
-            LOGGER.info("Database connection test: " + (success ? "SUCCESS" : "FAILED"));
-            return success;
-        } catch (SQLException e) {
-            LOGGER.log(Level.WARNING, "Database connection test failed", e);
-            return false;
-        }
-    }
-
 }

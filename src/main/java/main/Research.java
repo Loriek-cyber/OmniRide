@@ -7,8 +7,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.sql.SQLException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import utils.DBConnector;
 
@@ -24,19 +26,20 @@ public class Research extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        response.getWriter().append("Served at: ").append(request.getContextPath());
-        response.getWriter().append("<br>DB Connection: ");
-
-        try {
-            Connection conn = DBConnector.getConnection();
+        try (Connection conn = DBConnector.getConnection()) {
+            response.getWriter().append("Servito su: ").append(request.getContextPath());
+            response.getWriter().append("<br>Connessione al DB: ");
             if (conn != null) {
-                response.getWriter().append("<h1>Connected</h1>");
+                response.getWriter().append("<h1>Connesso</h1>");
             } else {
-                response.getWriter().append("<h1>Not connected</h1>");
+                response.getWriter().append("<h1>Non connesso</h1>");
             }
         } catch (SQLException e) {
-            response.getWriter().append("<h1>Error while trying to connect to the DB</h1>");
-            e.printStackTrace();
+            PrintWriter out = response.getWriter();
+            out.append("<h1>Errore durante la connessione al DB:</h1>");
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            out.append("<pre>").append(sw.toString()).append("</pre>");
         }
     }
 
