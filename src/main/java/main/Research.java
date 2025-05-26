@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.Connection;
 
 import utils.DBConnector;
 
@@ -27,12 +28,13 @@ public class Research extends HttpServlet {
         response.getWriter().append("<br>DB Connection: ");
 
         try {
-            if (DBConnector.getConnection()) {
+            Connection conn = DBConnector.getConnection();
+            if (conn != null) {
                 response.getWriter().append("<h1>Connected</h1>");
             } else {
                 response.getWriter().append("<h1>Not connected</h1>");
             }
-        } catch (IOException | SQLException e) {
+        } catch (SQLException e) {
             response.getWriter().append("<h1>Error while trying to connect to the DB</h1>");
             e.printStackTrace();
         }
