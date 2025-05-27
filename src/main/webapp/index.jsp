@@ -1,27 +1,19 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
-<html lang="it">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Benvenuto in Omniride</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Welcome to OmniRide</title>
+    <jsp:include page="import/meta.jsp" />
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Benvenuto in Omniride</h1>
-        </header>
+    <jsp:include page="import/header.jsp" />
+    <h1>Welcome to OmniRide</h1>
+    
+    <form action="/q" method="get" id="searchForm">
         
-        <main class="main-content">
-            <form action="Research" class="search-form" method="get">
-                <input type="text" name="search" placeholder="Cerca corse..." required>
-                <button type="submit">Cerca</button>
-            </form>
-        </main>
-        
-        <footer>
-            <p>&copy; 2025 Omniride. Tutti i diritti riservati.</p>
-        </footer>
-    </div>
+    	<input type="text" name="search" placeholder="Search for rides, vehicles, or users..." required>
+    </form>
+
+    <jsp:include page="import/footer.jsp" />
 </body>
 </html>
