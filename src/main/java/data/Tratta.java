@@ -28,4 +28,13 @@ public class Tratta {
 		return fermate;
 	}
 	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Tratta [id=").append(id).append(", nome=").append(nome).append(", fermate=");
+		for (Fermata f : fermate) {
+			sb.append(f.toString()).append(", ");
+		}
+		sb.append("]");
+		return sb.toString();
+	}
 }

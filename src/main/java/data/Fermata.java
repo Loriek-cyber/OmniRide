@@ -29,5 +29,8 @@ public class Fermata {
 	public String getLongitudine() {
 		return longitudine;
 	}
-
+	
+	public String toString() {
+		return "Fermata [nome=" + nome + ", id=" + id + ", latitudine=" + latitudine + ", longitudine=" + longitudine + "]";
+	}
 }
