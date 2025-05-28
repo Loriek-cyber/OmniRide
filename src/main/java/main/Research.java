@@ -16,7 +16,7 @@ import utils.DBConnector;
 import data.Tratta;
 import data.Fermata;
 
-@WebServlet("/Research")
+@WebServlet("/q")
 public class Research extends HttpServlet {
     private static final long serialVersionUID = 1L;
 

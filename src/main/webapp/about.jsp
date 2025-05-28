@@ -8,9 +8,10 @@
 </head>
 <body>
 <jsp:include page="import/header.jsp" />
-
-<h1>About OmniRide</h1>
-<p>OmniRide is a web application designed to help users manage their transportation needs efficiently. It provides features such as booking rides, tracking vehicles, and managing user profiles.</p>
+<main>
+	<h1>About OmniRide</h1>
+	<p>OmniRide is a web application designed to help users manage their transportation needs efficiently. It provides features such as booking rides, tracking vehicles, and managing user profiles.</p>
+</main>
 
 <jsp:include page="import/footer.jsp" />
 </body>

@@ -7,13 +7,21 @@
 </head>
 <body>
     <jsp:include page="import/header.jsp" />
-    <h1>Welcome to OmniRide</h1>
+    <main>
+    
+    
+    <div class="search-options">
     
     <form action="/q" method="get" id="searchForm">
-        
-    	<input type="text" name="search" placeholder="Search for rides, vehicles, or users..." required>
+        <label for="partenza">Partenza:</label>
+    	<input type="text" name="partenza" placeholder="Patenza" required>
+    	<label for="destinazione">Destinazione:</label>
+    	<input type="text" name="destinazione" placeholder="Destinazione" required>
+    	<button type="submit">Cerca</button>
     </form>
-
+    
+    </div>
+    </main>
     <jsp:include page="import/footer.jsp" />
 </body>
 </html>
