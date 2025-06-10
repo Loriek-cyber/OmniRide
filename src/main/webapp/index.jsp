@@ -12,7 +12,7 @@
     
     <div class="search-options">
     
-    <form action="/q" method="get" id="searchForm">
+    <form action="/Research" method="get" id="searchForm">
         <label for="partenza">Partenza:</label>
     	<input type="text" name="partenza" placeholder="Patenza" required>
     	<label for="destinazione">Destinazione:</label>

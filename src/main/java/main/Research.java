@@ -15,8 +15,9 @@ import java.util.ArrayList;
 import utils.DBConnector;
 import data.Tratta;
 import data.Fermata;
+import java.time.LocalDateTime;
 
-@WebServlet("/q")
+@WebServlet("/Research")
 public class Research extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -36,7 +37,7 @@ public class Research extends HttpServlet {
             out.println("<h1>Dettagli della Tratta</h1>");
 
             // Creazione di alcune fermate di esempio
-            Fermata fermata1 = new Fermata("F1", "Via Roma", null, 41.9028, 12.4964);
+            Fermata fermata1 = new Fermata("F1", "Via Roma", new LocalDateTIme() , 41.9028, 12.4964);
             Fermata fermata2 = new Fermata("F2", "Via Milano", null, 45.4642, 9.1900);
             Fermata fermata3 = new Fermata("F3", "Via Napoli", null, 40.8518, 14.2681);
 
@@ -45,26 +46,6 @@ public class Research extends HttpServlet {
             tratta.addFermata(fermata1);
             tratta.addFermata(fermata2);
             tratta.addFermata(fermata3);
-
-            out.println("<p><strong>ID Tratta:</strong> " + tratta.getId() + "</p>");
-            out.println("<ul>");
-            out.println("<li>" + tratta.toString() + "</li>");
-            out.println("</ul>");
-            
-            // Test della connessione al database
-            try (Connection conn = DBConnector.getConnection()) {
-                if (conn != null) {
-                    out.println("<p>Connessione al database riuscita.</p>");
-                } else {
-                    out.println("<p>Connessione al database fallita.</p>");
-                }
-            } catch (SQLException e) {
-                out.println("<p>Errore durante la connessione al database: " + e.getMessage() + "</p>");
-            }
-            
-            out.println("</body></html>");
-        } catch (Exception e) {
-            throw new ServletException("Errore nella servlet Research", e);
         }
     }
 
