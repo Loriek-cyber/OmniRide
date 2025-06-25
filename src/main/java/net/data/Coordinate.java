@@ -1,4 +1,4 @@
-package net.Data;
+package net.data;
 
 public class Coordinate {
     private double Latitudine;
