@@ -1,0 +1,26 @@
+header {
+    background-color: #333;
+    padding: 1em;
+    width: 100%;
+}
+
+header a {
+    color: white;
+    text-decoration: none;
+    margin-right: 20px;
+    font-size: 1.1em;
+}
+
+header a:hover {
+    color: #ddd;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    padding: 1em;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+}

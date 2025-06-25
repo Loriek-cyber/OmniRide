@@ -7,6 +7,7 @@
 <html>
 <head>
     <title><%= message %></title>
+    <%@ include file="import/metadata.jsp" %>
 </head>
 <body>
 <%@ include file="import/header.jsp" %>

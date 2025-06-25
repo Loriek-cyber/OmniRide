@@ -9,6 +9,7 @@
 <html>
 <head>
     <title>Title</title>
+    <%@ include file="import/metadata.jsp" %>
 </head>
 <body>
 <%@ include file="import/header.jsp"%>
