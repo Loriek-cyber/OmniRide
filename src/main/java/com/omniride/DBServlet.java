@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import net.db.DBConnector;
 
 @WebServlet(name = "DBServlet", value = "/DBServlet")
 public class DBServlet extends HttpServlet {
