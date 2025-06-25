@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import net.db.DBConnector;
@@ -27,18 +28,15 @@ public class DBServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        try {
-            // Verifica se la connessione è ancora valida
-            if (connection.isClosed()) {
-                connection = DBConnector.getConnection();
-            }
-            
-            // Utilizza la connessione salvata
-            // Esempio: PreparedStatement stmt = connection.prepareStatement("SELECT * FROM tabella");
-            
-        } catch (SQLException e) {
-            throw new ServletException("Errore durante l'operazione database", e);
-        }
+            init();
+
+            String message = "Hello World!";
+        PrintWriter out = response.getWriter();
+            out.println("<html><body>");
+            out.println("<h1>" + message + "</h1>");
+            out.println("</body></html>");
+            destroy();
+            out.close();
     }
 
     @Override
