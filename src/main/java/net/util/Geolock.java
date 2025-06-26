@@ -20,7 +20,7 @@ public class Geolock {
 
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
         conn.setRequestMethod("GET");
-        conn.setRequestProperty("User-Agent", "JavaGeocoder/1.0 (your.actual.email@example.com)"); // FIXME: Update with a valid email
+        conn.setRequestProperty("User-Agent", "JavaGeocoder/1.0 (omniride@example.com)");
 
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) {
@@ -44,6 +44,6 @@ public class Geolock {
         double lat = Double.parseDouble(firstResult.getString("lat"));
         double lon = Double.parseDouble(firstResult.getString("lon"));
 
-        return new Coordinate(lon, lat); // Corrected order: longitude, then latitude
+        return new Coordinate(lat, lon); // Correct order: latitude, then longitude
     }
 }

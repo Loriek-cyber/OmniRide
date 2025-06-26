@@ -1,12 +1,18 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%
-    String message = "Il mondo fa schifo!";
-%>
 
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    String message = (String) request.getAttribute("message");
+    if (message == null) {
+        message = "Benvenuto in Omniride";
+    }
+%>
+<%
+    String message = "Benvenuto in Omniride";
+%>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><%= message %></title>
+    <title>${message}</title>
     <%@ include file="import/metadata.jsp" %>
 </head>
 <body>
@@ -15,7 +21,7 @@
 <main>
 
     <h1>
-        <%= message %>
+        ${message}
     </h1>
 
 </main>
