@@ -1,4 +1,4 @@
-package net.data;
+package model.sdata;
 
 public class Coordinate {
     private double Latitudine;

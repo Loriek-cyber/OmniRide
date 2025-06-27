@@ -1,5 +1,5 @@
-package net.util;
-import net.data.Coordinate;
+package model.util;
+import model.sdata.Coordinate;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.BufferedReader;

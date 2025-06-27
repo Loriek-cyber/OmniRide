@@ -8,8 +8,5 @@
 <meta property="og:title" content="Omniride - Servizi di Trasporto">
 <meta property="og:description" content="La tua piattaforma di fiducia per servizi di trasporto e biglietti online">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://omniride.com">
-<meta property="og:image" content="Images/logo.png">
-<link rel="icon" type="image/png" href="Images/logo.png">
-<link rel="stylesheet" href="Styles/main.css">
-<link rel="stylesheet" href="style.css">
+<meta property="og:image" content="${pageContext.request.contextPath}/Images/logo.png">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/main.css">
