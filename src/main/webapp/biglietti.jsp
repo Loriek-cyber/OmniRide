@@ -14,8 +14,16 @@
 <body>
     <%@include file="import/header.jsp"%>
     <main>
-
-    </main>
+    <div id="content">
+        <h2>I tuoi Biglietti</h2>
+        <p>Qui potrai visualizzare i tuoi biglietti acquistati.</p>
+        <div class="empty-state">
+            <h3>🎫 Nessun biglietto trovato</h3>
+            <p>Non hai ancora acquistato nessun biglietto. Inizia a pianificare il tuo prossimo viaggio!</p>
+            <a href="${pageContext.request.contextPath}/index.jsp" class="btn">Cerca Tratte</a>
+        </div>
+    </div>
+</main>
     <%@include file="import/footer.jsp"%>
 </body>
 </html>

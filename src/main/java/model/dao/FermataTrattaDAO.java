@@ -1,5 +1,4 @@
-package model.DAO;
-import model.sdata.Fermata;
+package model.dao;
 import model.sdata.FermataTratta;
 import model.db.DBConnector;
 

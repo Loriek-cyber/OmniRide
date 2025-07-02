@@ -9,7 +9,7 @@
 <%@ include file="import/header.jsp"%>
 
 <main>
-    <div class="about-container">
+    <div id="content" class="about-container">
         <h1>Chi Siamo</h1>
         <div class="about-content">
             <p>Omniride è la tua piattaforma di fiducia per servizi di trasporto e biglietti online. 

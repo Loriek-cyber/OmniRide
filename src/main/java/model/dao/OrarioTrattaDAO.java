@@ -1,4 +1,4 @@
-package model.DAO;
+package model.dao;
 
 import model.db.DBConnector;
 import model.sdata.OrarioTratta;

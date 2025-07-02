@@ -1,15 +1,12 @@
-package model.DAO;
+package model.dao;
 
 import model.db.DBConnector;
 import model.sdata.*;
 import model.udata.Azienda;
 
 import java.sql.*;
-import java.time.DayOfWeek;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class TrattaDAO {
     private static final String trattaALL = "SELECT * FROM Tratta";
