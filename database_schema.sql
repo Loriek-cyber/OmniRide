@@ -1,83 +1,128 @@
--- Tabella aziende di trasporto
-CREATE TABLE aziende (
-                         id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                         nome VARCHAR(100) NOT NULL UNIQUE,
-                         tipo ENUM('URBANA', 'EXTRAURBANA', 'MISTA') NOT NULL,
-                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+-- =================================================================
+--  SCRIPT DI CREAZIONE TABELLE PER IL PROGETTO OMNIRIDE
+--  Questo schema è generato per mappare esattamente le classi Java
+--  del modello dati (sdata, udata).
+-- =================================================================
 
--- Tabella fermate
-CREATE TABLE fermate (
-                         id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                         nome VARCHAR(150) NOT NULL,
-                         latitudine DECIMAL(10, 8) NOT NULL,
-                         longitudine DECIMAL(11, 8) NOT NULL,
-                         tipo ENUM('URBANA', 'EXTRAURBANA', 'INTERCHANGE') DEFAULT 'URBANA',
-                         attiva BOOLEAN DEFAULT TRUE,
-                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                         INDEX idx_coordinate (latitudine, longitudine),
-                         INDEX idx_nome (nome),
-                         INDEX idx_attiva (attiva)
-);
+-- -----------------------------------------------------
+-- Tabella: Azienda
+-- Corrisponde alla classe: model.udata.Azienda
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Azienda` (
+                                         `id` BIGINT NOT NULL AUTO_INCREMENT,
+                                         `nome` VARCHAR(255) NOT NULL,
+                                         `tipo` VARCHAR(50) NOT NULL COMMENT 'Mappa l''enum Azienda.TipoAzienda',
+                                         PRIMARY KEY (`id`)
+) ENGINE = InnoDB;
 
--- Tabella tratte (linee di autobus)
-CREATE TABLE tratte (
-                        id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                        nome VARCHAR(100) NOT NULL,
-                        azienda_id BIGINT NOT NULL,
-                        tipo ENUM('URBANA', 'EXTRAURBANA') NOT NULL,
-                        costo_base DECIMAL(5, 2) DEFAULT 0.00,
-                        attiva BOOLEAN DEFAULT TRUE,
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                        FOREIGN KEY (azienda_id) REFERENCES aziende(id) ON DELETE CASCADE,
-                        INDEX idx_azienda (azienda_id),
-                        INDEX idx_tipo (tipo),
-                        INDEX idx_attiva (attiva)
-);
 
--- Tabella collegamento fermate-tratte (ordinato)
-CREATE TABLE tratte_fermate (
-                                id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                                tratta_id BIGINT NOT NULL,
-                                fermata_id BIGINT NOT NULL,
-                                ordine_fermata INT NOT NULL,
-                                tempo_prossima_fermata INT DEFAULT 0, -- in secondi
-                                distanza_prossima_fermata DECIMAL(8, 2) DEFAULT 0.00, -- in km
-                                FOREIGN KEY (tratta_id) REFERENCES tratte(id) ON DELETE CASCADE,
-                                FOREIGN KEY (fermata_id) REFERENCES fermate(id) ON DELETE CASCADE,
-                                UNIQUE KEY uk_tratta_ordine (tratta_id, ordine_fermata),
-                                INDEX idx_tratta (tratta_id),
-                                INDEX idx_fermata (fermata_id)
-);
+-- -----------------------------------------------------
+-- Tabella: Fermata
+-- Corrisponde alla classe: model.sdata.Fermata
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Fermata` (
+                                         `id` BIGINT NOT NULL AUTO_INCREMENT,
+                                         `nome` VARCHAR(255) NOT NULL,
+                                         `indirizzo` VARCHAR(255) NULL,
+                                         `latitudine` DOUBLE NOT NULL,
+                                         `longitudine` DOUBLE NOT NULL,
+                                         `tipo` VARCHAR(50) NULL COMMENT 'Mappa l''enum Fermata.TipoFermata',
+                                         `attiva` BOOLEAN NOT NULL DEFAULT TRUE,
+                                         PRIMARY KEY (`id`)
+) ENGINE = InnoDB;
 
--- Tabella orari e frequenze
-CREATE TABLE orari_tratte (
-                              id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                              tratta_id BIGINT NOT NULL,
-                              ora_inizio TIME NOT NULL,
-                              ora_fine TIME NOT NULL,
-                              frequenza_minuti INT NOT NULL, -- frequenza di passaggio
-                              giorni_settimana SET('LUN','MAR','MER','GIO','VEN','SAB','DOM') NOT NULL,
-                              attivo BOOLEAN DEFAULT TRUE,
-                              FOREIGN KEY (tratta_id) REFERENCES tratte(id) ON DELETE CASCADE,
-                              INDEX idx_tratta_orari (tratta_id, ora_inizio, ora_fine),
-                              INDEX idx_attivo (attivo)
-);
 
--- Tabella orari specifici (per orari non frequenziali)
-CREATE TABLE partenze_tratte (
-                                 id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                                 tratta_id BIGINT NOT NULL,
-                                 ora_partenza TIME NOT NULL,
-                                 giorni_settimana SET('LUN','MAR','MER','GIO','VEN','SAB','DOM') NOT NULL,
-                                 attivo BOOLEAN DEFAULT TRUE,
-                                 FOREIGN KEY (tratta_id) REFERENCES tratte(id) ON DELETE CASCADE,
-                                 INDEX idx_tratta_partenze (tratta_id, ora_partenza),
-                                 INDEX idx_attivo (attivo)
-);
+-- -----------------------------------------------------
+-- Tabella: Tratta
+-- Corrisponde alla classe: model.sdata.Tratta
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Tratta` (
+                                        `id` BIGINT NOT NULL AUTO_INCREMENT,
+                                        `nome` VARCHAR(255) NOT NULL,
+                                        `id_azienda` BIGINT NOT NULL,
+                                        PRIMARY KEY (`id`),
+                                        CONSTRAINT `fk_Tratta_Azienda`
+                                            FOREIGN KEY (`id_azienda`)
+                                                REFERENCES `Azienda` (`id`)
+                                                ON DELETE CASCADE
+                                                ON UPDATE CASCADE
+) ENGINE = InnoDB;
 
--- Indici per performance geospaziali
-CREATE INDEX idx_fermate_geo ON fermate(latitudine, longitudine);
+
+-- -----------------------------------------------------
+-- Tabella: Fermata_Tratta
+-- Modella la lista List<FermataTratta> dentro la classe Tratta.
+-- La colonna 'sequenza' è FONDAMENTALE per l'algoritmo di pathfinding.
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Fermata_Tratta` (
+                                                `id` BIGINT NOT NULL AUTO_INCREMENT,
+                                                `id_tratta` BIGINT NOT NULL,
+                                                `id_fermata` BIGINT NOT NULL,
+                                                `sequenza` INT NOT NULL COMMENT 'Ordine progressivo della fermata sulla tratta (0, 1, 2...)',
+                                                `tempo_prossima_fermata` INT NOT NULL COMMENT 'Minuti per raggiungere la fermata successiva',
+                                                PRIMARY KEY (`id`),
+                                                UNIQUE KEY `uk_tratta_fermata_sequenza` (`id_tratta`, `id_fermata`, `sequenza`),
+                                                CONSTRAINT `fk_Fermata_Tratta_Tratta`
+                                                    FOREIGN KEY (`id_tratta`)
+                                                        REFERENCES `Tratta` (`id`)
+                                                        ON DELETE CASCADE
+                                                        ON UPDATE CASCADE,
+                                                CONSTRAINT `fk_Fermata_Tratta_Fermata`
+                                                    FOREIGN KEY (`id_fermata`)
+                                                        REFERENCES `Fermata` (`id`)
+                                                        ON DELETE CASCADE
+                                                        ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Tabella: Unica_Tratta
+-- Corrisponde alla classe: model.sdata.UnicaTratta.
+-- Rappresenta una singola corsa di una Tratta (es. la corsa delle 8:05).
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Unica_Tratta` (
+                                              `id` BIGINT NOT NULL AUTO_INCREMENT,
+                                              `id_tratta` BIGINT NOT NULL,
+                                              PRIMARY KEY (`id`),
+                                              CONSTRAINT `fk_Unica_Tratta_Tratta`
+                                                  FOREIGN KEY (`id_tratta`)
+                                                      REFERENCES `Tratta` (`id`)
+                                                      ON DELETE CASCADE
+                                                      ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Tabella: Orario_Tratta
+-- Corrisponde alla classe: model.sdata.OrarioTratta.
+-- Contiene i dettagli dell'orario di una singola corsa (Unica_Tratta).
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Orario_Tratta` (
+                                               `id` BIGINT NOT NULL AUTO_INCREMENT,
+                                               `id_unica_tratta` BIGINT NOT NULL,
+                                               `ora_inizio` TIME NOT NULL COMMENT 'Orario di partenza dal capolinea',
+                                               `attivo` BOOLEAN NOT NULL DEFAULT TRUE,
+                                               PRIMARY KEY (`id`),
+                                               UNIQUE INDEX `idx_id_unica_tratta_unique` (`id_unica_tratta` ASC) COMMENT 'Ogni Unica_Tratta ha un solo orario',
+                                               CONSTRAINT `fk_Orario_Tratta_Unica_Tratta`
+                                                   FOREIGN KEY (`id_unica_tratta`)
+                                                       REFERENCES `Unica_Tratta` (`id`)
+                                                       ON DELETE CASCADE
+                                                       ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Tabella: Orario_Giorni
+-- Modella il Set<DayOfWeek> dentro la classe OrarioTratta.
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Orario_Giorni` (
+                                               `id_orario` BIGINT NOT NULL,
+                                               `giorno_settimana` VARCHAR(20) NOT NULL COMMENT 'Es: MONDAY, TUESDAY...',
+                                               PRIMARY KEY (`id_orario`, `giorno_settimana`),
+                                               CONSTRAINT `fk_Orario_Giorni_Orario_Tratta`
+                                                   FOREIGN KEY (`id_orario`)
+                                                       REFERENCES `Orario_Tratta` (`id`)
+                                                       ON DELETE CASCADE
+                                                       ON UPDATE CASCADE
+) ENGINE = InnoDB;

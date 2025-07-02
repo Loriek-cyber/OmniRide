@@ -10,13 +10,12 @@
 <main>
     <div id="results">
         <%
-            //Sezione di reindirizzamenti in mancanza di dati
-            String content = request.getParameter("content");
-            if(content==null){
-                RequestDispatcher ris = request.getRequestDispatcher("index.jsp");
-                ris.forward(request,response);
+            // Sezione di reindirizzamenti in mancanza di dati
+            for (int i = 0; i < 10; i++) {
+        %>
+        <p><%= i %></p>
+        <%
             }
-
         %>
     </div>
 </main>

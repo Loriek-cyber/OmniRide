@@ -28,4 +28,15 @@ public class OrarioTratta {
     public void setGiorniSettimana(Set<DayOfWeek> giorniSettimana) {this.giorniSettimana = giorniSettimana;}
     public boolean isAttivo() {return attivo;}
     public void setAttivo(boolean attivo) {this.attivo = attivo;}
+
+    @Override
+    public String toString() {
+        return "OrarioTratta{" +
+                "trattaId=" + trattaId +
+                ", oraInizio=" + (oraInizio != null ? oraInizio.toString() : "null") +
+                ", oraFine=" + (oraFine != null ? oraFine.toString() : "null") +
+                ", giorniSettimana=" + (giorniSettimana != null ? giorniSettimana.toString() : "null") +
+                ", attivo=" + attivo +
+                '}';
+    }
 }

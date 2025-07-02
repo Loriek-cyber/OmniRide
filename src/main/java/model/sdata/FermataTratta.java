@@ -25,4 +25,18 @@ public class FermataTratta {
     public void setTempoProssimaFermata(int tempoProssimaFermata) {this.tempoProssimaFermata = tempoProssimaFermata;}
 
 
+    @Override
+    public String toString() {
+        // String.format è un modo pulito e sicuro per costruire stringhe.
+        // Gestisce automaticamente gli oggetti null senza causare errori.
+        return String.format(
+                "FermataTratta{idTratta=%d, fermata=%s, prossimaFermata=%s, tempoProssimaFermata=%d}",
+                idTratta,
+                fermata != null ? fermata.toString() : "null",
+                prossimaFermata != null ? prossimaFermata.toString() : "null",
+                tempoProssimaFermata
+        );
+    }
+
+
 }
