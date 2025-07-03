@@ -10,7 +10,7 @@
     <nav class="main-nav">
         <a href="${pageContext.request.contextPath}/index.jsp">Home</a>
         <a href="${pageContext.request.contextPath}/biglietti.jsp">Biglietti</a>
-        <a href="${pageContext.request.contextPath}/tratte.jsp">Tratte</a>
+        <a href="${pageContext.request.contextPath}/biglietti.jsp">Avvisi</a>
         <a href="${pageContext.request.contextPath}/about.jsp">Chi Siamo</a>
     </nav>
     <div class="user-actions">
@@ -31,8 +31,8 @@
 
 
                 <%-- Mostra il link Admin solo se l'utente ha il ruolo 'admin' --%>
-                <c:if test="${sessionScope.utente.ruolo == 'admin'}">
-                    <a href="${pageContext.request.contextPath}/prvAdmin/admin.jsp" class="btn btn-danger">Area Admin</a>
+                <c:if test="${not empty sessionScope.utente}"> <%--Testing--%>
+                    <a href="${pageContext.request.contextPath}/admin" class="btnHeader" style="background:red; color:white;">Area Admin</a>
                 </c:if>
 
                 <a href="${pageContext.request.contextPath}/logout" class="btnHeader">Logout</a>

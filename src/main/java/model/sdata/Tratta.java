@@ -13,6 +13,7 @@ public class Tratta {
     private Azienda azienda;
     private List<UnicaTratta> unicaTrattaList;
     private List<FermataTratta> fermataTrattaList;
+    private double costo;
 
     public Tratta() {
         this.unicaTrattaList = new ArrayList<>();
@@ -20,12 +21,13 @@ public class Tratta {
     }
 
     // Costruttore pulito senza parametri inutilizzati
-    public Tratta(Long id, String nome, Azienda azienda, List<UnicaTratta> unicaTrattaList, List<FermataTratta> fermataTrattaList) {
+    public Tratta(Long id, String nome, Azienda azienda, List<UnicaTratta> unicaTrattaList, List<FermataTratta> fermataTrattaList, Double costo) {
         this.id = id;
         this.nome = nome;
         this.azienda = azienda;
         this.unicaTrattaList = unicaTrattaList != null ? unicaTrattaList : new ArrayList<>();
         this.fermataTrattaList = fermataTrattaList != null ? fermataTrattaList : new ArrayList<>();
+        this.costo = costo;
     }
 
     public boolean FermataIN(Fermata fermata) {
@@ -98,6 +100,9 @@ public class Tratta {
     public void setFermataTrattaList(List<FermataTratta> fermataTrattaList) {this.fermataTrattaList = fermataTrattaList;}
     public List<UnicaTratta> getUnicaTrattaList() {return unicaTrattaList;}
     public void setUnicaTrattaList(List<UnicaTratta> unicaTrattaList) {this.unicaTrattaList = unicaTrattaList;}
+    public double getCosto(){return costo;}
+    public void setCosto(double costo){this.costo = costo;}
+
 
     @Override
     public String toString() {
