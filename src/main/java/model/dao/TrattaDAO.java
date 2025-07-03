@@ -1,9 +1,7 @@
 package model.dao;
-
 import model.db.DBConnector;
 import model.sdata.*;
 import model.udata.Azienda;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +20,8 @@ public class TrattaDAO {
                 rs.getString("nome"),
                 azienda,
                 unicaTrattaList,
-                fermataTrattaList
+                fermataTrattaList,
+                rs.getDouble("costo")
         );
     }
 

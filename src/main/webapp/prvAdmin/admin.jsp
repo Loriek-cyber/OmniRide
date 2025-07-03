@@ -9,18 +9,19 @@
 <html>
 <head>
     <title>Admin Mode</title>
+    <jsp:include page="/import/metadata.jsp"/>
 </head>
 <body>
     <jsp:include page="/import/header.jsp"/>
 
     <main>
-        <div id="content">
+        <div id="content" class="content">
             <h2>Area Amministratore</h2>
             <p>Benvenuto nell'area di amministrazione. Qui puoi gestire utenti, tratte e altre impostazioni del sistema.</p>
             <p>Funzionalità disponibili:</p>
             <ul>
                 <li><a href="#">Gestione Utenti</a></li>
-                <li><a href="${pageContext.request.contextPath}/tratte.jsp">Gestione Tratte</a></li>
+                <li><a href="${pageContext.request.contextPath}/admin/gestoreTratte">Gestione Tratte</a></li>
                 <li><a href="#">Report e Statistiche</a></li>
             </ul>
             <a href="${pageContext.request.contextPath}/logout" class="btn btn-danger">Logout Admin</a>
