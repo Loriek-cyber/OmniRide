@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.udata.Utente;
-
 import java.io.IOException;
 
 @WebFilter(filterName = "AuthenticationFilter", urlPatterns = {"/prvUser/*", "/prvAdmin/*"})

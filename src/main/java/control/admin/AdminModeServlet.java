@@ -13,6 +13,8 @@ import java.io.IOException;
 public class AdminModeServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String pass = req.getParameter("pass");
+        if(pass == "1234");
         HttpSession session = req.getSession();
         session.setAttribute("admin", true);
         req.getRequestDispatcher("/prvAdmin/admin.jsp").forward(req, resp);
