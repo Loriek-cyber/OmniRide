@@ -44,6 +44,10 @@ header {
     margin-left: 10px;
 }
 
+.main-header img {
+    height: 100px;
+}
+
 .main-nav a:hover {
     background-color: #59a300;
     color: #ffffff;

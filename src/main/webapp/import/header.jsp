@@ -4,7 +4,7 @@
 <header class="main-header">
     <div class="logo">
         <a href="${pageContext.request.contextPath}/index.jsp">
-            <img src="${pageContext.request.contextPath}/Images/logo.png" alt="Omniride Logo" style="height: 40px;">
+            <img src="${pageContext.request.contextPath}/Images/logo.png" alt="Omniride Logo">
         </a>
     </div>
     <nav class="main-nav">
