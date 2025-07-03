@@ -121,4 +121,19 @@ public class UtenteDAO {
         utente.setPasswordHash(rs.getString("password_hash"));
         return  utente;
     }
+
+    public boolean update(Utente utente) throws SQLException {
+        String sql = "UPDATE Utente SET nome = ?, cognome = ?, email = ?, password_hash = ? WHERE id = ?";
+        try(Connection conn = DBConnector.getConnection()){
+            PreparedStatement pt = conn.prepareStatement(sql);
+            pt.setString(1, utente.getNome());
+            pt.setString(2, utente.getCognome());
+            pt.setString(3, utente.getEmail());
+            pt.setString(4, utente.getPasswordHash());
+            pt.setLong(5, utente.getId());
+            int affectedRows = pt.executeUpdate();
+            return affectedRows > 0;
+        }
+
+    }
 }

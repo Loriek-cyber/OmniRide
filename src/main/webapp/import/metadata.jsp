@@ -9,4 +9,10 @@
 <meta property="og:description" content="La tua piattaforma di fiducia per servizi di trasporto e biglietti online">
 <meta property="og:type" content="website">
 <meta property="og:image" content="${pageContext.request.contextPath}/Images/logo.png">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/main.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/base.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/about.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/footer.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/form.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/header.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/responsive.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/tratte.css">

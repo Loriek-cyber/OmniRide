@@ -17,6 +17,7 @@
         <c:choose>
             <%-- Caso 1: L'utente è loggato --%>
             <c:when test="${not empty sessionScope.utente}">
+                <span>
                 <a href="${pageContext.request.contextPath}/prvUser/dashboard.jsp" class="user-avatar-link">
                     <c:choose>
                         <c:when test="${not empty sessionScope.utente.avatar}">
@@ -28,18 +29,23 @@
                     </c:choose>
                 </a>
 
+
                 <%-- Mostra il link Admin solo se l'utente ha il ruolo 'admin' --%>
                 <c:if test="${sessionScope.utente.ruolo == 'admin'}">
                     <a href="${pageContext.request.contextPath}/prvAdmin/admin.jsp" class="btn btn-danger">Area Admin</a>
                 </c:if>
 
-                <a href="${pageContext.request.contextPath}/logout" class="btn">Logout</a>
+                <a href="${pageContext.request.contextPath}/logout" class="btnHeader">Logout</a>
+            </span>
             </c:when>
+
 
             <%-- Caso 2: L'utente non è loggato --%>
             <c:otherwise>
-                <a href="${pageContext.request.contextPath}/login" class="btn">Login</a>
-                <a href="${pageContext.request.contextPath}/register" class="btn btn-primary">Registrati</a>
+                <span>
+                <a href="${pageContext.request.contextPath}/login" class="btnHeader">Login</a>
+                <a href="${pageContext.request.contextPath}/register" class="btnHeader">Registrati</a>
+                </span>
             </c:otherwise>
         </c:choose>
     </div>
