@@ -1,5 +1,19 @@
+<%@ page import="model.sdata.Tratta" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.sql.SQLException" %>
+<%@ page import="model.dao.TrattaDAO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<%
+    List<Tratta> tratte;
+    try{
+        tratte = TrattaDAO.getAllTratte();
+    }catch (SQLException e){
+        e.printStackTrace();
+    }
+
+%>
 
 <!DOCTYPE html>
 <html lang="it">
@@ -14,85 +28,31 @@
 
 <main>
     <div class="container">
-        <div class="header-section">
+        <div class = "avvisi-result">
             <div>
-                <h1>Elenco Tratte</h1>
-                <p>Visualizza tutte le tratte disponibili nel nostro sistema.</p>
+                <h1>Tratte</h1>
             </div>
+
+            <table border="1" cellspacing="0" cellpadding="8">
+                <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Azienda</th>
+                    <th>Costo</th>
+                </tr>
+                </thead>
+                <tbody>
+                <%
+                    for (Tratta tratta : tratte) {
+                %>
+                <tr>
+                    <td><%= tratta.getNome() %></td>
+                    <td><%= tratta.getAzienda().getNome() %></td>
+                    <td><%= tratta.getCosto()%>
+                </tbody>
+                <%}%>
+            </table>
         </div>
-
-        <!-- Statistiche -->
-        <div class="stats-container">
-            <div class="stat-card">
-                <span class="stat-number">${not empty tratte ? tratte.size() : 0}</span>
-                <span class="stat-label">Tratte Totali</span>
-            </div>
-        </div>
-
-        <!-- Messaggio di errore -->
-        <c:if test="${not empty errorMessage}">
-            <div class="error-message">
-                <strong>⚠️ Errore:</strong> ${errorMessage}
-            </div>
-        </c:if>
-
-        <!-- Tabella tratte -->
-        <c:choose>
-            <c:when test="${not empty tratte}">
-                <table class="tratte-table" id="tratteTable">
-                    <thead>
-                    <tr>
-                        <th>Nome Tratta</th>
-                        <th>Azienda</th>
-                        <th>Fermate</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach var="tratta" items="${tratte}" varStatus="status">
-                        <tr class="tratta-row">
-                            <td>
-                                <strong>${not empty tratta.nome ? tratta.nome : 'Nome non disponibile'}</strong>
-                                <br>
-                                <small style="color: #666;">ID: ${tratta.id}</small>
-                            </td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${not empty tratta.azienda && not empty tratta.azienda.nome}">
-                                        <span class="azienda-badge">${tratta.azienda.nome}</span>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span style="color: #999; font-style: italic;">Azienda non specificata</span>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${not empty tratta.fermataTrattaList}">
-                                        <ul class="fermate-list">
-                                            <c:forEach var="fermataTratta" items="${tratta.fermataTrattaList}">
-                                                <li>${fermataTratta.fermata.nome}</li>
-                                            </c:forEach>
-                                        </ul>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <div class="no-data">
-                                            <em>Nessuna fermata</em>
-                                        </div>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
-            </c:when>
-            <c:otherwise>
-                <div class="empty-state">
-                    <h3>📋 Nessuna tratta trovata</h3>
-                    <p>Non sono ancora state configurate tratte nel sistema.</p>
-                </div>
-            </c:otherwise>
-        </c:choose>
     </div>
 </main>
 

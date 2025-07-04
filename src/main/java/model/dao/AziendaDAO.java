@@ -2,6 +2,7 @@ package model.dao;
 
 import model.db.DBConnector;
 import model.udata.Azienda;
+import model.udata.Utente;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,6 +12,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AziendaDAO {
+
+    public static long createAzienda(Azienda azienda) throws SQLException {
+        String sql = "INSERT INTO Azienda (nome, tipo) VALUES (?, ?)";
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, azienda.getNome());
+            ps.setString(2, azienda.getTipo().name());
+            
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Creazione azienda fallita, nessuna riga modificata.");
+            }
+
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getLong(1);
+                } else {
+                    throw new SQLException("Creazione azienda fallita, nessun ID ottenuto.");
+                }
+            }
+        }
+    }
 
     public static Azienda doRetrieveById(long id) {
         try (Connection con = DBConnector.getConnection()) {

@@ -7,7 +7,7 @@ public class Azienda {
     private TipoAzienda tipo;
 
     public enum TipoAzienda {
-        URBANA, EXTRAURBANA, REGIONALE,NAZIONALE
+        URBANA, EXTRAURBANA, REGIONALE,NAZIONALE, PUBBLICO
     }
 
     public Azienda() {}

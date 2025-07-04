@@ -1,5 +1,8 @@
 package model.udata;
 
+import model.udata.Azienda;
+
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class Utente {
@@ -11,6 +14,8 @@ public class Utente {
     private Timestamp dataRegistrazione;
     private String ruolo;
     private byte[] avatar;
+    private Azienda azienda;
+
 
     // Costruttore vuoto
     public Utente() {
@@ -59,13 +64,17 @@ public class Utente {
     public void setRuolo(String ruolo) {
         this.ruolo = ruolo;
     }
-
     public byte[] getAvatar() {
         return avatar;
     }
-
     public void setAvatar(byte[] avatar) {
         this.avatar = avatar;
+    }
+    public Azienda getAzienda() {
+        return azienda;
+    }
+    public void setAzienda(Azienda azienda) {
+        this.azienda = azienda;
     }
 
     @Override

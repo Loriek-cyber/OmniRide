@@ -8,16 +8,21 @@
         </a>
     </div>
     <nav class="main-nav">
-        <a href="${pageContext.request.contextPath}/index.jsp">Home</a>
-        <a href="${pageContext.request.contextPath}/biglietti.jsp">Biglietti</a>
-        <a href="${pageContext.request.contextPath}/biglietti.jsp">Avvisi</a>
+        <a href="${pageContext.request.contextPath}/tratte.jsp">Tratte</a>
+        <a href="${pageContext.request.contextPath}/avvisi.jsp">Avvisi</a>
         <a href="${pageContext.request.contextPath}/about.jsp">Chi Siamo</a>
     </nav>
     <div class="user-actions">
         <c:choose>
             <%-- Caso 1: L'utente è loggato --%>
             <c:when test="${not empty sessionScope.utente}">
-                <span>
+                <a href="${pageContext.request.contextPath}/biglietti.jsp" class="btnHeader-icon" title="I Miei Biglietti">🎫</a>
+                <a href="${pageContext.request.contextPath}/carrello" class="btnHeader-icon" title="Carrello">
+                    🛒 <span class="badge">${not empty sessionScope.carrello ? sessionScope.carrello.size() : 0}</span>
+                </a>
+                <span class="credito-display" title="Il tuo credito">
+                    💰 <fmt:formatNumber value="${sessionScope.utente.credito}" type="currency" currencySymbol="€"/>
+                </span>
                 <a href="${pageContext.request.contextPath}/prvUser/dashboard.jsp" class="user-avatar-link">
                     <c:choose>
                         <c:when test="${not empty sessionScope.utente.avatar}">
@@ -28,25 +33,21 @@
                         </c:otherwise>
                     </c:choose>
                 </a>
-
-
-                <%-- Mostra il link Admin solo se l'utente ha il ruolo 'admin' --%>
-                <c:if test="${not empty sessionScope.utente}"> <%--Testing--%>
-                    <a href="${pageContext.request.contextPath}/admin" class="btnHeader" style="background:red; color:white;">Area Admin</a>
+                <c:if test="${sessionScope.utente.ruolo == 'admin'}">
+                    <a href="${pageContext.request.contextPath}/prvAdmin/admin.jsp" class="btn btn-danger">Admin</a>
                 </c:if>
-
                 <a href="${pageContext.request.contextPath}/logout" class="btnHeader">Logout</a>
-            </span>
             </c:when>
-
 
             <%-- Caso 2: L'utente non è loggato --%>
             <c:otherwise>
-                <span>
+                <a href="${pageContext.request.contextPath}/carrello" class="btnHeader-icon" title="Carrello">
+                    🛒 <span class="badge">${not empty sessionScope.carrello ? sessionScope.carrello.size() : 0}</span>
+                </a>
                 <a href="${pageContext.request.contextPath}/login" class="btnHeader">Login</a>
                 <a href="${pageContext.request.contextPath}/register" class="btnHeader">Registrati</a>
-                </span>
             </c:otherwise>
         </c:choose>
     </div>
 </header>
+

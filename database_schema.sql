@@ -143,24 +143,11 @@ CREATE TABLE IF NOT EXISTS `Utente` (
     `email` VARCHAR(255) NOT NULL UNIQUE,
     `password_hash` VARCHAR(255) NOT NULL COMMENT 'Password hashata con BCrypt',
     `data_registrazione` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `ruolo` VARCHAR(20) NOT NULL DEFAULT 'utente' COMMENT 'Es: utente, admin',
-    PRIMARY KEY (`id`)
-) ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Tabella: Tipo_Biglietto
--- Definisce i tipi di biglietti disponibili per l'acquisto.
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Tipo_Biglietto` (
-    `id` BIGINT NOT NULL AUTO_INCREMENT,
-    `nome` VARCHAR(100) NOT NULL,
-    `descrizione` TEXT NULL,
-    `prezzo` DECIMAL(10, 2) NOT NULL,
-    `validita_giorni` INT NOT NULL COMMENT 'Durata del biglietto in giorni dall''attivazione',
+    `ruolo` VARCHAR(20) NOT NULL DEFAULT 'utente' COMMENT 'Es: utente, admin, azienda',
+    `credito` DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     `id_azienda` BIGINT NULL,
     PRIMARY KEY (`id`),
-    CONSTRAINT `fk_Tipo_Biglietto_Azienda`
+    CONSTRAINT `fk_Utente_Azienda`
         FOREIGN KEY (`id_azienda`)
         REFERENCES `Azienda` (`id`)
         ON DELETE SET NULL
@@ -168,27 +155,7 @@ CREATE TABLE IF NOT EXISTS `Tipo_Biglietto` (
 ) ENGINE = InnoDB;
 
 
--- -----------------------------------------------------
--- Tabella: Biglietto_Acquistato
--- Traccia i biglietti acquistati dagli utenti.
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Biglietto_Acquistato` (
-    `id` BIGINT NOT NULL AUTO_INCREMENT,
-    `id_utente` BIGINT NOT NULL,
-    `id_tipo_biglietto` BIGINT NOT NULL,
-    `data_acquisto` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `data_attivazione` TIMESTAMP NULL COMMENT 'Data di prima validazione/attivazione',
-    `data_scadenza` TIMESTAMP NULL COMMENT 'Calcolata da data_attivazione + validita_giorni',
-    `codice_biglietto` VARCHAR(255) NOT NULL UNIQUE COMMENT 'Codice univoco del biglietto, es. UUID',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_Biglietto_Acquistato_Utente`
-        FOREIGN KEY (`id_utente`)
-        REFERENCES `Utente` (`id`)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT `fk_Biglietto_Acquistato_Tipo_Biglietto`
-        FOREIGN KEY (`id_tipo_biglietto`)
-        REFERENCES `Tipo_Biglietto` (`id`)
-        ON DELETE RESTRICT
-        ON UPDATE CASCADE
-) ENGINE = InnoDB;
+CREATE TABLE avvisi (
+                        id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                        descrizione TEXT NOT NULL
+);

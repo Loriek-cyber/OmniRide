@@ -4,3 +4,48 @@
     background: white;
     padding: 4em;
 }
+
+
+.avvisi-result {
+    width: 100%;
+    max-width: 900px;
+    margin: 30px auto;
+    border-collapse: collapse;
+    font-family: "Segoe UI", sans-serif;
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.avvisi-result thead {
+    background-color: #d0ffb3; /* lime chiaro */
+    color: #004d00;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.avvisi-result th, .avvisi-result td {
+    padding: 14px 20px;
+    text-align: left;
+    border-bottom: 1px solid #e6f7d9;
+}
+
+.avvisi-result tbody tr:hover {
+    background-color: #f2ffe6; /* highlight su hover */
+}
+
+.avvisi-result td {
+    color: #333;
+}
+
+.avvisi-result td em {
+    color: #888;
+    font-style: italic;
+}
+
+@media (max-width: 600px) {
+    .avvisi-result {
+        font-size: 14px;
+    }
+}

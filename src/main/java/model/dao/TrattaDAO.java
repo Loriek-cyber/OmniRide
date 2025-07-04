@@ -48,4 +48,18 @@ public class TrattaDAO {
             return tratte;
         }
     }
+
+    public static String getTrattaNameByID(Long id){
+        try(Connection con = DBConnector.getConnection()){
+            PreparedStatement ps = con.prepareStatement(trattaByID);
+            ps.setLong(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("nome");
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
