@@ -52,11 +52,10 @@ public class RegisterAziendaServlet extends HttpServlet {
             utente.setNome(nome);
             utente.setCognome(cognome);
             utente.setEmail(email);
-            utente.setAzienda(azienda);
             utente.setPasswordHash(password); // Il DAO si occuperà dell'hashing
             utente.setRuolo("azienda");
 
-            boolean utenteCreato = utenteDAO.create(utente, idAzienda);
+            boolean utenteCreato = utenteDAO.create(utente);
 
             if (utenteCreato) {
                 // Registrazione completata, reindirizza al login

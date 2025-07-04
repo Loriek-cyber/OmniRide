@@ -28,7 +28,7 @@ public class RegisterServlet extends HttpServlet {
         UtenteDAO utenteDAO = new UtenteDAO();
 
         // 1. Controlla se l'email esiste già
-        if (utenteDAO.findByEmail(email) != null) {
+        if (UtenteDAO.findByEmail(email) != null) {
             req.setAttribute("errorMessage", "Un account con questa email esiste già. Prova ad accedere.");
             req.getRequestDispatcher("/register/register.jsp").forward(req, resp);
             return;

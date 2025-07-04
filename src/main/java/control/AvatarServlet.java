@@ -23,9 +23,9 @@ public class AvatarServlet extends HttpServlet {
             return;
         }
 
-        int userId;
+        Long userId;
         try {
-            userId = Integer.parseInt(userIdParam);
+            userId = Long.parseLong(userIdParam);
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid User ID format.");
             return;
