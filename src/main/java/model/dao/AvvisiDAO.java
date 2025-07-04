@@ -1,7 +1,9 @@
 package model.dao;
 
+import com.mysql.cj.jdbc.PreparedStatementWrapper;
 import model.db.DBConnector;
 import model.sdata.Avvisi;
+import model.sdata.Coordinate;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -74,5 +76,52 @@ public class AvvisiDAO {
             return avvisi;
             }
         }
+
+    //CREATE
+    public boolean create(Avvisi nuovoAvviso) throws SQLException{
+        String QRstr= "INSERT TO Avvisi (descrizione) " +
+                "VALUES (?)";
+        String QRfor="INSERT TO Avvisi_tratte (avviso_id, tratta_id)" +
+                "VALUES (?,?)";
+        try(Connection con=DBConnector.getConnection()){
+            PreparedStatement ps=con.prepareStatement(QRstr);
+            ps.setString(1, nuovoAvviso.getDescrizione());
+            for(Long id_tratta:nuovoAvviso.getId_tratte_coinvolte()){
+                PreparedStatement ps2=con.prepareStatement(QRfor);
+                ps2.setLong(1,nuovoAvviso.getId());
+                ps2.setLong(2,id_tratta);
+                ps2.executeUpdate();
+            }
+            if(ps.executeUpdate()>=1){
+                return true;
+            }else return false;
+        }
+    }
+
+    //UPDATE
+    public boolean update(Avvisi avvisoInSezione) throws SQLException{
+        String sql = "UPDATE Avvisi" +
+                "SET descrizione=?" +
+                "WHERE id=?";
+        String sqlFor= "UPDATE Avvisi_tratte" +
+                "SET  tratta_id=?" +
+                "WHERE avviso_id=? ";
+        try(Connection con=DBConnector.getConnection()){
+            PreparedStatement ps=con.prepareStatement(sql);
+            ps.setLong(2, avvisoInSezione.getId());
+            ps.setString(1, avvisoInSezione.getDescrizione());
+
+            for(Long id_tratta:avvisoInSezione.getId_tratte_coinvolte()){
+                PreparedStatement ps2=con.prepareStatement(sqlFor);
+                ps2.setLong(1,id_tratta);
+                ps2.setLong(2,avvisoInSezione.getId());
+                ps2.executeUpdate();
+            }
+            if(ps.executeUpdate()>=1){
+                return true;
+            }else return false;
+
+        }
+    }
 
 }
