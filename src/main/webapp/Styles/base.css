@@ -83,6 +83,8 @@ main form,
 
 .content {
     padding: 4em;
+    padding-top:2em;
+    padding-bottom:3em;
     background-color: white;
     margin: 4em;
     border-radius: 20px;

@@ -8,9 +8,10 @@ import java.sql.SQLException;
 * */
 
 public class DBConnector {
+    // tcp://5.tcp.eu.ngrok.io:16889
     // Parametri di accesso
     private static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/omniride";
+    private static final String DB_URL = "jdbc:mysql://5.tcp.eu.ngrok.io:16889/omniride";
     private static final String USER = "root";
     private static final String PASS = "rootpassword";
 
