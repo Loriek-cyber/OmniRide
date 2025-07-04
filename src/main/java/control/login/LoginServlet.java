@@ -33,20 +33,85 @@ public class LoginServlet extends HttpServlet {
         String email = req.getParameter("email");
         String password = req.getParameter("password");
 
-        UtenteDAO utenteDAO = new UtenteDAO();
-        Utente utente = utenteDAO.findByEmail(email);
+        // Debug logging
+        System.out.println("[LOGIN DEBUG] Tentativo di login per email: " + email);
+        System.out.println("[LOGIN DEBUG] Password ricevuta: " + (password != null ? "[PRESENTE]" : "[ASSENTE]"));
 
-        // BCrypt.checkpw richiede che il sale sia generato e incluso nell'hash
-        // La nostra tabella 'Utente' ha 'password_hash', che dovrebbe già contenere il sale.
-        if (utente != null && BCrypt.checkpw(password, utente.getPasswordHash())) {
+        if (email == null || email.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+            req.setAttribute("errorMessage", "Email e password sono obbligatori.");
+            req.getRequestDispatcher("/login/login.jsp").forward(req, resp);
+            return;
+        }
+
+        Utente utente = null;
+        
+        try {
+            utente = UtenteDAO.findByEmail(email.trim());
+        } catch (Exception e) {
+            System.out.println("[LOGIN ERROR] Errore durante la ricerca dell'utente: " + e.getMessage());
+            e.printStackTrace();
+            req.setAttribute("errorMessage", "Errore del sistema. Riprova più tardi.");
+            req.getRequestDispatcher("/login/login.jsp").forward(req, resp);
+            return;
+        }
+
+        if (utente == null) {
+            System.out.println("[LOGIN DEBUG] Utente non trovato per email: " + email);
+            req.setAttribute("errorMessage", "Email o password non validi. Riprova.");
+            req.getRequestDispatcher("/login/login.jsp").forward(req, resp);
+            return;
+        }
+
+        System.out.println("[LOGIN DEBUG] Utente trovato: " + utente.getNome() + " " + utente.getCognome());
+        System.out.println("[LOGIN DEBUG] Password hash dal DB: " + (utente.getPasswordHash() != null ? "[PRESENTE]" : "[ASSENTE]"));
+
+        boolean passwordCorretta = false;
+        String passwordHash = utente.getPasswordHash();
+
+        if (passwordHash != null && !passwordHash.trim().isEmpty()) {
+            // Verifica se la password è già hashata con BCrypt
+            if (passwordHash.startsWith("$2a$") || passwordHash.startsWith("$2b$") || passwordHash.startsWith("$2y$")) {
+                // Password hashata con BCrypt
+                System.out.println("[LOGIN DEBUG] Verifica password con BCrypt...");
+                try {
+                    passwordCorretta = BCrypt.checkpw(password, passwordHash);
+                    System.out.println("[LOGIN DEBUG] Risultato BCrypt: " + passwordCorretta);
+                } catch (Exception e) {
+                    System.out.println("[LOGIN ERROR] Errore durante la verifica BCrypt: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            } else {
+                // Password in chiaro (per compatibilità)
+                System.out.println("[LOGIN DEBUG] Verifica password in chiaro...");
+                passwordCorretta = password.equals(passwordHash);
+                System.out.println("[LOGIN DEBUG] Risultato confronto diretto: " + passwordCorretta);
+
+                // Se la password è corretta ma in chiaro, aggiorniamo l'hash
+                if (passwordCorretta) {
+                    System.out.println("[LOGIN DEBUG] Aggiornamento hash password...");
+                    try {
+                        String nuovoHash = BCrypt.hashpw(password, BCrypt.gensalt());
+                        utente.setPasswordHash(nuovoHash);
+                        UtenteDAO.update(utente);
+                        System.out.println("[LOGIN DEBUG] Hash password aggiornato");
+                    } catch (Exception e) {
+                        System.out.println("[LOGIN WARNING] Impossibile aggiornare l'hash: " + e.getMessage());
+                    }
+                }
+            }
+        } else {
+            System.out.println("[LOGIN DEBUG] Password hash è null o vuoto");
+        }
+
+        if (passwordCorretta) {
             // Login successo: creo la sessione e salvo l'utente
+            System.out.println("[LOGIN SUCCESS] Login riuscito per: " + email);
             HttpSession session = req.getSession(true);
             session.setAttribute("utente", utente);
-
-            // Reindirizzo alla dashboard
             resp.sendRedirect(req.getContextPath() + "/prvUser/dashboard.jsp");
         } else {
-            // Login fallito: imposto un messaggio di errore e rimando alla pagina di login
+            // Login fallito
+            System.out.println("[LOGIN FAILED] Login fallito per: " + email);
             req.setAttribute("errorMessage", "Email o password non validi. Riprova.");
             req.getRequestDispatcher("/login/login.jsp").forward(req, resp);
         }

@@ -14,7 +14,6 @@ public class Utente {
     private Timestamp dataRegistrazione;
     private String ruolo;
     private byte[] avatar;
-    private Azienda azienda;
 
 
     // Costruttore vuoto
@@ -70,12 +69,7 @@ public class Utente {
     public void setAvatar(byte[] avatar) {
         this.avatar = avatar;
     }
-    public Azienda getAzienda() {
-        return azienda;
-    }
-    public void setAzienda(Azienda azienda) {
-        this.azienda = azienda;
-    }
+
 
     @Override
     public String toString() {

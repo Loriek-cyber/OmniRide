@@ -8,11 +8,13 @@ import java.sql.SQLException;
 public class DipendentiDAO{
     private Dipendenti getDipendentifromSet(ResultSet rs) throws SQLException{
         Dipendenti dipendente = new Dipendenti();
-        try{
+        try {
             dipendente.setAzienda(AziendaDAO.doRetrieveById(rs.getLong("id_azienda")));
             dipendente.setLavoro(Dipendenti.Lavoro.valueOf(rs.getString("lavoro")));
-            dipendente.setUtente(UtenteDAO.getAvatarByUserId(rs.getLong("id_utente")));
+
+        } finally {
 
         }
+        return null;
     }
 }

@@ -26,7 +26,6 @@ public class UpdateProfileServlet extends HttpServlet {
         }
 
         Utente utenteInSessione = (Utente) session.getAttribute("utente");
-        UtenteDAO utenteDAO = new UtenteDAO();
 
         String nome = req.getParameter("nome");
         String cognome = req.getParameter("cognome");
@@ -45,10 +44,14 @@ public class UpdateProfileServlet extends HttpServlet {
 
         // Validazione email: controlla se è cambiata e se la nuova email è già in uso
         if (!email.equals(utenteInSessione.getEmail())) {
-            if (utenteDAO.findByEmail(email) != null) {
-                req.setAttribute("errorMessage", "Questa email è già associata ad un altro account.");
-                req.getRequestDispatcher("/prvUser/dashboard.jsp").forward(req, resp);
-                return;
+            try {
+                if (UtenteDAO.findByEmail(email) != null) {
+                    req.setAttribute("errorMessage", "Questa email è già associata ad un altro account.");
+                    req.getRequestDispatcher("/prvUser/dashboard.jsp").forward(req, resp);
+                    return;
+                }
+            } catch (SQLException e) {
+                throw new ServletException("Errore database durante la validazione dell'email.", e);
             }
         }
 
@@ -69,7 +72,7 @@ public class UpdateProfileServlet extends HttpServlet {
         utenteInSessione.setEmail(email);
 
         try {
-            boolean success = utenteDAO.update(utenteInSessione); // Questo metodo dovrà essere aggiunto a UtenteDAO
+            boolean success = UtenteDAO.update(utenteInSessione); // Questo metodo dovrà essere aggiunto a UtenteDAO
 
             if (success) {
                 // Aggiorna l'utente nella sessione con i dati più recenti
