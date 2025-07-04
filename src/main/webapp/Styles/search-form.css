@@ -1,0 +1,69 @@
+/* Stile per il contenitore principale del form di ricerca */
+.search-container {
+    border: 1px solid #ccc; /* Bordo grigio chiaro */
+    border-radius: 8px; /* Angoli arrotondati */
+    padding: 16px; /* Spaziatura interna */
+    display: flex; /* Layout flessibile per allineare gli elementi */
+    flex-direction: column; /* Disposizione in colonna */
+    background-color: #f9f9f9; /* Sfondo leggermente grigio */
+    max-width: 400px; /* Larghezza massima del contenitore */
+    margin: 0 auto; /* Centratura orizzontale */
+}
+
+/* Stile per ogni gruppo di input (etichetta + campo) */
+.input-group-wrapper {
+    display: flex; /* Layout flessibile */
+    align-items: center; /* Allineamento verticale al centro */
+    margin-bottom: 8px; /* Spazio inferiore */
+}
+
+/* Stile per le etichette "Da" e "A" */
+.input-label {
+    font-weight: bold; /* Grassetto */
+    margin-right: 16px; /* Spazio a destra */
+    color: #555; /* Colore del testo */
+    width: 30px; /* Larghezza fissa per allineamento */
+}
+
+/* Stile per i campi di input */
+.search-container input[type="text"] {
+    border: none; /* Rimuove il bordo predefinito */
+    background-color: transparent; /* Sfondo trasparente */
+    font-size: 16px; /* Dimensione del font */
+    width: 100%; /* Occupa tutta la larghezza disponibile */
+    padding: 8px 0; /* Spaziatura interna verticale */
+}
+
+/* Rimuove il bordo blu quando l'input è attivo */
+.search-container input[type="text"]:focus {
+    outline: none;
+}
+
+/* Stile per il separatore con l'icona */
+.separator {
+    border-top: 1px solid #ccc; /* Linea di separazione */
+    margin: 8px 0; /* Spaziatura verticale */
+    position: relative; /* Necessario per posizionare l'icona */
+    text-align: right; /* Allinea l'icona a destra */
+}
+
+/* Stile per il link dell'icona di inversione */
+#swap-button {
+    position: absolute; /* Posizionamento assoluto rispetto al separatore */
+    top: -18px; /* Sposta l'icona sopra la linea */
+    right: 0; /* Allinea a destra */
+    background-color: #f9f9f9; /* Sfondo uguale al contenitore */
+    padding: 0 8px; /* Spaziatura orizzontale */
+    text-decoration: none; /* Rimuove la sottolineatura */
+}
+
+/* Stile per l'icona SVG */
+.swap-icon {
+    stroke: #007bff; /* Colore blu per l'icona */
+    transition: transform 0.2s; /* Transizione per l'effetto di rotazione */
+}
+
+/* Effetto di rotazione al passaggio del mouse */
+#swap-button:hover .swap-icon {
+    transform: rotate(180deg);
+}
