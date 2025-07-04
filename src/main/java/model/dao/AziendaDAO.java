@@ -18,7 +18,7 @@ public class AziendaDAO {
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, azienda.getNome());
-            ps.setString(2, azienda.getTipo().name());
+            ps.setString(2, azienda.getTipo());
             
             int affectedRows = ps.executeUpdate();
             if (affectedRows == 0) {
@@ -70,9 +70,7 @@ public class AziendaDAO {
         azienda.setId(rs.getLong("id"));
         azienda.setNome(rs.getString("nome"));
         String tipoStr = rs.getString("tipo");
-        if (tipoStr != null) {
-            azienda.setTipo(Azienda.TipoAzienda.valueOf(tipoStr));
-        }
+        azienda.setTipo(tipoStr);
         return azienda;
     }
 }

@@ -12,12 +12,7 @@ import java.util.*;
  * L'obiettivo primario è trovare il percorso che minimizza l'orario di arrivo.
  */
 public class PathFinding {
-
-    /**
-     * Classe interna per rappresentare lo stato di un nodo (fermata) durante la ricerca.
-     * Contiene la fermata e l'orario di arrivo, ed è comparabile per essere usata
-     * in una PriorityQueue.
-     */
+/*
     private static class Stato implements Comparable<Stato> {
         final Fermata fermata;
         final LocalTime orarioArrivo;
@@ -46,16 +41,7 @@ public class PathFinding {
         }
     }
 
-    /**
-     * Trova il percorso ottimale (arrivo più veloce) tra due fermate.
-     *
-     * @param partenza       La fermata di partenza.
-     * @param destinazione   La fermata di destinazione.
-     * @param orarioPartenza L'orario in cui si desidera partire.
-     * @param giorno         Il giorno della settimana del viaggio.
-     * @param tutteLeTratte  La lista completa di tutte le tratte disponibili nel sistema.
-     * @return Un oggetto Percorso contenente la soluzione, o null se non viene trovato alcun percorso.
-     */
+
     public Percorso trovaPercorso(Fermata partenza, Fermata destinazione, LocalTime orarioPartenza, DayOfWeek giorno, List<Tratta> tutteLeTratte) {
 
         // Mappa per memorizzare l'orario di arrivo più basso per ogni fermata
@@ -121,7 +107,7 @@ public class PathFinding {
                             }
                             // --- FINE DELLA MODIFICA ---
 
-                            LocalTime partenzaProgrammata = orarioCorsa.getOraInizio().plusMinutes(minutiDaCapolinea);
+                            LocalTime partenzaProgrammata = orarioCorsa.getOraPartenza();
 
                             // Se la partenza programmata è dopo il nostro arrivo alla fermata, possiamo prendere questo mezzo
                             if (!partenzaProgrammata.isBefore(orarioArrivoCorrente)) {
@@ -152,13 +138,7 @@ public class PathFinding {
         return null;
     }
 
-    /**
-     * Ricostruisce il percorso finale partendo dalla destinazione e tornando indietro
-     * tramite la mappa dei predecessori.
-     * @param destinazione La fermata finale del percorso.
-     * @param predecessori La mappa che collega ogni fermata alla tappa usata per raggiungerla.
-     * @return Un oggetto Percorso completo.
-     */
+
     private Percorso ricostruisciPercorso(Fermata destinazione, Map<Fermata, Percorso.Tappa> predecessori) {
         LinkedList<Percorso.Tappa> tappeInOrdine = new LinkedList<>();
         Fermata fermataAttuale = destinazione;
@@ -179,5 +159,6 @@ public class PathFinding {
         }
 
         return new Percorso(tappeInOrdine);
+
     }
-}
+*/}

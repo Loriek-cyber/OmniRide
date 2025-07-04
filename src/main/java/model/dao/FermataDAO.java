@@ -16,7 +16,10 @@ public class FermataDAO {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM Fermata WHERE id = ?");
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
-                return extractFermataFromResultSet(rs);
+                if (rs.next()) {
+                    return extractFermataFromResultSet(rs);
+                }
+                return null;
             }
         }
     }
@@ -28,7 +31,10 @@ public class FermataDAO {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                fermate.add(extractFermataFromResultSet(rs));
+                Fermata fermata = extractFermataFromResultSet(rs);
+                if (fermata != null) {
+                    fermate.add(fermata);
+                }
             }
             return fermate;
         }
@@ -41,8 +47,15 @@ public class FermataDAO {
         fermata.setIndirizzo(rs.getString("indirizzo"));
         fermata.setCoordinate(new Coordinate(rs.getDouble("latitudine"), rs.getDouble("longitudine")));
         String tipoStr = rs.getString("tipo");
-        if (tipoStr != null) {
-            fermata.setTipo(Fermata.TipoFermata.valueOf(tipoStr));
+        if (tipoStr != null && !tipoStr.isEmpty()) {
+            try {
+                fermata.setTipo(Fermata.TipoFermata.valueOf(tipoStr));
+            } catch (IllegalArgumentException e) {
+                // Se il tipo non è valido, usa un valore di default
+                fermata.setTipo(Fermata.TipoFermata.FERMATA_NORMALE);
+            }
+        } else {
+            fermata.setTipo(Fermata.TipoFermata.FERMATA_NORMALE);
         }
         fermata.setAttiva(rs.getBoolean("attiva"));
         return fermata;

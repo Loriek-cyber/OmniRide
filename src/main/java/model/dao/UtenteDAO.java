@@ -72,7 +72,7 @@ public class UtenteDAO {
     }
 
 
-    public boolean create(Utente nuovoUtente) {
+    public boolean create(Utente nuovoUtente) throws SQLException {
         String QRstr="INSERT INTO Utente (nome, cognome, email, password_hash, data_registrazione, ruolo, avatar) " +
                 "VALUES (?,?,?,?,?,?,?) ";
         try(Connection con=DBConnector.getConnection()){
@@ -90,11 +90,6 @@ public class UtenteDAO {
             }else return false;
 
         }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-
-        return false;
     }
 
     public byte[] getAvatarByUserId(Long userId) throws SQLException{

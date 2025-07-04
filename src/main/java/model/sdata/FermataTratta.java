@@ -1,6 +1,9 @@
 package model.sdata;
+
+import java.io.Serializable;
+
 //classe intermedi per l'apartenenza a una fermata
-public class FermataTratta {
+public class FermataTratta implements Serializable {
     private Long idTratta;
     private Fermata fermata;
     private Fermata prossimaFermata;

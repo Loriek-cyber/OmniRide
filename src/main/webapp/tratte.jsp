@@ -27,33 +27,6 @@
 
 <main>
     <div class="tratte-container">
-        <div class="tratte-header">
-            <h1>Tratte</h1>
-            <c:if test="${sessionScope.utente.ruolo == 'azienda' || sessionScope.utente.ruolo == 'admin'}">
-                <button class="btn-modern btn-primary" onclick="toggleAddForm()">Aggiungi Nuova Tratta</button>
-            </c:if>
-        </div>
-
-        <div id="form-add-tratta" class="form-add-tratta">
-            <form action="addTratta" method="POST">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="nome">Nome Tratta</label>
-                        <input type="text" id="nome" name="nome" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="azienda">Azienda</label>
-                        <input type="text" id="azienda" name="azienda" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="costo">Costo</label>
-                        <input type="number" step="0.01" id="costo" name="costo" class="form-control" required>
-                    </div>
-                </div>
-                <button type="submit" class="btn-modern btn-primary">Salva</button>
-            </form>
-        </div>
-
         <table class="tratte-table">
             <thead>
                 <tr>

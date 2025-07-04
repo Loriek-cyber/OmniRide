@@ -1,8 +1,9 @@
 package model.sdata;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Fermata {
+public class Fermata implements Serializable {
     private Long id;
     private String nome;
     private String indirizzo;

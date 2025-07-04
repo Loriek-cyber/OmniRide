@@ -2,18 +2,21 @@ package model.sdata;
 
 import model.udata.Azienda;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 //Classe Di Default per la tratta
-public class Tratta {
+public class Tratta implements Serializable {
     private Long id;
     private String nome;
     private Azienda azienda;
-    private List<UnicaTratta> unicaTrattaList;
+    private List<UnicaTratta> unicaTrattaList; // Mantenuto per compatibilità
     private List<FermataTratta> fermataTrattaList;
+    private List<OrarioTratta> orari; // Nuova gestione orari semplificata
     private double costo;
+    private boolean attiva; // Nuovo campo per gestire tratte attive/disattive
 
     public Tratta() {
         this.unicaTrattaList = new ArrayList<>();
@@ -102,7 +105,55 @@ public class Tratta {
     public void setUnicaTrattaList(List<UnicaTratta> unicaTrattaList) {this.unicaTrattaList = unicaTrattaList;}
     public double getCosto(){return costo;}
     public void setCosto(double costo){this.costo = costo;}
-
+    
+    // Nuovi getters e setters per la gestione orari
+    public List<OrarioTratta> getOrari() { return orari; }
+    public void setOrari(List<OrarioTratta> orari) { this.orari = orari; }
+    
+    public boolean isAttiva() { return attiva; }
+    public void setAttiva(boolean attiva) { this.attiva = attiva; }
+    
+    /**
+     * Metodi di utilità per la gestione degli orari
+     */
+    
+    /**
+     * Aggiunge un orario alla tratta
+     */
+    public void addOrario(OrarioTratta orario) {
+        if (this.orari == null) {
+            this.orari = new ArrayList<>();
+        }
+        this.orari.add(orario);
+    }
+    
+    /**
+     * Rimuove un orario dalla tratta
+     */
+    public boolean removeOrario(OrarioTratta orario) {
+        return this.orari != null && this.orari.remove(orario);
+    }
+    
+    /**
+     * Ottiene gli orari attivi per un giorno specifico
+     */
+    public List<OrarioTratta> getOrariPerGiorno(String giorno) {
+        if (orari == null) {
+            return new ArrayList<>();
+        }
+        
+        return orari.stream()
+                .filter(OrarioTratta::isAttivo)
+                .filter(orario -> orario.isValidoPerGiorno(giorno))
+                .collect(java.util.stream.Collectors.toList());
+    }
+    
+    /**
+     * Verifica se la tratta ha orari attivi
+     */
+    public boolean hasOrariAttivi() {
+        return orari != null && orari.stream().anyMatch(OrarioTratta::isAttivo);
+    }
 
     @Override
     public String toString() {

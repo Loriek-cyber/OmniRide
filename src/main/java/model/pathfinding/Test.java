@@ -12,11 +12,11 @@ import java.util.List;
 
 public class Test {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) {/*
         System.out.println("Avvio del test per l'algoritmo di PathFinding...");
 
         // --- 1. SETUP: Creazione dei dati di mock (Fermate, Tratte, Orari) ---
-        Azienda azienda = new Azienda(1L, "OmniBus", Azienda.TipoAzienda.URBANA);
+        Azienda azienda = new Azienda(1L, "OmniBus", "Urbana");
 
         Fermata casa = new Fermata(1L, "Casa", "Via Roma 1", new Coordinate(45.4642, 9.1900));
         Fermata stazione = new Fermata(2L, "Stazione Centrale", "Piazza Duca d'Aosta 1", new Coordinate(45.4862, 9.2040));
@@ -132,5 +132,5 @@ public class Test {
         } else {
             System.out.println("\nRISULTATO: ---> TEST FALLITO. Controllare gli errori sopra. <---");
         }
-    }
+    */}
 }

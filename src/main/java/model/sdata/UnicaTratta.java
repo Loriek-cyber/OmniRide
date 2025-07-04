@@ -1,6 +1,8 @@
 package model.sdata;
 
-public class UnicaTratta {
+import java.io.Serializable;
+
+public class UnicaTratta implements Serializable {
     private Long id;
     private Long trattaId;
     private OrarioTratta orarioTratta;
@@ -42,7 +44,7 @@ public class UnicaTratta {
         return "UnicaTratta{" +
                 "id=" + id +
                 ", trattaId=" + trattaId +
-                ", orarioTratta=" + orarioTratta.toString() +
+                ", orarioTratta=" + (orarioTratta != null ? orarioTratta.toString() : "null") +
                 '}';
     }
 }
