@@ -34,10 +34,14 @@ public class RegisterAziendaServlet extends HttpServlet {
         String password = req.getParameter("password");
 
         UtenteDAO utenteDAO = new UtenteDAO();
-        if (utenteDAO.findByEmail(email) != null) {
-            req.setAttribute("errorMessage", "Un utente con questa email esiste già.");
-            req.getRequestDispatcher("/register/registerAzienda.jsp").forward(req, resp);
-            return;
+        try {
+            if (utenteDAO.findByEmail(email) != null) {
+                req.setAttribute("errorMessage", "Un utente con questa email esiste già.");
+                req.getRequestDispatcher("/register/registerAzienda.jsp").forward(req, resp);
+                return;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
         try {

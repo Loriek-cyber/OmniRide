@@ -19,14 +19,15 @@ public class UtenteDAO {
         utente.setNome(rs.getString("nome"));
         utente.setCognome(rs.getString("cognome"));
         utente.setEmail(rs.getString("email"));
-        utente.setDataRegistrazione(rs.getTimestamp("dataRegistrazione"));
+        utente.setPasswordHash(rs.getString("password_hash"));
+        utente.setDataRegistrazione(rs.getTimestamp("data_registrazione"));
         utente.setRuolo(rs.getString("ruolo"));
         utente.setAvatar(rs.getBytes("avatar"));
         return utente;
     }
 
 
-    public static Utente findByEmail(String email)  {
+    public static Utente findByEmail(String email) throws SQLException  {
         String QRsql="SELECT * FROM Utente WHERE email=?";
         try(Connection con=DBConnector.getConnection()){
             //preaprato la query
@@ -37,9 +38,9 @@ public class UtenteDAO {
             /*in poche parole
             * 1) la query dice che colonna trovare
             * 2) ps.string(1, email) dice che alla primo punto interrogativo della query deve inserire l'email passata come stringa, questo permete di trovare l'utente e di stampare l'intera riga*/
-            return getUtenteFromSet(rs);
-        }catch (SQLException e){
-            e.printStackTrace();
+            if(rs.next()) {
+                return getUtenteFromSet(rs);
+            }
         }
         return null;
     }
@@ -50,8 +51,11 @@ public class UtenteDAO {
           PreparedStatement ps=con.prepareStatement(QRstr);
           ps.setLong(1, id);
           ResultSet rs=ps.executeQuery();
-          return getUtenteFromSet(rs);
+          if(rs.next()) {
+              return getUtenteFromSet(rs);
+          }
         }
+        return null;
     }
 
     public static List<Utente> getAllUtenti() throws SQLException{
@@ -69,7 +73,7 @@ public class UtenteDAO {
 
 
     public boolean create(Utente nuovoUtente) {
-        String QRstr="INSERT TO Utente (nome, cognome, email, password_hash, data_registrazione, ruolo, avatar) " +
+        String QRstr="INSERT INTO Utente (nome, cognome, email, password_hash, data_registrazione, ruolo, avatar) " +
                 "VALUES (?,?,?,?,?,?,?) ";
         try(Connection con=DBConnector.getConnection()){
             PreparedStatement ps=con.prepareStatement(QRstr);
@@ -97,9 +101,9 @@ public class UtenteDAO {
         return findById(userId).getAvatar();
     }
 
-    public boolean update(Utente utenteInSessione) throws SQLException {
+    public static boolean update(Utente utenteInSessione) throws SQLException {
         String sql = "UPDATE Utente " +
-                "SET nome=?,cognome=?,email=?,password_hash=?,data_registrazione,ruolo=?,avatar=?" +
+                "SET nome=?,cognome=?,email=?,password_hash=?,data_registrazione=?,ruolo=?,avatar=?" +
                 " WHERE id=?";
         try (Connection conn = DBConnector.getConnection()){
             PreparedStatement ps = conn.prepareStatement(sql);

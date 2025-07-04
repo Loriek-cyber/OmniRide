@@ -9,6 +9,7 @@ import model.dao.UtenteDAO;
 import model.udata.Utente;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
@@ -28,10 +29,14 @@ public class RegisterServlet extends HttpServlet {
         UtenteDAO utenteDAO = new UtenteDAO();
 
         // 1. Controlla se l'email esiste già
-        if (UtenteDAO.findByEmail(email) != null) {
-            req.setAttribute("errorMessage", "Un account con questa email esiste già. Prova ad accedere.");
-            req.getRequestDispatcher("/register/register.jsp").forward(req, resp);
-            return;
+        try {
+            if (UtenteDAO.findByEmail(email) != null) {
+                req.setAttribute("errorMessage", "Un account con questa email esiste già. Prova ad accedere.");
+                req.getRequestDispatcher("/register/register.jsp").forward(req, resp);
+                return;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
         // 2. Crea il nuovo utente
