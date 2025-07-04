@@ -7,25 +7,46 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.dao.UtenteDAO;
+import model.dao.udata.SessioneDAO;
 import model.udata.Utente;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.Instant;
 
 @WebServlet("/updateProfile")
 public class UpdateProfileServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("utente") == null) {
+        HttpSession httpSession = req.getSession(false);
+        if (httpSession == null || httpSession.getAttribute("utente") == null) {
             // Utente non loggato, reindirizza al login
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
-        Utente utenteInSessione = (Utente) session.getAttribute("utente");
+        Utente utenteInSessione = (Utente) httpSession.getAttribute("utente");
+        String sessionId = (String) httpSession.getAttribute("sessionId");
+        
+        // Verifica e aggiorna la sessione personalizzata se presente
+        if (sessionId != null) {
+            try {
+                boolean sessioneValida = SessioneDAO.sessioneEsistente(sessionId);
+                if (sessioneValida) {
+                    SessioneDAO.aggiornaUltimoAccesso(sessionId, Instant.now().getEpochSecond());
+                } else {
+                    // Sessione non valida, reindirizza al login
+                    httpSession.invalidate();
+                    resp.sendRedirect(req.getContextPath() + "/login");
+                    return;
+                }
+            } catch (SQLException e) {
+                System.out.println("[UPDATE_PROFILE ERROR] Errore durante la verifica della sessione: " + e.getMessage());
+                // Procedi comunque per compatibilità
+            }
+        }
 
         String nome = req.getParameter("nome");
         String cognome = req.getParameter("cognome");
@@ -76,7 +97,7 @@ public class UpdateProfileServlet extends HttpServlet {
 
             if (success) {
                 // Aggiorna l'utente nella sessione con i dati più recenti
-                session.setAttribute("utente", utenteInSessione);
+                httpSession.setAttribute("utente", utenteInSessione);
                 req.setAttribute("successMessage", "Profilo aggiornato con successo!");
             } else {
                 req.setAttribute("errorMessage", "Errore durante l'aggiornamento del profilo. Riprova.");

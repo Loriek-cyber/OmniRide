@@ -5,8 +5,12 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.dao.udata.SessioneDAO;
+import model.udata.Sessione;
 import model.udata.Utente;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.time.Instant;
 
 @WebFilter(filterName = "AuthenticationFilter", urlPatterns = {"/prvUser/*", "/prvAdmin/*"})
 public class AuthenticationFilter implements Filter {
@@ -17,11 +21,37 @@ public class AuthenticationFilter implements Filter {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        HttpSession session = httpRequest.getSession(false);
+        HttpSession httpSession = httpRequest.getSession(false);
 
-        Utente utente = (session != null) ? (Utente) session.getAttribute("utente") : null;
-        boolean isLoggedIn = (utente != null);
+        Utente utente = null;
+        boolean isLoggedIn = false;
         String requestURI = httpRequest.getRequestURI();
+        
+        if (httpSession != null) {
+            // Controllo prima l'utente nella sessione HTTP
+            utente = (Utente) httpSession.getAttribute("utente");
+            String sessionId = (String) httpSession.getAttribute("sessionId");
+            
+            if (utente != null && sessionId != null) {
+                // Verifica se la sessione è ancora valida nel database
+                try {
+                    boolean sessioneValida = SessioneDAO.sessioneEsistente(sessionId);
+                    if (sessioneValida) {
+                        // Aggiorna l'ultimo accesso
+                        SessioneDAO.aggiornaUltimoAccesso(sessionId, Instant.now().getEpochSecond());
+                        isLoggedIn = true;
+                    } else {
+                        // Sessione non valida nel database, invalida anche la sessione HTTP
+                        httpSession.invalidate();
+                        utente = null;
+                    }
+                } catch (SQLException e) {
+                    System.out.println("[FILTER ERROR] Errore durante la verifica della sessione: " + e.getMessage());
+                    // In caso di errore, mantengo la sessione HTTP per compatibilità
+                    isLoggedIn = (utente != null);
+                }
+            }
+        }
 
         // Se la richiesta è per l'area admin
         if (requestURI.startsWith(httpRequest.getContextPath() + "/prvAdmin/")) {

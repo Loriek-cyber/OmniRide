@@ -7,10 +7,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.dao.TrattaDAO;
+import model.dao.udata.SessioneDAO;
 import model.sdata.Tratta;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,11 +27,31 @@ public class CarrelloServlet extends HttpServlet {
             return;
         }
 
-        HttpSession session = req.getSession();
-        Map<Long, Tratta> carrello = (Map<Long, Tratta>) session.getAttribute("carrello");
+        HttpSession httpSession = req.getSession();
+        
+        // Verifica e aggiorna la sessione personalizzata se presente
+        String sessionId = (String) httpSession.getAttribute("sessionId");
+        if (sessionId != null) {
+            try {
+                boolean sessioneValida = SessioneDAO.sessioneEsistente(sessionId);
+                if (sessioneValida) {
+                    SessioneDAO.aggiornaUltimoAccesso(sessionId, Instant.now().getEpochSecond());
+                } else {
+                    // Sessione non valida, reindirizza al login
+                    httpSession.invalidate();
+                    resp.sendRedirect(req.getContextPath() + "/login");
+                    return;
+                }
+            } catch (SQLException e) {
+                System.out.println("[CARRELLO ERROR] Errore durante la verifica della sessione: " + e.getMessage());
+                // Procedi comunque per compatibilità
+            }
+        }
+        
+        Map<Long, Tratta> carrello = (Map<Long, Tratta>) httpSession.getAttribute("carrello");
         if (carrello == null) {
             carrello = new HashMap<>();
-            session.setAttribute("carrello", carrello);
+            httpSession.setAttribute("carrello", carrello);
         }
 
         try {

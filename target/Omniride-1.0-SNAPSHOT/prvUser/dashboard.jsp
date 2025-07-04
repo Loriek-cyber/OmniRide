@@ -27,10 +27,11 @@
 
                 <%-- Sezione Azienda --%>
                 <c:if test="${sessionScope.utente.ruolo == 'azienda'}">
-                    <p>Questa è l'area di gestione per la tua azienda: <strong><c:out value="${sessionScope.utente.azienda.nome}"/></strong>.</p>
+                    <p>Questa è l'area di gestione per la tua azienda: <strong><c:out value="${sessionScope.utente.nome}"/></strong>.</p>
                     <div class="dashboard-actions">
-                        <a href="${pageContext.request.contextPath}/prvAzienda/gestoreTratte.jsp" class="btn">Gestisci le Tue Tratte</a>
-                        <a href="${pageContext.request.contextPath}/prvAzienda/gestoreFermate.jsp" class="btn">Gestisci Fermate (Pubbliche)</a>
+                        <a href="${pageContext.request.contextPath}/prvAzienda/dashboard" class="btn">Dashboard Azienda Completa</a>
+                        <a href="${pageContext.request.contextPath}/prvAdmin/gestoreTratte" class="btn">Gestisci le Tue Tratte</a>
+                        <a href="${pageContext.request.contextPath}/tratte.jsp" class="btn">Visualizza Tutte le Tratte</a>
                         <a href="${pageContext.request.contextPath}/prvUser/editProfile.jsp" class="btn">Impostazioni Account</a>
                     </div>
                 </c:if>

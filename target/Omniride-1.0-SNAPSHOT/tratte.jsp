@@ -6,13 +6,12 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%
-    List<Tratta> tratte;
+    List<Tratta> tratte = null;
     try{
         tratte = TrattaDAO.getAllTratte();
     }catch (SQLException e){
         e.printStackTrace();
     }
-
 %>
 
 <!DOCTYPE html>
@@ -27,35 +26,61 @@
 <jsp:include page="import/header.jsp" />
 
 <main>
-    <div class="container">
-        <div class = "avvisi-result">
-            <div>
-                <h1>Tratte</h1>
-            </div>
+    <div class="tratte-container">
+        <div class="tratte-header">
+            <h1>Tratte</h1>
+            <c:if test="${sessionScope.utente.ruolo == 'azienda' || sessionScope.utente.ruolo == 'admin'}">
+                <button class="btn-modern btn-primary" onclick="toggleAddForm()">Aggiungi Nuova Tratta</button>
+            </c:if>
+        </div>
 
-            <table border="1" cellspacing="0" cellpadding="8">
-                <thead>
+        <div id="form-add-tratta" class="form-add-tratta">
+            <form action="addTratta" method="POST">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nome">Nome Tratta</label>
+                        <input type="text" id="nome" name="nome" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="azienda">Azienda</label>
+                        <input type="text" id="azienda" name="azienda" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="costo">Costo</label>
+                        <input type="number" step="0.01" id="costo" name="costo" class="form-control" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-modern btn-primary">Salva</button>
+            </form>
+        </div>
+
+        <table class="tratte-table">
+            <thead>
                 <tr>
                     <th>Nome</th>
                     <th>Azienda</th>
                     <th>Costo</th>
                 </tr>
-                </thead>
-                <tbody>
-                <%
-                    for (Tratta tratta : tratte) {
-                %>
+            </thead>
+            <tbody>
+            <c:forEach var="tratta" items="${tratte}">
                 <tr>
-                    <td><%= tratta.getNome() %></td>
-                    <td><%= tratta.getAzienda().getNome() %></td>
-                    <td><%= tratta.getCosto()%>
-                </tbody>
-                <%}%>
-            </table>
-        </div>
+                    <td>${tratta.nome}</td>
+                    <td>${tratta.azienda.getNome()}</td>
+                    <td>${tratta.costo}</td>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
     </div>
 </main>
 
 <jsp:include page="import/footer.jsp" />
+<script>
+    function toggleAddForm() {
+        const form = document.getElementById('form-add-tratta');
+        form.classList.toggle('active');
+    }
+</script>
 </body>
 </html>

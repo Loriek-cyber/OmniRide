@@ -7,11 +7,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.dao.UtenteDAO;
+import model.dao.udata.SessioneDAO;
+import model.udata.Sessione;
 import model.udata.Utente;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.Instant;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -106,8 +109,45 @@ public class LoginServlet extends HttpServlet {
         if (passwordCorretta) {
             // Login successo: creo la sessione e salvo l'utente
             System.out.println("[LOGIN SUCCESS] Login riuscito per: " + email);
-            HttpSession session = req.getSession(true);
-            session.setAttribute("utente", utente);
+            HttpSession httpSession = req.getSession(true);
+            
+            // Creo una nuova sessione personalizzata
+            Sessione sessione = new Sessione();
+            sessione.setUtente(utente);
+            sessione.setValid(true);
+            sessione.setCreationTime(Instant.now().getEpochSecond());
+            sessione.setLastAccessTime(Instant.now().getEpochSecond());
+            
+            try {
+                // Salvo la sessione nel database
+                SessioneDAO.salvaSessione(sessione);
+                
+                // Salvo sia l'utente che la sessione nella HttpSession
+                httpSession.setAttribute("utente", utente);
+                httpSession.setAttribute("sessionId", sessione.getSessionId());
+                httpSession.setAttribute("sessione", sessione);
+                
+                System.out.println("[SESSION DEBUG] Sessione creata con ID: " + sessione.getSessionId());
+                
+            } catch (SQLException e) {
+                System.out.println("[SESSION ERROR] Errore durante il salvataggio della sessione: " + e.getMessage());
+                System.out.println("[SESSION ERROR] Dettagli errore: " + e.toString());
+                e.printStackTrace();
+                
+                // Anche se c'è un errore nel salvataggio della sessione personalizzata,
+                // procedo con la sessione HTTP standard
+                httpSession.setAttribute("utente", utente);
+                // Non salvo sessionId se c'è stato un errore
+                System.out.println("[SESSION WARNING] Continuo con sessione HTTP standard senza persistenza database");
+            } catch (Exception e) {
+                System.out.println("[SESSION ERROR] Errore generico durante la creazione della sessione: " + e.getMessage());
+                e.printStackTrace();
+                
+                // Fallback a sessione HTTP standard
+                httpSession.setAttribute("utente", utente);
+                System.out.println("[SESSION WARNING] Fallback a sessione HTTP standard");
+            }
+            
             resp.sendRedirect(req.getContextPath() + "/prvUser/dashboard.jsp");
         } else {
             // Login fallito
