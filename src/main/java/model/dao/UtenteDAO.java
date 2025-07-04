@@ -12,11 +12,11 @@ import java.util.List;
 import java.sql.Blob;
 
 public class UtenteDAO {
-    private  static Utente getUtenteFromSet(ResultSet rs){
+    private  static Utente getUtenteFromSet(ResultSet rs) throws  SQLException {
         Utente utente;
-        try {
+        try{
             utente = new Utente();
-            ResultSet
+
         }
     }
     public static Utente findByEmail(String email) {}
