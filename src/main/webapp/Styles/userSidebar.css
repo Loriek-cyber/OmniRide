@@ -1,0 +1,323 @@
+/* ==== USER SIDEBAR STYLES ==== */
+
+/* Layout principale con sidebar */
+.user-dashboard-layout {
+    display: flex;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9f7e9 100%);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Sidebar sinistra */
+.sidebar {
+    width: 250px;
+    background: linear-gradient(135deg, #2d5016, #59a300);
+    color: white;
+    position: fixed;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    overflow-y: auto;
+}
+
+/* Header della sidebar */
+.sidebar-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+}
+
+.sidebar-header .user-name {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-top: 0.5rem;
+    font-weight: 400;
+}
+
+/* Menu di navigazione */
+.sidebar-nav {
+    padding: 1rem 0;
+}
+
+.nav-item {
+    margin: 0;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+    font-size: 0.95rem;
+    font-weight: 400;
+}
+
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border-left-color: #32cd32;
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.nav-link.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border-left-color: #32cd32;
+    font-weight: 500;
+}
+
+.nav-icon {
+    margin-right: 0.75rem;
+    font-size: 1rem;
+    width: 16px;
+    text-align: center;
+    opacity: 0.8;
+}
+
+.nav-link:hover .nav-icon,
+.nav-link.active .nav-icon {
+    opacity: 1;
+}
+
+/* Divider tra sezioni */
+.nav-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 1rem 1.5rem;
+}
+
+/* Link logout speciale */
+.logout-link {
+    color: rgba(255, 255, 255, 0.7) !important;
+    border-left-color: transparent !important;
+}
+
+.logout-link:hover {
+    background: rgba(255, 0, 0, 0.1) !important;
+    border-left-color: #ff4757 !important;
+    color: #ff4757 !important;
+}
+
+/* Area contenuto principale */
+.user-main-content {
+    flex: 1;
+    margin-left: 250px;
+    padding: 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9f7e9 100%);
+    min-height: 100vh;
+}
+
+/* Modifica del main per non centrare il contenuto */
+.user-main-content main {
+    flex: 1;
+    display: block;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 2rem;
+    background: transparent;
+}
+
+/* Header del contenuto */
+.content-header {
+    background: white;
+    padding: 1.5rem 2rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    border-left: 4px solid #32cd32;
+}
+
+.content-header h1 {
+    margin: 0;
+    color: #2d5016;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.content-header .breadcrumb {
+    margin: 0.5rem 0 0 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* Cards delle sezioni */
+.dashboard-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.dashboard-actions .btn {
+    background: linear-gradient(135deg, #32cd32, #59a300);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    text-decoration: none;
+    text-align: center;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 4px 12px rgba(89, 163, 0, 0.2);
+}
+
+.dashboard-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(89, 163, 0, 0.3);
+    background: linear-gradient(135deg, #59a300, #32cd32);
+}
+
+/* Bottone toggle mobile */
+.sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1100;
+    background: #59a300;
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(89, 163, 0, 0.3);
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+}
+
+.sidebar-toggle:hover {
+    background: #32cd32;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(89, 163, 0, 0.4);
+}
+
+/* Overlay per mobile */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        width: 280px;
+    }
+    
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    
+    .user-main-content {
+        margin-left: 0;
+    }
+    
+    .user-main-content main {
+        padding: 1rem;
+    }
+    
+    .sidebar-toggle {
+        display: block;
+    }
+    
+    .sidebar-overlay.active {
+        display: block;
+    }
+    
+    .content-header {
+        padding: 1rem 1.5rem;
+        margin-top: 3rem;
+    }
+    
+    .content-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .dashboard-actions {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        width: 100%;
+    }
+    
+    .content-header {
+        margin: 3rem 0.5rem 1rem 0.5rem;
+        padding: 1rem;
+    }
+    
+    .user-main-content main {
+        padding: 0.5rem;
+    }
+}
+
+/* Animazioni */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.content-header,
+.dashboard-actions .btn {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Stili per il contenuto principale */
+.user-content {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.user-content h2 {
+    color: #2d5016;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.user-content h3 {
+    color: #59a300;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+
+.user-content p {
+    color: #6c757d;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
