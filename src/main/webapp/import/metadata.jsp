@@ -17,3 +17,4 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/responsive.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/tratte.css">
 <script src="${pageContext.request.contextPath}/Scripts/header.js"></script>
+<script src="${pageContext.request.contextPath}/Scripts/tratte.js"></script>

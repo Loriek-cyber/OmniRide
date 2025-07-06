@@ -12,18 +12,25 @@
 
 <main>
     <div id="content" class="content">
-        <form method="get" action="DBtestServlet">
-            <h2>Cerca la tua tratta</h2>
-            <div class="input-group search">
-                <label for="start">Partenza:</label>
-                <input type="text" id="start" name="start" placeholder="Città di partenza" required>
+        <div class="hero-section">
+            <div class="hero-image">
+                <img src="Images/background.png" alt="Background" />
             </div>
-            <div class="input-group search">
-                <label for="end">Destinazione:</label>
-                <input type="text" id="end" name="end" placeholder="Città di destinazione" required>
+            <div class="hero-content">
+                <form method="get" action="DBtestServlet">
+                    <h2>Cerca la tua tratta</h2>
+                    <div class="input-group search">
+                        <label for="start">Partenza:</label>
+                        <input type="text" id="start" name="start" placeholder="Città di partenza" required>
+                    </div>
+                    <div class="input-group search">
+                        <label for="end">Destinazione:</label>
+                        <input type="text" id="end" name="end" placeholder="Città di destinazione" required>
+                    </div>
+                    <button type="submit" class="btn">🔎 Cerca</button>
+                </form>
             </div>
-            <button type="submit" class="btn">🔎 Cerca</button>
-        </form>
+        </div>
     </div>
 </main>
 
