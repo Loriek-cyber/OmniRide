@@ -1,4 +1,4 @@
-package control.add;
+package control.admin;
 
 import error.ErrorPage;
 import jakarta.servlet.ServletException;
@@ -17,8 +17,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet(name = "addTratta", value = "/prvAzienda/addTratta")
-public class AddTrattaServlet extends HttpServlet {
+@WebServlet(name = "addTrattaAdmin", value = "/prvAdmin/addTratta")
+public class AddTrattaAdminServlet extends HttpServlet {
     
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -26,7 +26,7 @@ public class AddTrattaServlet extends HttpServlet {
             // Recupera tutte le fermate disponibili
             List<Fermata> fermate = FermataDAO.doRetrieveAll();
             req.setAttribute("fermate", fermate);
-            req.getRequestDispatcher("/prvAzienda/addTratta.jsp").forward(req, resp);
+            req.getRequestDispatcher("/prvAdmin/addTratta.jsp").forward(req, resp);
         } catch (SQLException e) {
             handleDatabaseError(req, resp, "Errore nel recupero delle fermate");
         }
@@ -35,13 +35,9 @@ public class AddTrattaServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            // Validazione dell'azienda dalla sessione
-            Azienda azienda = validateAzienda(req);
-            if (azienda == null) {
-                handleAuthorizationError(req, resp);
-                return;
-            }
-
+            // Per l'admin, creiamo un'azienda fittizia o usiamo quella di default
+            Azienda aziendaDefault = getDefaultAzienda();
+            
             // Validazione dei parametri
             ValidationResult validation = validateParameters(req);
             if (!validation.isValid()) {
@@ -50,7 +46,7 @@ public class AddTrattaServlet extends HttpServlet {
             }
 
             // Creazione della tratta
-            Tratta nuovaTratta = createTratta(validation, azienda);
+            Tratta nuovaTratta = createTratta(validation, aziendaDefault);
             
             // Salvataggio nel database
             Long trattaId = TrattaDAO.insertTratta(nuovaTratta);
@@ -59,7 +55,7 @@ public class AddTrattaServlet extends HttpServlet {
             createFermataTrattaRelations(trattaId, validation.getFermateSelezionate(), validation.getTempiTraFermate());
             
             // Redirect alla pagina di successo
-            resp.sendRedirect(req.getContextPath() + "/prvAzienda/dashboard?success=tratta_creata");
+            resp.sendRedirect(req.getContextPath() + "/prvAdmin/admin.jsp?success=tratta_creata");
             
         } catch (SQLException e) {
             handleDatabaseError(req, resp, "Errore durante il salvataggio della tratta");
@@ -69,18 +65,18 @@ public class AddTrattaServlet extends HttpServlet {
     }
 
     /**
-     * Valida l'azienda dalla sessione
+     * Ottiene l'azienda di default per l'admin
      */
-    private Azienda validateAzienda(HttpServletRequest req) {
-        HttpSession session = req.getSession(false);
-        if (session == null) {
-            return null;
-        }
-        return (Azienda) session.getAttribute("azienda");
+    private Azienda getDefaultAzienda() {
+        // Per l'admin, usiamo un'azienda di sistema
+        Azienda azienda = new Azienda();
+        azienda.setId(1L); // ID dell'azienda di sistema
+        azienda.setNome("Sistema Amministrativo");
+        return azienda;
     }
 
     /**
-     * Valida i parametri della richiesta
+     * Valida i parametri della richiesta (stesso codice della servlet azienda)
      */
     private ValidationResult validateParameters(HttpServletRequest req) {
         ValidationResult result = new ValidationResult();
@@ -203,36 +199,19 @@ public class AddTrattaServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Gestione errori del database
-     */
+    // Metodi di gestione errori (uguali alla servlet azienda)
     private void handleDatabaseError(HttpServletRequest req, HttpServletResponse resp, String message) throws ServletException, IOException {
         ErrorPage errorPage = new ErrorPage(503, message);
         req.setAttribute("error", errorPage);
         req.getRequestDispatcher("/error.jsp").forward(req, resp);
     }
 
-    /**
-     * Gestione errori di autorizzazione
-     */
-    private void handleAuthorizationError(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ErrorPage errorPage = new ErrorPage(401, "Accesso non autorizzato");
-        req.setAttribute("error", errorPage);
-        req.getRequestDispatcher("/error.jsp").forward(req, resp);
-    }
-
-    /**
-     * Gestione errori di validazione
-     */
     private void handleValidationError(HttpServletRequest req, HttpServletResponse resp, String message) throws ServletException, IOException {
         ErrorPage errorPage = new ErrorPage(400, message);
         req.setAttribute("error", errorPage);
         req.getRequestDispatcher("/error.jsp").forward(req, resp);
     }
 
-    /**
-     * Gestione errori generici
-     */
     private void handleGenericError(HttpServletRequest req, HttpServletResponse resp, String message) throws ServletException, IOException {
         ErrorPage errorPage = new ErrorPage(500, message);
         req.setAttribute("error", errorPage);

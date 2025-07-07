@@ -1,4 +1,4 @@
-package control.add;
+package control.admin;
 
 import error.ErrorPage;
 import jakarta.servlet.ServletException;
@@ -12,8 +12,8 @@ import model.util.Geolock;
 import java.io.IOException;
 import java.sql.SQLException;
 
-@WebServlet(name = "addFermata", value = "/prvAzienda/addFermata")
-public class AddFermataServlet extends HttpServlet {
+@WebServlet(name = "addFermataAdmin", value = "/prvAdmin/addFermata")
+public class AddFermataAdminServlet extends HttpServlet {
     
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -48,7 +48,7 @@ public class AddFermataServlet extends HttpServlet {
             
             if (fermataId != null) {
                 // Redirect con messaggio di successo
-                resp.sendRedirect(req.getContextPath() + "/prvAzienda/dashboard?success=fermata_creata");
+                resp.sendRedirect(req.getContextPath() + "/prvAdmin/admin.jsp?success=fermata_creata");
             } else {
                 handleDatabaseError(req, resp, "Errore durante il salvataggio della fermata");
             }

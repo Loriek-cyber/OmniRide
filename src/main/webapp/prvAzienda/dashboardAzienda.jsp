@@ -117,12 +117,30 @@
                         <div class="section-description">
                             Visualizza e modifica le tratte della tua azienda, aggiungi nuove rotte e gestisci gli orari.
                         </div>
+                        <div class="section-actions">
+                            <a href="addTratta" class="btn btn-primary">Aggiungi Tratta</a>
+                            <a href="#sezione2" class="btn btn-secondary" onclick="showSection(2)">Visualizza Tutte</a>
+                        </div>
                     </div>
                     <div class="section-card">
                         <div class="section-number">Accesso Rapido 2</div>
+                        <div class="section-title">Gestione Fermate</div>
+                        <div class="section-description">
+                            Aggiungi nuove fermate, modifica quelle esistenti e gestisci la rete di trasporti.
+                        </div>
+                        <div class="section-actions">
+                            <a href="addFermata" class="btn btn-primary">Aggiungi Fermata</a>
+                            <a href="#sezione3" class="btn btn-secondary" onclick="showSection(3)">Visualizza Tutte</a>
+                        </div>
+                    </div>
+                    <div class="section-card">
+                        <div class="section-number">Accesso Rapido 3</div>
                         <div class="section-title">Statistiche in Tempo Reale</div>
                         <div class="section-description">
                             Monitora le performance delle tue tratte, il numero di passeggeri e i ricavi giornalieri.
+                        </div>
+                        <div class="section-actions">
+                            <a href="#sezione4" class="btn btn-primary" onclick="showSection(4)">Visualizza Report</a>
                         </div>
                     </div>
                 </div>
