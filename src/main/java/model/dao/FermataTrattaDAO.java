@@ -1,44 +1,87 @@
 package model.dao;
+
 import model.sdata.FermataTratta;
 import model.db.DBConnector;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FermataTrattaDAO {
-    private static final String getFTfromTid = "SELECT * FROM Fermata_Tratta WHERE id_tratta = ? ORDER BY sequenza";
 
-    private static FermataTratta getFTfromSet(ResultSet rs) throws SQLException {
-        return new FermataTratta(
-                rs.getLong("id_tratta"),
-                FermataDAO.doRetrieveById(rs.getLong("id_fermata")),
-                null, // La prossima fermata verrà impostata dopo
-                rs.getInt("tempo_prossima_fermata")
-        );
+    private static FermataTratta extractFermataTrattaFromResultSet(ResultSet rs) throws SQLException {
+        FermataTratta ft = new FermataTratta();
+        ft.setId(rs.getLong("id"));
+        ft.setIdTratta(rs.getLong("id_tratta"));
+        ft.setSequenza(rs.getInt("sequenza"));
+        ft.setTempoProssimaFermata(rs.getInt("tempo_prossima_fermata"));
+        ft.setFermata(FermataDAO.findFermataById(rs.getLong("id_fermata")));
+        return ft;
     }
 
-    public static List<FermataTratta> getFTfromTrattaID(long id_tratta) throws SQLException {
+    public static void updateFermateForTratta(Long idTratta, List<FermataTratta> nuoveFermate) throws SQLException {
+        String deleteSql = "DELETE FROM Fermata_Tratta WHERE id_tratta = ?";
+        String insertSql = "INSERT INTO Fermata_Tratta (id_tratta, id_fermata, sequenza, tempo_prossima_fermata) VALUES (?, ?, ?, ?)";
+        
+        try (Connection conn = DBConnector.getConnection()) {
+            conn.setAutoCommit(false); // Inizio transazione
+
+            try (PreparedStatement psDelete = conn.prepareStatement(deleteSql)) {
+                psDelete.setLong(1, idTratta);
+                psDelete.executeUpdate();
+            }
+
+            try (PreparedStatement psInsert = conn.prepareStatement(insertSql)) {
+                for (FermataTratta ft : nuoveFermate) {
+                    psInsert.setLong(1, idTratta);
+                    psInsert.setLong(2, ft.getFermata().getId());
+                    psInsert.setInt(3, ft.getSequenza());
+                    psInsert.setInt(4, ft.getTempoProssimaFermata());
+                    psInsert.addBatch();
+                }
+                psInsert.executeBatch();
+            }
+
+            conn.commit(); // Conferma transazione
+        } catch (SQLException e) {
+            // Il try-with-resources gestirà la chiusura della connessione,
+            // ma il rollback è ancora necessario in caso di errore.
+            try (Connection conn = DBConnector.getConnection()) {
+                if (conn != null) conn.rollback();
+            } catch (SQLException ex) {
+                e.addSuppressed(ex); // Aggiunge l'eccezione di rollback a quella originale
+            }
+            throw e;
+        }
+    }
+    
+    public static boolean deleteFermataTratta(Long id) throws SQLException {
+        String sql = "DELETE FROM Fermata_Tratta WHERE id = ?";
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, id);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    public static List<FermataTratta> findFermateByTrattaId(long idTratta) throws SQLException {
         List<FermataTratta> lft = new ArrayList<>();
-        try(Connection conn = DBConnector.getConnection()){
-            PreparedStatement ps = conn.prepareStatement(getFTfromTid);
-            ps.setLong(1, id_tratta);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()){
-                lft.add(getFTfromSet(rs));
+        String sql = "SELECT * FROM Fermata_Tratta WHERE id_tratta = ? ORDER BY sequenza";
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setLong(1, idTratta);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()){
+                    lft.add(extractFermataTrattaFromResultSet(rs));
+                }
             }
         }
 
-        // Imposta la fermata successiva per ogni elemento della lista
         if (!lft.isEmpty()) {
             for (int i = 0; i < lft.size() - 1; i++) {
                 lft.get(i).setProssimaFermata(lft.get(i + 1).getFermata());
             }
-            // L'ultima fermata non ha una prossima fermata, quindi impostiamo a null esplicitamente
-            lft.get(lft.size() - 1).setProssimaFermata(null);
         }
 
         return lft;

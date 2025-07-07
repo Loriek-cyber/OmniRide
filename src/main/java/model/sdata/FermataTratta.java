@@ -2,44 +2,37 @@ package model.sdata;
 
 import java.io.Serializable;
 
-//classe intermedi per l'apartenenza a una fermata
 public class FermataTratta implements Serializable {
+    private Long id; // PK della tabella Fermata_Tratta
     private Long idTratta;
     private Fermata fermata;
-    private Fermata prossimaFermata;
-    private int tempoProssimaFermata; //in minuti
+    private int sequenza; // Ordine della fermata nella tratta
+    private int tempoProssimaFermata; // in minuti
+
+    // Questo campo può essere popolato dopo il recupero per comodità
+    private transient Fermata prossimaFermata;
+
     public FermataTratta() {}
 
-    public FermataTratta(Long idTratta, Fermata fermata, Fermata prossimaFermata, int tempoProssimaFermata) {
+    // Costruttore per la creazione di nuove istanze (l'ID verrà generato dal DB)
+    public FermataTratta(Long idTratta, Fermata fermata, int sequenza, int tempoProssimaFermata) {
         this.idTratta = idTratta;
         this.fermata = fermata;
-        this.prossimaFermata = prossimaFermata;
+        this.sequenza = sequenza;
         this.tempoProssimaFermata = tempoProssimaFermata;
     }
 
-
-    public Long getIdTratta() {return idTratta;}
-    public void setIdTratta(Long idTratta) {this.idTratta = idTratta;}
-    public Fermata getFermata() {return fermata;}
-    public void setFermata(Fermata fermata) {this.fermata = fermata;}
-    public Fermata getProssimaFermata() {return prossimaFermata;}
-    public void setProssimaFermata(Fermata prossimaFermata) {this.prossimaFermata = prossimaFermata;}
-    public int getTempoProssimaFermata() {return tempoProssimaFermata;}
-    public void setTempoProssimaFermata(int tempoProssimaFermata) {this.tempoProssimaFermata = tempoProssimaFermata;}
-
-
-    @Override
-    public String toString() {
-        // String.format è un modo pulito e sicuro per costruire stringhe.
-        // Gestisce automaticamente gli oggetti null senza causare errori.
-        return String.format(
-                "FermataTratta{idTratta=%d, fermata=%s, prossimaFermata=%s, tempoProssimaFermata=%d}",
-                idTratta,
-                fermata != null ? fermata.toString() : "null",
-                prossimaFermata != null ? prossimaFermata.toString() : "null",
-                tempoProssimaFermata
-        );
-    }
-
-
+    // Getters e Setters per tutti i campi
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public Long getIdTratta() { return idTratta; }
+    public void setIdTratta(Long idTratta) { this.idTratta = idTratta; }
+    public Fermata getFermata() { return fermata; }
+    public void setFermata(Fermata fermata) { this.fermata = fermata; }
+    public int getSequenza() { return sequenza; }
+    public void setSequenza(int sequenza) { this.sequenza = sequenza; }
+    public int getTempoProssimaFermata() { return tempoProssimaFermata; }
+    public void setTempoProssimaFermata(int tempoProssimaFermata) { this.tempoProssimaFermata = tempoProssimaFermata; }
+    public Fermata getProssimaFermata() { return prossimaFermata; }
+    public void setProssimaFermata(Fermata prossimaFermata) { this.prossimaFermata = prossimaFermata; }
 }

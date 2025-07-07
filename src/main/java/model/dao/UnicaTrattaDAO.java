@@ -17,7 +17,7 @@ public class UnicaTrattaDAO {
 
     private static UnicaTratta getUTfromSet(ResultSet rs) throws SQLException {
         long unicaTrattaId = rs.getLong("id");
-        OrarioTratta orario = OrarioTrattaDAO.getFromIdUT(unicaTrattaId);
+        OrarioTratta orario = OrarioTrattaDAO.findOrarioTrattaById(rs.getLong("id_orario"));
 
         return new UnicaTratta(
                 unicaTrattaId,
@@ -26,31 +26,65 @@ public class UnicaTrattaDAO {
         );
     }
 
-    public static UnicaTratta getUTfromID(long id) throws SQLException {
-        try(Connection conn = DBConnector.getConnection()){
-            PreparedStatement ps = conn.prepareStatement(getUnicaFromID);
+    public static UnicaTratta findById(long id) throws SQLException {
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(getUnicaFromID)) {
             ps.setLong(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()){
-                return getUTfromSet(rs);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()){
+                    return getUTfromSet(rs);
+                }
             }
         }
         return null;
     }
 
+    public static Long create(UnicaTratta nuovaUnicaTratta) throws SQLException {
+        String sql = "INSERT INTO Unica_Tratta (id_tratta, id_orario) VALUES (?, ?)";
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+
+            ps.setLong(1, nuovaUnicaTratta.getTrattaId());
+            ps.setLong(2, nuovaUnicaTratta.getOrarioTratta().getId());
+
+            if (ps.executeUpdate() == 0) {
+                throw new SQLException("Creazione UnicaTratta fallita, nessuna riga modificata.");
+            }
+
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getLong(1);
+                } else {
+                    throw new SQLException("Creazione UnicaTratta fallita, nessun ID ottenuto.");
+                }
+            }
+        }
+    }
+
+    public static boolean update(UnicaTratta unicaTrattaInSessione) throws SQLException {
+        String sql = "UPDATE Unica_Tratta SET id_tratta = ?, id_orario = ? WHERE id = ?";
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, unicaTrattaInSessione.getTrattaId());
+            ps.setLong(2, unicaTrattaInSessione.getOrarioTratta().getId());
+            ps.setLong(3, unicaTrattaInSessione.getId());
+
+            return ps.executeUpdate() > 0;
+        }
+    }
+
     public static List<UnicaTratta> getLUTfromIDT(long id) throws SQLException {
         List<UnicaTratta> utl = new ArrayList<>();
-        try (Connection con = DBConnector.getConnection()) {
-            PreparedStatement pr = con.prepareStatement(getAllUTFromIDT);
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement pr = con.prepareStatement(getAllUTFromIDT)) {
             pr.setLong(1, id);
-            ResultSet rs = pr.executeQuery();
-            while(rs.next()){
-                utl.add(getUTfromSet(rs));
+            try (ResultSet rs = pr.executeQuery()) {
+                while(rs.next()){
+                    utl.add(getUTfromSet(rs));
+                }
             }
         }
         return utl;
     }
 }
-
-
-
