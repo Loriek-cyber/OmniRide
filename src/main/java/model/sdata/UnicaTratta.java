@@ -45,4 +45,7 @@ public class UnicaTratta {
                 ", orarioTratta=" + orarioTratta.toString() +
                 '}';
     }
+
+
+
 }

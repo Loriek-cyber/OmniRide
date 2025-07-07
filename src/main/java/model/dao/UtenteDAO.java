@@ -44,6 +44,7 @@ public class UtenteDAO {
         return null;
     }
 
+    //FINDBYID
     public static Utente findById(Long id) throws SQLException{
         String QRstr="SELECT * FROM Utente WHERE id=?";
         try(Connection con=DBConnector.getConnection()){
@@ -67,8 +68,8 @@ public class UtenteDAO {
         }
     }
 
-
-    public boolean create(Utente nuovoUtente) {
+    //CREATE
+    public static boolean create(Utente nuovoUtente) {
         String QRstr="INSERT TO Utente (nome, cognome, email, password_hash, data_registrazione, ruolo, avatar) " +
                 "VALUES (?,?,?,?,?,?,?) ";
         try(Connection con=DBConnector.getConnection()){
@@ -93,11 +94,12 @@ public class UtenteDAO {
         return false;
     }
 
-    public byte[] getAvatarByUserId(Long userId) throws SQLException{
+    public static byte[] getAvatarByUserId(Long userId) throws SQLException{
         return findById(userId).getAvatar();
     }
 
-    public boolean update(Utente utenteInSessione) throws SQLException {
+    //UPDATE
+    public static boolean update(Utente utenteInSessione) throws SQLException {
         String sql = "UPDATE Utente " +
                 "SET nome=?,cognome=?,email=?,password_hash=?,data_registrazione,ruolo=?,avatar=?" +
                 " WHERE id=?";

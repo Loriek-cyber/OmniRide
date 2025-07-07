@@ -13,43 +13,6 @@ import java.util.List;
 
 public class AziendaDAO {
 
-    public static long createAzienda(Azienda azienda) throws SQLException {
-        String sql = "INSERT INTO Azienda (nome, tipo) VALUES (?, ?)";
-        try (Connection con = DBConnector.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, azienda.getNome());
-            ps.setString(2, azienda.getTipo().name());
-            
-            int affectedRows = ps.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("Creazione azienda fallita, nessuna riga modificata.");
-            }
-
-            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    return generatedKeys.getLong(1);
-                } else {
-                    throw new SQLException("Creazione azienda fallita, nessun ID ottenuto.");
-                }
-            }
-        }
-    }
-
-    public static Azienda doRetrieveById(long id) {
-        try (Connection con = DBConnector.getConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM Azienda WHERE id = ?");
-            ps.setLong(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return extractAziendaFromResultSet(rs);
-                }
-            }
-            return null;
-        } catch (SQLException e) {
-            throw new RuntimeException("Errore durante il recupero dell'azienda con id: " + id, e);
-        }
-    }
-
     public static List<Azienda> doRetrieveAll() {
         List<Azienda> aziende = new ArrayList<>();
         try (Connection con = DBConnector.getConnection();
@@ -65,6 +28,7 @@ public class AziendaDAO {
         }
     }
 
+
     private static Azienda extractAziendaFromResultSet(ResultSet rs) throws SQLException {
         Azienda azienda = new Azienda();
         azienda.setId(rs.getLong("id"));
@@ -75,4 +39,49 @@ public class AziendaDAO {
         }
         return azienda;
     }
+
+// CREATE
+public static boolean create(Azienda nuovaAzienda) {
+    String QRstr = "INSERT INTO Azienda (nome, tipo) VALUES (?, ?)";
+    try (Connection con = DBConnector.getConnection()) {
+        PreparedStatement ps = con.prepareStatement(QRstr);
+        ps.setString(1, nuovaAzienda.getNome());
+        ps.setString(2, nuovaAzienda.getTipo());
+
+        return ps.executeUpdate() >= 1;
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
+// UPDATE
+public static boolean update(Azienda aziendaInSessione) throws SQLException {
+    String sql = "UPDATE Azienda SET nome=?, tipo=? WHERE id=?";
+    try (Connection conn = DBConnector.getConnection()) {
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, aziendaInSessione.getNome());
+        ps.setString(2, aziendaInSessione.getTipo());
+        ps.setLong(3, aziendaInSessione.getId());
+
+        return ps.executeUpdate() >= 1;
+    }
+}
+
+// FINDBYID
+public static Azienda findById(long id) {
+    try (Connection con = DBConnector.getConnection()) {
+        PreparedStatement ps = con.prepareStatement("SELECT * FROM Azienda WHERE id = ?");
+        ps.setLong(1, id);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return extractAziendaFromResultSet(rs);
+            }
+        }
+        return null;
+    } catch (SQLException e) {
+        throw new RuntimeException("Errore durante il recupero dell'azienda con id: " + id, e);
+    }
+}
 }

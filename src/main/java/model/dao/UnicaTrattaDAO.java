@@ -17,25 +17,13 @@ public class UnicaTrattaDAO {
 
     private static UnicaTratta getUTfromSet(ResultSet rs) throws SQLException {
         long unicaTrattaId = rs.getLong("id");
-        OrarioTratta orario = OrarioTrattaDAO.getFromIdUT(unicaTrattaId);
+        OrarioTratta orario = OrarioTrattaDAO.findByUnicaTrattaId(unicaTrattaId);
 
         return new UnicaTratta(
                 unicaTrattaId,
                 rs.getLong("id_tratta"),
                 orario
         );
-    }
-
-    public static UnicaTratta getUTfromID(long id) throws SQLException {
-        try(Connection conn = DBConnector.getConnection()){
-            PreparedStatement ps = conn.prepareStatement(getUnicaFromID);
-            ps.setLong(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()){
-                return getUTfromSet(rs);
-            }
-        }
-        return null;
     }
 
     public static List<UnicaTratta> getLUTfromIDT(long id) throws SQLException {
@@ -50,7 +38,39 @@ public class UnicaTrattaDAO {
         }
         return utl;
     }
+
+    // CREATE
+    public static boolean create(UnicaTratta nuovaUnicaTratta) {
+        String QRstr = "INSERT INTO Unica_Tratta (id_tratta) VALUES (?)";
+        try (Connection con = DBConnector.getConnection()) {
+            PreparedStatement ps = con.prepareStatement(QRstr);
+            ps.setLong(1, nuovaUnicaTratta.getTrattaId());
+
+            return ps.executeUpdate() >= 1;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // UPDATE
+    public static boolean update(UnicaTratta unicaTrattaInSessione) throws SQLException {
+        // Non c'è nulla da aggiornare in Unica_Tratta se non l'id_tratta,
+        // che non dovrebbe cambiare. Se necessario, si può implementare.
+        return true;
+    }
+
+    // FINDBYID
+    public static UnicaTratta findById(long id) throws SQLException {
+        try(Connection conn = DBConnector.getConnection()){
+            PreparedStatement ps = conn.prepareStatement(getUnicaFromID);
+            ps.setLong(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()){
+                return getUTfromSet(rs);
+            }
+        }
+        return null;
+    }
 }
-
-
-

@@ -44,17 +44,6 @@ public class AvvisiDAO {
         return avvisi;
     }
 
-    public static Avvisi getAvvisiById(Long id) throws SQLException {
-        try(Connection conn = DBConnector.getConnection()){
-            PreparedStatement pr = conn.prepareStatement("SELECT * FROM Avviso WHERE id = ?");
-            pr.setLong(1, id);
-            ResultSet rs = pr.executeQuery();
-            if(rs.next()){
-                return getAvvisiFromSet(rs);
-            }
-            return null;
-        }
-    }
     public static List<Avvisi> getAvvisiByTrattaId(Long id) throws SQLException {
         List<Avvisi> avvisi = new ArrayList<>();
         try (Connection conn = DBConnector.getConnection()){
@@ -77,51 +66,75 @@ public class AvvisiDAO {
             }
         }
 
-    //CREATE
-    public boolean create(Avvisi nuovoAvviso) throws SQLException{
-        String QRstr= "INSERT TO Avvisi (descrizione) " +
-                "VALUES (?)";
-        String QRfor="INSERT TO Avvisi_tratte (avviso_id, tratta_id)" +
-                "VALUES (?,?)";
-        try(Connection con=DBConnector.getConnection()){
-            PreparedStatement ps=con.prepareStatement(QRstr);
-            ps.setString(1, nuovoAvviso.getDescrizione());
-            for(Long id_tratta:nuovoAvviso.getId_tratte_coinvolte()){
-                PreparedStatement ps2=con.prepareStatement(QRfor);
-                ps2.setLong(1,nuovoAvviso.getId());
-                ps2.setLong(2,id_tratta);
-                ps2.executeUpdate();
-            }
-            if(ps.executeUpdate()>=1){
-                return true;
-            }else return false;
+// CREATE
+public static boolean create(Avvisi nuovoAvviso) throws SQLException {
+    String QRstr = "INSERT INTO Avvisi (descrizione) VALUES (?)";
+    String QRfor = "INSERT INTO Avvisi_tratte (avviso_id, tratta_id) VALUES (?,?)";
+    try (Connection con = DBConnector.getConnection()) {
+        PreparedStatement ps = con.prepareStatement(QRstr, PreparedStatement.RETURN_GENERATED_KEYS);
+        ps.setString(1, nuovoAvviso.getDescrizione());
+        int affectedRows = ps.executeUpdate();
+
+        if (affectedRows == 0) {
+            return false;
         }
-    }
 
-    //UPDATE
-    public boolean update(Avvisi avvisoInSezione) throws SQLException{
-        String sql = "UPDATE Avvisi" +
-                "SET descrizione=?" +
-                "WHERE id=?";
-        String sqlFor= "UPDATE Avvisi_tratte" +
-                "SET  tratta_id=?" +
-                "WHERE avviso_id=? ";
-        try(Connection con=DBConnector.getConnection()){
-            PreparedStatement ps=con.prepareStatement(sql);
-            ps.setLong(2, avvisoInSezione.getId());
-            ps.setString(1, avvisoInSezione.getDescrizione());
-
-            for(Long id_tratta:avvisoInSezione.getId_tratte_coinvolte()){
-                PreparedStatement ps2=con.prepareStatement(sqlFor);
-                ps2.setLong(1,id_tratta);
-                ps2.setLong(2,avvisoInSezione.getId());
-                ps2.executeUpdate();
+        try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                long avvisoId = generatedKeys.getLong(1);
+                for (Long id_tratta : nuovoAvviso.getId_tratte_coinvolte()) {
+                    PreparedStatement ps2 = con.prepareStatement(QRfor);
+                    ps2.setLong(1, avvisoId);
+                    ps2.setLong(2, id_tratta);
+                    ps2.executeUpdate();
+                }
+            } else {
+                throw new SQLException("Creazione avviso fallita, nessun ID ottenuto.");
             }
-            if(ps.executeUpdate()>=1){
-                return true;
-            }else return false;
-
         }
+        return true;
     }
+}
 
+// UPDATE
+public static boolean update(Avvisi avvisoInSessione) throws SQLException {
+    String sql = "UPDATE Avvisi SET descrizione=? WHERE id=?";
+    String deleteSql = "DELETE FROM Avvisi_tratte WHERE avviso_id = ?";
+    String insertSql = "INSERT INTO Avvisi_tratte (avviso_id, tratta_id) VALUES (?,?)";
+
+    try (Connection con = DBConnector.getConnection()) {
+        // Update descrizione
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setString(1, avvisoInSessione.getDescrizione());
+        ps.setLong(2, avvisoInSessione.getId());
+        boolean updated = ps.executeUpdate() >= 1;
+
+        // Delete old tratte
+        PreparedStatement deletePs = con.prepareStatement(deleteSql);
+        deletePs.setLong(1, avvisoInSessione.getId());
+        deletePs.executeUpdate();
+
+        // Insert new tratte
+        for (Long id_tratta : avvisoInSessione.getId_tratte_coinvolte()) {
+            PreparedStatement insertPs = con.prepareStatement(insertSql);
+            insertPs.setLong(1, avvisoInSessione.getId());
+            insertPs.setLong(2, id_tratta);
+            insertPs.executeUpdate();
+        }
+        return updated;
+    }
+}
+
+// FINDBYID
+public static Avvisi findById(Long id) throws SQLException {
+    try (Connection conn = DBConnector.getConnection()) {
+        PreparedStatement pr = conn.prepareStatement("SELECT * FROM Avvisi WHERE id = ?");
+        pr.setLong(1, id);
+        ResultSet rs = pr.executeQuery();
+        if (rs.next()) {
+            return getAvvisiFromSet(rs);
+        }
+        return null;
+    }
+}
 }

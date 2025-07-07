@@ -11,7 +11,7 @@ public class TrattaDAO {
     private static final String trattaByID = "SELECT * FROM Tratta WHERE id=?";
 
     private static Tratta getTrattaFromSET(ResultSet rs) throws SQLException {
-        Azienda azienda = AziendaDAO.doRetrieveById(rs.getLong("id_azienda"));
+        Azienda azienda = AziendaDAO.findById(rs.getLong("id_azienda"));
         List<FermataTratta> fermataTrattaList = FermataTrattaDAO.getFTfromTrattaID(rs.getLong("id"));
         List<UnicaTratta> unicaTrattaList = UnicaTrattaDAO.getLUTfromIDT(rs.getLong("id"));
 
@@ -23,18 +23,6 @@ public class TrattaDAO {
                 fermataTrattaList,
                 rs.getDouble("costo")
         );
-    }
-
-    public static Tratta getTrattaByID(Long id) throws SQLException {
-        try(Connection conn = DBConnector.getConnection()){
-            PreparedStatement ps = conn.prepareStatement(trattaByID);
-            ps.setLong(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return getTrattaFromSET(rs);
-            }
-            return null; // Ritorna null se nessuna tratta viene trovata
-        }
     }
 
     public static List<Tratta> getAllTratte() throws SQLException {
@@ -61,5 +49,49 @@ public class TrattaDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+    // CREATE
+    public static boolean create(Tratta nuovaTratta) {
+        String QRstr = "INSERT INTO Tratta (nome, id_azienda, costo) VALUES (?, ?, ?)";
+        try (Connection con = DBConnector.getConnection()) {
+            PreparedStatement ps = con.prepareStatement(QRstr);
+            ps.setString(1, nuovaTratta.getNome());
+            ps.setLong(2, nuovaTratta.getAzienda().getId());
+            ps.setDouble(3, nuovaTratta.getCosto());
+
+            return ps.executeUpdate() >= 1;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // UPDATE
+    public static boolean update(Tratta trattaInSessione) throws SQLException {
+        String sql = "UPDATE Tratta SET nome=?, id_azienda=?, costo=? WHERE id=?";
+        try (Connection conn = DBConnector.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, trattaInSessione.getNome());
+            ps.setLong(2, trattaInSessione.getAzienda().getId());
+            ps.setDouble(3, trattaInSessione.getCosto());
+            ps.setLong(4, trattaInSessione.getId());
+
+            return ps.executeUpdate() >= 1;
+        }
+    }
+
+    // FINDBYID
+    public static Tratta findById(Long id) throws SQLException {
+        try(Connection conn = DBConnector.getConnection()){
+            PreparedStatement ps = conn.prepareStatement(trattaByID);
+            ps.setLong(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return getTrattaFromSET(rs);
+            }
+            return null; // Ritorna null se nessuna tratta viene trovata
+        }
     }
 }

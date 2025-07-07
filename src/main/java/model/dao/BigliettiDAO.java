@@ -22,20 +22,7 @@ public class BigliettiDAO {
 
     }
 
-    public static Biglietto GetBigliettoFromID(Long id) throws  SQLException {
-        try(Connection conn = DBConnector.getConnection()){
-            String sql = "SELECT * FROM Biglietto WHERE id = ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setLong(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()){
-                return getBfromSet(rs);
-            }
-            return null;
-        }
-    }
-
-    public static List<Biglietto> GetBigliettoFromUserID(Long id) throws SQLException{
+    public static List<Biglietto> findByUserId(Long id) throws SQLException{
         String sql = "SELECT * FROM Biglietto WHERE id_utente = ?";
         try (Connection conn = DBConnector.getConnection()){
             List<Biglietto> biglietti = new ArrayList<Biglietto>();
@@ -49,7 +36,7 @@ public class BigliettiDAO {
             }
         }
 
-    public static List<Biglietto> GetBigliettoFromTrattaID(Long id) throws SQLException{
+    public static List<Biglietto> findByTrattaId(Long id) throws SQLException{
         String sql = "SELECT * FROM Biglietto WHERE id_tratta = ?";
         try (Connection conn = DBConnector.getConnection()){
             List<Biglietto> biglietti = new ArrayList<Biglietto>();
@@ -63,7 +50,56 @@ public class BigliettiDAO {
         }
     }
 
+// CREATE
+public static boolean create(Biglietto nuovoBiglietto) {
+    String QRstr = "INSERT INTO Biglietto (data_acquisto, data_convalida, stato, id_utente, id_tratta) " +
+            "VALUES (?,?,?,?,?) ";
+    try (Connection con = DBConnector.getConnection()) {
+        PreparedStatement ps = con.prepareStatement(QRstr);
+        ps.setTimestamp(1, nuovoBiglietto.getDataAquisto());
+        ps.setTimestamp(2, nuovoBiglietto.getDataConvalida());
+        ps.setString(3, nuovoBiglietto.getStato().name());
+        ps.setLong(4, nuovoBiglietto.getId_utente());
+        ps.setLong(5, nuovoBiglietto.getId_tratta());
 
+        return ps.executeUpdate() >= 1;
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return false;
 }
 
+// UPDATE
+public static boolean update(Biglietto bigliettoInSessione) throws SQLException {
+    String sql = "UPDATE Biglietto " +
+            "SET data_acquisto=?, data_convalida=?, stato=?, id_utente=?, id_tratta=?" +
+            " WHERE id=?";
+    try (Connection conn = DBConnector.getConnection()) {
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setTimestamp(1, bigliettoInSessione.getDataAquisto());
+        ps.setTimestamp(2, bigliettoInSessione.getDataConvalida());
+        ps.setString(3, bigliettoInSessione.getStato().name());
+        ps.setLong(4, bigliettoInSessione.getId_utente());
+        ps.setLong(5, bigliettoInSessione.getId_tratta());
+        ps.setLong(6, bigliettoInSessione.getId());
 
+        return ps.executeUpdate() >= 1;
+    }
+}
+
+// FINDBYID
+public static Biglietto findById(Long id) throws SQLException {
+    try (Connection conn = DBConnector.getConnection()) {
+        String sql = "SELECT * FROM Biglietto WHERE id = ?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setLong(1, id);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return getBfromSet(rs);
+        }
+        return null;
+    }
+}
+}

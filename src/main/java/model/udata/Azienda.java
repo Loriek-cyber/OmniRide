@@ -1,5 +1,4 @@
 package model.udata;
-import model.sdata.*;
 
 public class Azienda {
     private Long id;
@@ -23,6 +22,6 @@ public class Azienda {
     public void setId(Long id) { this.id = id; }
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
-    public TipoAzienda getTipo() { return tipo; }
+    public String getTipo() { return tipo; }
     public void setTipo(TipoAzienda tipo) { this.tipo = tipo; }
 }
