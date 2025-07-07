@@ -21,8 +21,7 @@ public class OrarioTrattaDAO {
         while (rs.next()) {
             if (ot == null) { // First row
                 ot = new OrarioTratta();
-                currentOrarioId = rs.getLong("id");
-                ot.setId(currentOrarioId);
+                ot.setTrattaId(rs.getLong("id"));
                 ot.setUnicaTrattaId(rs.getLong("id_unica_tratta"));
                 ot.setTrattaId(rs.getLong("id_tratta"));
                 ot.setOraInizio(rs.getTime("ora_inizio").toLocalTime());

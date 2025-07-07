@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class DipendentiDAO{
     private static Dipendenti getDipendentifromSet(ResultSet rs) throws SQLException{
         Dipendenti dipendente = new Dipendenti();
-        dipendente.setId(rs.getLong("id_utente"));
+        dipendente.setUtente(UtenteDAO.findById(rs.getLong("id_utente")));
         dipendente.setAzienda(AziendaDAO.findById(rs.getLong("id_azienda")));
         dipendente.setLavoro(Dipendenti.Lavoro.valueOf(rs.getString("lavoro")));
         return dipendente;
@@ -22,7 +22,7 @@ public class DipendentiDAO{
         String QRstr = "INSERT INTO Dipendenti (id_utente, id_azienda, lavoro) VALUES (?, ?, ?)";
         try (Connection con = DBConnector.getConnection()) {
             PreparedStatement ps = con.prepareStatement(QRstr);
-            ps.setLong(1, nuovoDipendente.getId());
+            ps.setLong(1, nuovoDipendente.getUtente().getId());
             ps.setLong(2, nuovoDipendente.getAzienda().getId());
             ps.setString(3, nuovoDipendente.getLavoro().name());
 
@@ -41,7 +41,7 @@ public class DipendentiDAO{
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setLong(1, dipendenteInSessione.getAzienda().getId());
             ps.setString(2, dipendenteInSessione.getLavoro().name());
-            ps.setLong(3, dipendenteInSessione.getId());
+            ps.setLong(3, dipendenteInSessione.getUtente().getId());
 
             return ps.executeUpdate() >= 1;
         }
