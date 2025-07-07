@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="add-tratta-container">
-        <a href="admin.jsp" class="back-link">← Torna alla Dashboard Admin</a>
+        <a href="../dashboard" class="back-link">← Torna alla Dashboard</a>
         <h1 class="add-tratta-title">Aggiungi Nuova Tratta</h1>
         
         <form action="addTratta" method="post" id="addTrattaForm">

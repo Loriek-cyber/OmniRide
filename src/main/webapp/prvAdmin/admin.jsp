@@ -22,6 +22,8 @@
             <ul>
                 <li><a href="#">Gestione Utenti</a></li>
                 <li><a href="${pageContext.request.contextPath}/admin/gestoreTratte">Gestione Tratte</a></li>
+                <li><a href="addTratta.jsp">Aggiungi Tratta</a></li>
+                <li><a href="addFermata.jsp">Aggiungi Fermata</a></li>
                 <li><a href="#">Report e Statistiche</a></li>
             </ul>
             <a href="${pageContext.request.contextPath}/logout" class="btn btn-danger">Logout Admin</a>
