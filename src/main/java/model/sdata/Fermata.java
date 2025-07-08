@@ -41,6 +41,15 @@ public class Fermata implements Serializable {
     public void setTipo(TipoFermata tipo) { this.tipo = tipo; }
     public boolean isAttiva() { return attiva; }
     public void setAttiva(boolean attiva) { this.attiva = attiva; }
+    
+    // Metodi di convenienza per accedere alle coordinate
+    public Double getLatitudine() { 
+        return coordinate != null ? coordinate.getLatitudine() : null; 
+    }
+    
+    public Double getLongitudine() { 
+        return coordinate != null ? coordinate.getLongitudine() : null; 
+    }
 
     /**
      * Due oggetti Fermata sono considerati uguali se hanno lo stesso ID.

@@ -13,67 +13,130 @@
         <h1 class="add-tratta-title">Aggiungi Nuova Tratta</h1>
         
         <form action="addTratta" method="post" id="addTrattaForm">
-            <div class="form-group">
-                <label for="nome">Nome Tratta *:</label>
-                <input type="text" id="nome" name="nome" class="form-input" required 
-                       placeholder="Es: Linea 1 - Centro-Periferia">
-                <div class="help-text">Inserisci un nome descrittivo per la tratta</div>
-            </div>
+            <!-- Informazioni Base -->
+            <div class="form-section">
+                <h2>Informazioni Base</h2>
+                <div class="form-group">
+                    <label for="nome">Nome Tratta *:</label>
+                    <input type="text" id="nome" name="nome" class="form-input" required 
+                           placeholder="Es: Linea 1 - Centro-Periferia">
+                    <div class="help-text">Inserisci un nome descrittivo per la tratta</div>
+                </div>
 
-            <div class="form-group">
-                <label for="costo">Costo (€) *:</label>
-                <input type="number" id="costo" name="costo" class="form-input" 
-                       step="0.01" min="0.01" required placeholder="Es: 2.50">
-                <div class="help-text">Inserisci il costo del biglietto per l'intera tratta</div>
-            </div>
-
-            <div class="form-group">
-                <label>Seleziona Fermate e Tempi di Percorrenza *:</label>
-                <div class="help-text">Seleziona almeno 2 fermate e specifica i tempi di percorrenza tra fermate consecutive</div>
-                <div class="fermate-container" id="fermateContainer">
-                    <%
-                        List<Fermata> fermate = (List<Fermata>) request.getAttribute("fermate");
-                        if (fermate != null && !fermate.isEmpty()) {
-                    %>
-                        <% for (int i = 0; i < fermate.size(); i++) { 
-                            Fermata fermata = fermate.get(i);
-                        %>
-                        <div class="fermata-item">
-                            <input type="checkbox" class="fermata-checkbox" 
-                                   name="fermateSelezionate" 
-                                   value="<%= fermata.getId() %>" 
-                                   id="fermata_<%= fermata.getId() %>">
-                            <label for="fermata_<%= fermata.getId() %>" class="fermata-name">
-                                <%= fermata.getNome() %>
-                            </label>
-                            <div class="tempo-container" id="tempo_<%= fermata.getId() %>" style="display: none;">
-                                <label for="tempo_<%= fermata.getId() %>_input">Tempo alla prossima (min):</label>
-                                <input type="number" 
-                                       class="tempo-input" 
-                                       name="tempiTraFermate" 
-                                       id="tempo_<%= fermata.getId() %>_input"
-                                       min="1" 
-                                       placeholder="15">
-                            </div>
-                        </div>
-                        <% } %>
-                    <%
-                        } else {
-                    %>
-                        <div class="no-fermate-message">
-                            <p>Nessuna fermata disponibile.</p>
-                            <p><a href="../addFermata">Aggiungi prima alcune fermate</a>.</p>
-                        </div>
-                    <%
-                        }
-                    %>
+                <div class="form-group">
+                    <label for="costo">Costo (€) *:</label>
+                    <input type="number" id="costo" name="costo" class="form-input" 
+                           step="0.01" min="0.01" required placeholder="Es: 2.50">
+                    <div class="help-text">Inserisci il costo del biglietto per l'intera tratta</div>
                 </div>
             </div>
 
-            <% if (fermate != null && !fermate.isEmpty()) { %>
-            <button type="submit" class="submit-btn">Crea Tratta</button>
-            <% } %>
+            <!-- Percorso Tratta -->
+            <div class="form-section">
+                <h2>Percorso Tratta</h2>
+                <div class="help-text">Aggiungi le fermate in ordine di percorrenza. Puoi cercare per nome o indirizzo.</div>
+                
+                <div class="fermate-selected-container">
+                    <div class="fermata-search-container">
+                        <div class="search-box">
+                            <input type="text" id="fermataSearch" class="search-input" 
+                                   placeholder="Cerca fermata per nome o indirizzo...">
+                            <div class="search-results" id="searchResults"></div>
+                        </div>
+                        <button type="button" class="add-fermata-btn" id="addFermataBtn" disabled>
+                            <span class="icon">+</span> Aggiungi Fermata
+                        </button>
+                    </div>
+                    
+                    <div class="selected-fermate" id="selectedFermate">
+                        <div class="empty-state" id="emptyState">
+                            <p>Nessuna fermata selezionata</p>
+                            <p class="help-text">Cerca e aggiungi almeno 2 fermate per creare la tratta</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orari e Giorni -->
+            <div class="form-section">
+                <h2>Orari e Giorni</h2>
+							
+            <div class="form-group">
+                <label>Orari di Inizio *:</label>
+                <div class="orari-container" id="orariContainer">
+                    <!-- Orari verranno aggiunti qui dinamicamente -->
+                </div>
+                <button type="button" class="add-orario-btn" id="addOrarioBtn">+	Aggiungi Orario</button>
+                <div class="help-text">Aggiungi uno o pi&ugrave; orari di partenza per la tratta.</div>
+            </div>
+                
+                <div class="form-group">
+                    <label>Giorni di Servizio *:</label>
+                    <div class="days-container">
+                        <div class="day-item">
+                            <input type="checkbox" id="lunedi" name="giorni" value="1">
+                            <label for="lunedi">Lunedì</label>
+                        </div>
+                        <div class="day-item">
+                            <input type="checkbox" id="martedi" name="giorni" value="2">
+                            <label for="martedi">Martedì</label>
+                        </div>
+                        <div class="day-item">
+                            <input type="checkbox" id="mercoledi" name="giorni" value="3">
+                            <label for="mercoledi">Mercoledì</label>
+                        </div>
+                        <div class="day-item">
+                            <input type="checkbox" id="giovedi" name="giorni" value="4">
+                            <label for="giovedi">Giovedì</label>
+                        </div>
+                        <div class="day-item">
+                            <input type="checkbox" id="venerdi" name="giorni" value="5">
+                            <label for="venerdi">Venerdì</label>
+                        </div>
+                        <div class="day-item">
+                            <input type="checkbox" id="sabato" name="giorni" value="6">
+                            <label for="sabato">Sabato</label>
+                        </div>
+                        <div class="day-item">
+                            <input type="checkbox" id="domenica" name="giorni" value="0">
+                            <label for="domenica">Domenica</label>
+                        </div>
+                    </div>
+                    <div class="help-text">Seleziona i giorni in cui la tratta è attiva</div>
+                </div>
+            </div>
+
+            <!-- Dati Hidden per il form -->
+            <input type="hidden" id="fermateSelezionate" name="fermateSelezionate" value="">
+            <input type="hidden" id="tempiTraFermate" name="tempiTraFermate" value="">
+
+            <button type="submit" class="submit-btn" id="submitBtn" disabled>Crea Tratta</button>
         </form>
     </div>
+
+    <!-- Dati fermate per JavaScript -->
+    <script>
+        window.fermateData = [
+            <%
+                List<Fermata> fermate = (List<Fermata>) request.getAttribute("fermate");
+                if (fermate != null && !fermate.isEmpty()) {
+                    for (int i = 0; i < fermate.size(); i++) {
+                        Fermata fermata = fermate.get(i);
+                        if (i > 0) out.print(",");
+                        out.print("{");
+                        out.print("id: " + fermata.getId() + ",");
+                        out.print("nome: \"" + fermata.getNome().replace("\"", "\\\"") + "\",");
+                        out.print("indirizzo: \"" + (fermata.getIndirizzo() != null ? fermata.getIndirizzo().replace("\"", "\\\"") : "") + "\",");
+                        out.print("latitudine: " + (fermata.getLatitudine() != null ? fermata.getLatitudine() : "null") + ",");
+                        out.print("longitudine: " + (fermata.getLongitudine() != null ? fermata.getLongitudine() : "null"));
+                        out.print("}");
+                    }
+                }
+            %>
+        ];
+    </script>
+    
+    <!-- Script per la gestione del form -->
+    <script src="../Scripts/addTratta.js"></script>
 </body>
 </html>

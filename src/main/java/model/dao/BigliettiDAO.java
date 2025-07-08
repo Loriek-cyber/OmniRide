@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,6 +64,79 @@ public class BigliettiDAO {
         }
     }
 
+    /**
+     * Inserisce un nuovo biglietto nel database
+     * @param biglietto Il biglietto da inserire
+     * @return L'ID del biglietto inserito, null se l'inserimento fallisce
+     * @throws SQLException Se c'è un errore nel database
+     */
+    public static Long insertBiglietto(Biglietto biglietto) throws SQLException {
+        String sql = "INSERT INTO Biglietto (id_utente, id_tratta, data_acquisto, prezzo, stato) VALUES (?, ?, ?, ?, ?)";
+        
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            
+            ps.setLong(1, biglietto.getId_utente());
+            ps.setLong(2, biglietto.getId_tratta());
+            ps.setTimestamp(3, biglietto.getDataAquisto());
+            ps.setDouble(4, biglietto.getPrezzo());
+            ps.setString(5, biglietto.getStato().name());
+            
+            int affectedRows = ps.executeUpdate();
+            
+            if (affectedRows == 0) {
+                throw new SQLException("Inserimento biglietto fallito, nessuna riga modificata.");
+            }
+            
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getLong(1);
+                } else {
+                    throw new SQLException("Inserimento biglietto fallito, nessun ID generato.");
+                }
+            }
+        }
+    }
+
+    /**
+     * Aggiorna lo stato di un biglietto
+     * @param id L'ID del biglietto
+     * @param stato Il nuovo stato
+     * @return true se l'aggiornamento è riuscito, false altrimenti
+     * @throws SQLException Se c'è un errore nel database
+     */
+    public static boolean updateStatoBiglietto(Long id, Biglietto.StatoBiglietto stato) throws SQLException {
+        String sql = "UPDATE Biglietto SET stato = ? WHERE id = ?";
+        
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, stato.name());
+            ps.setLong(2, id);
+            
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * Convalida un biglietto
+     * @param id L'ID del biglietto
+     * @return true se la convalida è riuscita, false altrimenti
+     * @throws SQLException Se c'è un errore nel database
+     */
+    public static boolean convalidaBiglietto(Long id) throws SQLException {
+        String sql = "UPDATE Biglietto SET stato = ?, data_convalida = CURRENT_TIMESTAMP WHERE id = ? AND stato = ?";
+        
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, Biglietto.StatoBiglietto.CONVALIDATO.name());
+            ps.setLong(2, id);
+            ps.setString(3, Biglietto.StatoBiglietto.ACQUISTATO.name());
+            
+            return ps.executeUpdate() > 0;
+        }
+    }
 
 }
 

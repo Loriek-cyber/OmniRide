@@ -28,6 +28,6 @@ public class Biglietto {
     public void setDataConvalida(Timestamp dataConvalida) {this.dataConvalida = dataConvalida;}
     public double getPrezzo() {return prezzo;}
     public void setPrezzo(double prezzo) {this.prezzo = prezzo;}
-    public StatoBiglietto getStato(String stato) {return this.stato;}
+    public StatoBiglietto getStato() {return this.stato;}
     public void setStato(StatoBiglietto stato) {this.stato = stato;}
 }
