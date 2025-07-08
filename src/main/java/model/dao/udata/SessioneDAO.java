@@ -80,7 +80,7 @@ public class SessioneDAO {
     private static Sessione getSessioneFromSet(ResultSet rs)throws SQLException{
         Sessione sessione = new Sessione();
         sessione.setSessionId(rs.getString("session_id"));
-        sessione.setUtente(UtenteDAO.findById(rs.getLong("utente_id")));
+        sessione.setUtente(UtenteDAO.getById(rs.getLong("utente_id")));
         sessione.setCreationTime(rs.getLong("creation_time"));
         sessione.setLastAccessTime(rs.getLong("last_access_time"));
         sessione.setValid(rs.getBoolean("is_valid"));

@@ -36,7 +36,7 @@ public class BigliettiDAO {
      * @return L'ID del biglietto appena creato.
      * @throws SQLException in caso di errore del database.
      */
-    public static Long createBiglietto(Biglietto nuovoBiglietto) throws SQLException {
+    public static Long create(Biglietto nuovoBiglietto) throws SQLException {
         String sql = "INSERT INTO biglietto (id_utente, id_tratta, id_orario, data_acquisto, stato, prezzo_pagato) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -73,7 +73,7 @@ public class BigliettiDAO {
      * @return true se l'aggiornamento ha avuto successo.
      * @throws SQLException in caso di errore del database.
      */
-    public static boolean updateBiglietto(Biglietto BigliettoInSessione) throws SQLException {
+    public static boolean update(Biglietto BigliettoInSessione) throws SQLException {
         String sql = "UPDATE biglietto SET data_convalida = ?, data_scadenza = ?, stato = ? WHERE id = ?";
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -94,7 +94,7 @@ public class BigliettiDAO {
      * @return Un oggetto Biglietto se trovato, altrimenti null.
      * @throws SQLException in caso di errore del database.
      */
-    public static Biglietto findBigliettoById(Long id) throws SQLException {
+    public static Biglietto getById(Long id) throws SQLException {
         String sql = "SELECT * FROM biglietto WHERE id = ?";
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

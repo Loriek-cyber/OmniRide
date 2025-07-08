@@ -60,7 +60,7 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-        UtenteDAO utenteDAO = new UtenteDAO();
+        // Non più necessario creare istanza di UtenteDAO
 
         // 1. Controlla se l'email esiste già
         try {
@@ -86,7 +86,7 @@ public class RegisterServlet extends HttpServlet {
         nuovoUtente.setRuolo("utente"); // Ruolo di default
 
         try {
-            boolean success = utenteDAO.create(nuovoUtente);
+            boolean success = UtenteDAO.create(nuovoUtente);
             if (success) {
                 req.setAttribute("successMessage", "Registrazione completata con successo! Ora puoi accedere.");
                 req.getRequestDispatcher("/login/login.jsp").forward(req, resp);
