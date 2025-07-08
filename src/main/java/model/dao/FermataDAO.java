@@ -49,7 +49,7 @@ public class FermataDAO {
      * @return L'ID della nuova fermata creata.
      * @throws SQLException in caso di errore del database.
      */
-    public static Long createFermata(Fermata nuovaFermata) throws SQLException {
+    public static Long create(Fermata nuovaFermata) throws SQLException {
         String sql = "INSERT INTO Fermata (nome, indirizzo, latitudine, longitudine, tipo, attiva) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -82,7 +82,7 @@ public class FermataDAO {
      * @return true se l'aggiornamento ha avuto successo.
      * @throws SQLException in caso di errore del database.
      */
-    public static boolean updateFermata(Fermata FermataInSessione) throws SQLException {
+    public static boolean update(Fermata FermataInSessione) throws SQLException {
         String sql = "UPDATE Fermata SET nome = ?, indirizzo = ?, latitudine = ?, longitudine = ?, tipo = ?, attiva = ? WHERE id = ?";
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -106,7 +106,7 @@ public class FermataDAO {
      * @return Un oggetto Fermata se trovato, altrimenti null.
      * @throws SQLException in caso di errore del database.
      */
-    public static Fermata findFermataById(Long id) throws SQLException {
+    public static Fermata getById(Long id) throws SQLException {
         String sql = "SELECT * FROM Fermata WHERE id = ?";
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {

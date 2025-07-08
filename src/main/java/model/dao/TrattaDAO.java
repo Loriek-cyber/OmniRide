@@ -16,7 +16,7 @@ public class TrattaDAO {
 
     private static Tratta getTrattaFromResultSet(ResultSet rs) throws SQLException {
         Long trattaId = rs.getLong("id");
-        Azienda azienda = AziendaDAO.findAziendaById(rs.getLong("id_azienda"));
+        Azienda azienda = AziendaDAO.getById(rs.getLong("id_azienda"));
         List<FermataTratta> fermataTrattaList = FermataTrattaDAO.findFermateByTrattaId(trattaId);
         List<OrarioTratta> orariTratta = OrarioTrattaDAO.findOrariByTrattaId(trattaId);
         
@@ -35,7 +35,7 @@ public class TrattaDAO {
         return tratta;
     }
 
-    public static Tratta findById(Long id) throws SQLException {
+    public static Tratta getById(Long id) throws SQLException {
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(TRATTA_BY_ID)) {
             ps.setLong(1, id);
@@ -70,7 +70,7 @@ public class TrattaDAO {
         }
     }
     
-    public static boolean updateTratta(Tratta trattaInSessione) throws SQLException {
+    public static boolean update(Tratta trattaInSessione) throws SQLException {
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(UPDATE_TRATTA)) {
             ps.setString(1, trattaInSessione.getNome());

@@ -58,7 +58,7 @@ public class AvvisiDAO {
         }
     }
 
-    public static Long createAvviso(Avvisi nuovoAvvisi) throws SQLException {
+    public static Long create(Avvisi nuovoAvvisi) throws SQLException {
         String insertAvvisoSQL = "INSERT INTO Avvisi (descrizione, data_inizio, data_fine, tipo) VALUES (?, ?, ?, ?)";
         String insertAvvisiTratteSQL = "INSERT INTO Avvisi_tratte (avviso_id, tratta_id) VALUES (?, ?)";
         Long avvisoId = null;
@@ -110,7 +110,7 @@ public class AvvisiDAO {
         }
     }
 
-    public static boolean updateAvviso(Avvisi AvvisiInSessione) throws SQLException {
+    public static boolean update(Avvisi AvvisiInSessione) throws SQLException {
         String updateAvvisoSQL = "UPDATE Avvisi SET descrizione = ?, data_inizio = ?, data_fine = ?, tipo = ? WHERE id = ?";
         String deleteTratteSQL = "DELETE FROM Avvisi_tratte WHERE avviso_id = ?";
         String insertTratteSQL = "INSERT INTO Avvisi_tratte (avviso_id, tratta_id) VALUES (?, ?)";
@@ -158,7 +158,7 @@ public class AvvisiDAO {
         }
     }
 
-    public static Avvisi findAvvisoById(Long id) throws SQLException {
+    public static Avvisi getById(Long id) throws SQLException {
         try(Connection conn = DBConnector.getConnection();
             PreparedStatement pr = conn.prepareStatement("SELECT * FROM Avvisi WHERE id = ?")){
             pr.setLong(1, id);

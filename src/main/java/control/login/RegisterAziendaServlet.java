@@ -83,7 +83,7 @@ public class RegisterAziendaServlet extends HttpServlet {
             return;
         }
 
-        UtenteDAO utenteDAO = new UtenteDAO();
+        // Non più necessario creare istanza di UtenteDAO
         
         // Verifica se l'email esiste già
         try {
@@ -105,7 +105,7 @@ public class RegisterAziendaServlet extends HttpServlet {
             Azienda azienda = new Azienda();
             azienda.setNome(nomeAzienda);
             azienda.setTipo(tipoAziendaStr);
-            idAzienda = AziendaDAO.createAzienda(azienda);
+            idAzienda = AziendaDAO.create(azienda);
 
             if (idAzienda == null || idAzienda <= 0) {
                 req.setAttribute("errorMessage", "Errore durante la creazione dell'azienda. Riprova.");
@@ -122,7 +122,7 @@ public class RegisterAziendaServlet extends HttpServlet {
             utente.setDataRegistrazione(Timestamp.from(Instant.now()));
             utente.setRuolo("azienda");
 
-            boolean utenteCreato = utenteDAO.create(utente);
+            boolean utenteCreato = UtenteDAO.create(utente);
 
             if (utenteCreato) {
                 // TODO: Qui dovremmo associare l'utente all'azienda in una tabella di relazione

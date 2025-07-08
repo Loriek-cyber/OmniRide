@@ -17,8 +17,8 @@ public class DipendentiDAO {
         Dipendenti dipendente = new Dipendenti();
         
         // Carica l'utente e l'azienda usando i rispettivi DAO
-        dipendente.setUtente(UtenteDAO.findById(rs.getLong("id_utente")));
-        dipendente.setAzienda(AziendaDAO.findAziendaById(rs.getLong("id_azienda")));
+        dipendente.setUtente(UtenteDAO.getById(rs.getLong("id_utente")));
+        dipendente.setAzienda(AziendaDAO.getById(rs.getLong("id_azienda")));
         
         dipendente.setLavoro(Dipendenti.Lavoro.valueOf(rs.getString("ruolo")));
         dipendente.setDataAssunzione(rs.getTimestamp("data_assunzione"));
@@ -34,7 +34,7 @@ public class DipendentiDAO {
      * @return true se l'inserimento ha avuto successo.
      * @throws SQLException in caso di errore del database.
      */
-    public static boolean createDipendente(Dipendenti nuovoDipendente) throws SQLException {
+    public static boolean create(Dipendenti nuovoDipendente) throws SQLException {
         String sql = "INSERT INTO Dipendente (id_utente, id_azienda, ruolo, data_assunzione, attivo) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -56,7 +56,7 @@ public class DipendentiDAO {
      * @return true se l'aggiornamento ha avuto successo.
      * @throws SQLException in caso di errore del database.
      */
-    public static boolean updateDipendente(Dipendenti DipendenteInSessione) throws SQLException {
+    public static boolean update(Dipendenti DipendenteInSessione) throws SQLException {
         String sql = "UPDATE Dipendente SET ruolo = ?, attivo = ? WHERE id_utente = ? AND id_azienda = ?";
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -78,7 +78,7 @@ public class DipendentiDAO {
      * @return Un oggetto Dipendenti se trovato, altrimenti null.
      * @throws SQLException in caso di errore del database.
      */
-    public static Dipendenti findDipendenteById(Long idUtente, Long idAzienda) throws SQLException {
+    public static Dipendenti getById(Long idUtente, Long idAzienda) throws SQLException {
         String sql = "SELECT * FROM Dipendente WHERE id_utente = ? AND id_azienda = ?";
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {

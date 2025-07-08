@@ -15,7 +15,7 @@ public class FermataTrattaDAO {
         ft.setIdTratta(rs.getLong("id_tratta"));
         ft.setSequenza(rs.getInt("sequenza"));
         ft.setTempoProssimaFermata(rs.getInt("tempo_prossima_fermata"));
-        ft.setFermata(FermataDAO.findFermataById(rs.getLong("id_fermata")));
+        ft.setFermata(FermataDAO.getById(rs.getLong("id_fermata")));
         return ft;
     }
 

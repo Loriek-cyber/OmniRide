@@ -17,7 +17,7 @@ public class UnicaTrattaDAO {
 
     private static UnicaTratta getUTfromSet(ResultSet rs) throws SQLException {
         long unicaTrattaId = rs.getLong("id");
-        OrarioTratta orario = OrarioTrattaDAO.findOrarioTrattaById(rs.getLong("id_orario"));
+        OrarioTratta orario = OrarioTrattaDAO.getById(rs.getLong("id_orario"));
 
         return new UnicaTratta(
                 unicaTrattaId,
@@ -26,7 +26,7 @@ public class UnicaTrattaDAO {
         );
     }
 
-    public static UnicaTratta findById(long id) throws SQLException {
+    public static UnicaTratta getById(long id) throws SQLException {
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(getUnicaFromID)) {
             ps.setLong(1, id);

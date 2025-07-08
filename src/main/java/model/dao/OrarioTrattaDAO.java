@@ -51,7 +51,7 @@ public class OrarioTrattaDAO {
      * @return L'ID del nuovo orario creato.
      * @throws SQLException in caso di errore del database.
      */
-    public static Long createOrarioTratta(OrarioTratta nuovoOrarioTratta) throws SQLException {
+    public static Long create(OrarioTratta nuovoOrarioTratta) throws SQLException {
         String sql = "INSERT INTO Tratta_Orari (id_tratta, ora_partenza, ora_arrivo, giorni_settimana, " +
                      "tipo_servizio, frequenza_minuti, attivo, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         
@@ -94,7 +94,7 @@ public class OrarioTrattaDAO {
      * @return true se l'aggiornamento ha avuto successo.
      * @throws SQLException in caso di errore del database.
      */
-    public static boolean updateOrarioTratta(OrarioTratta OrarioTrattaInSessione) throws SQLException {
+    public static boolean update(OrarioTratta OrarioTrattaInSessione) throws SQLException {
         String sql = "UPDATE Tratta_Orari SET ora_partenza = ?, ora_arrivo = ?, giorni_settimana = ?, " +
                      "tipo_servizio = ?, frequenza_minuti = ?, attivo = ?, note = ? WHERE id = ?";
         
@@ -127,7 +127,7 @@ public class OrarioTrattaDAO {
      * @return Un oggetto OrarioTratta se trovato, altrimenti null.
      * @throws SQLException in caso di errore del database.
      */
-    public static OrarioTratta findOrarioTrattaById(Long id) throws SQLException {
+    public static OrarioTratta getById(Long id) throws SQLException {
         String sql = "SELECT * FROM Tratta_Orari WHERE id = ?";
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

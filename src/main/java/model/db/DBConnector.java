@@ -10,9 +10,9 @@ import java.sql.SQLException;
 public class DBConnector {
     // Parametri di accesso
     private static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/omniride";
-    private static final String USER = "root";
-    private static final String PASS = "rootpassword";
+    private static final String DB_URL = "jdbc:mysql://13.49.243.124:3306/omniride";
+    private static final String USER = "rootomni";
+    private static final String PASS = "omniridepass";
 
     public static Connection getConnection() throws SQLException {
         try{

@@ -35,7 +35,7 @@ public class AziendaDAO {
      * @return L'ID generato per la nuova azienda.
      * @throws SQLException in caso di errore del database.
      */
-    public static long createAzienda(Azienda nuovoAzienda) throws SQLException {
+    public static long create(Azienda nuovoAzienda) throws SQLException {
         String sql = "INSERT INTO Azienda (nome, tipo) VALUES (?, ?)";
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -64,7 +64,7 @@ public class AziendaDAO {
      * @return true se l'aggiornamento ha modificato almeno una riga, false altrimenti.
      * @throws SQLException in caso di errore del database.
      */
-    public static boolean updateAzienda(Azienda AziendaInSessione) throws SQLException {
+    public static boolean update(Azienda AziendaInSessione) throws SQLException {
         String sql = "UPDATE Azienda SET nome = ?, tipo = ? WHERE id = ?";
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -84,7 +84,7 @@ public class AziendaDAO {
      * @return Un oggetto Azienda se trovato, altrimenti null.
      * @throws SQLException in caso di errore del database.
      */
-    public static Azienda findAziendaById(Long id) throws SQLException {
+    public static Azienda getById(Long id) throws SQLException {
         String sql = "SELECT * FROM Azienda WHERE id = ?";
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {

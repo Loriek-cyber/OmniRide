@@ -58,7 +58,7 @@ public class CarrelloServlet extends HttpServlet {
             if ("add".equals(action)) {
                 long idTratta = Long.parseLong(req.getParameter("idTratta"));
                 if (!carrello.containsKey(idTratta)) {
-                    Tratta tratta = TrattaDAO.findById(idTratta);
+                    Tratta tratta = TrattaDAO.getById(idTratta);
                     if (tratta != null) {
                         carrello.put(idTratta, tratta);
                     }
