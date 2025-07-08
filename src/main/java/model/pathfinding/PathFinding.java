@@ -1,7 +1,6 @@
 package model.pathfinding;
 
 import model.sdata.*;
-
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.*;
@@ -12,7 +11,7 @@ import java.util.*;
  * L'obiettivo primario è trovare il percorso che minimizza l'orario di arrivo.
  */
 public class PathFinding {
-/*
+
     private static class Stato implements Comparable<Stato> {
         final Fermata fermata;
         final LocalTime orarioArrivo;
@@ -90,41 +89,42 @@ public class PathFinding {
                 if (indiceFermataCorrente != -1) {
                     Fermata primaFermataTratta = fermateDellaTratta.get(0).getFermata();
 
-                    // Controlla ogni corsa (UnicaTratta) per questa linea
-                    for (UnicaTratta corsa : tratta.getUnicaTrattaList()) {
-                        OrarioTratta orarioCorsa = corsa.getOrarioTratta();
+                    // Controlla ogni orario per questa tratta (nuova struttura)
+                    List<OrarioTratta> orari = tratta.getOrari();
+                    if (orari != null) {
+                        for (OrarioTratta orarioCorsa : orari) {
+                            // Verifica se l'orario è attivo nel giorno richiesto
+                            if (orarioCorsa.isAttivo() && orarioCorsa.isValidoPerGiorno(giorno.name())) {
 
-                        // Verifica se la corsa è attiva nel giorno richiesto
-                        if (orarioCorsa.isAttivo() && orarioCorsa.getGiorniSettimana().contains(giorno)) {
+                                // --- INIZIO DELLA MODIFICA ---
+                                // Calcola l'orario di partenza di questa corsa dalla fermata corrente
+                                long minutiDaCapolinea = 0;
+                                // Se la fermata corrente non è il capolinea, calcola la distanza.
+                                // Altrimenti, la distanza è 0.
+                                if (!fermataCorrente.equals(primaFermataTratta)) {
+                                    minutiDaCapolinea = tratta.getDistanceForTwoFermate(primaFermataTratta, fermataCorrente);
+                                }
+                                // --- FINE DELLA MODIFICA ---
 
-                            // --- INIZIO DELLA MODIFICA ---
-                            // Calcola l'orario di partenza di questa corsa dalla fermata corrente
-                            long minutiDaCapolinea = 0;
-                            // Se la fermata corrente non è il capolinea, calcola la distanza.
-                            // Altrimenti, la distanza è 0.
-                            if (!fermataCorrente.equals(primaFermataTratta)) {
-                                minutiDaCapolinea = tratta.getDistanceForTwoFermate(primaFermataTratta, fermataCorrente);
-                            }
-                            // --- FINE DELLA MODIFICA ---
+                                LocalTime partenzaProgrammata = orarioCorsa.getOraPartenza();
 
-                            LocalTime partenzaProgrammata = orarioCorsa.getOraPartenza();
+                                // Se la partenza programmata è dopo il nostro arrivo alla fermata, possiamo prendere questo mezzo
+                                if (!partenzaProgrammata.isBefore(orarioArrivoCorrente)) {
 
-                            // Se la partenza programmata è dopo il nostro arrivo alla fermata, possiamo prendere questo mezzo
-                            if (!partenzaProgrammata.isBefore(orarioArrivoCorrente)) {
+                                    // Ora calcoliamo l'arrivo a tutte le fermate successive su questa stessa corsa
+                                    for (int i = indiceFermataCorrente + 1; i < fermateDellaTratta.size(); i++) {
+                                        Fermata fermataSuccessiva = fermateDellaTratta.get(i).getFermata();
+                                        long tempoPercorrenza = tratta.getDistanceForTwoFermate(fermataCorrente, fermataSuccessiva);
+                                        LocalTime nuovoOrarioArrivo = partenzaProgrammata.plusMinutes(tempoPercorrenza);
 
-                                // Ora calcoliamo l'arrivo a tutte le fermate successive su questa stessa corsa
-                                for (int i = indiceFermataCorrente + 1; i < fermateDellaTratta.size(); i++) {
-                                    Fermata fermataSuccessiva = fermateDellaTratta.get(i).getFermata();
-                                    long tempoPercorrenza = tratta.getDistanceForTwoFermate(fermataCorrente, fermataSuccessiva);
-                                    LocalTime nuovoOrarioArrivo = partenzaProgrammata.plusMinutes(tempoPercorrenza);
-
-                                    // Se questo nuovo percorso è migliore di uno trovato in precedenza...
-                                    if (nuovoOrarioArrivo.isBefore(orariArrivoMigliori.getOrDefault(fermataSuccessiva, LocalTime.MAX))) {
-                                        // ...aggiorniamo i nostri dati
-                                        orariArrivoMigliori.put(fermataSuccessiva, nuovoOrarioArrivo);
-                                        Percorso.Tappa tappa = new Percorso.Tappa(tratta, fermataCorrente, fermataSuccessiva, partenzaProgrammata, nuovoOrarioArrivo);
-                                        predecessori.put(fermataSuccessiva, tappa);
-                                        pq.add(new Stato(fermataSuccessiva, nuovoOrarioArrivo));
+                                        // Se questo nuovo percorso è migliore di uno trovato in precedenza...
+                                        if (nuovoOrarioArrivo.isBefore(orariArrivoMigliori.getOrDefault(fermataSuccessiva, LocalTime.MAX))) {
+                                            // ...aggiorniamo i nostri dati
+                                            orariArrivoMigliori.put(fermataSuccessiva, nuovoOrarioArrivo);
+                                            Percorso.Tappa tappa = new Percorso.Tappa(tratta, fermataCorrente, fermataSuccessiva, partenzaProgrammata, nuovoOrarioArrivo);
+                                            predecessori.put(fermataSuccessiva, tappa);
+                                            pq.add(new Stato(fermataSuccessiva, nuovoOrarioArrivo));
+                                        }
                                     }
                                 }
                             }
@@ -132,12 +132,13 @@ public class PathFinding {
                     }
                 }
             }
+
+            // Se la coda è vuota e non abbiamo raggiunto la destinazione, non esiste un percorso
+            return null;
         }
 
-        // Se la coda è vuota e non abbiamo raggiunto la destinazione, non esiste un percorso
         return null;
     }
-
 
     private Percorso ricostruisciPercorso(Fermata destinazione, Map<Fermata, Percorso.Tappa> predecessori) {
         LinkedList<Percorso.Tappa> tappeInOrdine = new LinkedList<>();
@@ -161,4 +162,4 @@ public class PathFinding {
         return new Percorso(tappeInOrdine);
 
     }
-*/}
+}

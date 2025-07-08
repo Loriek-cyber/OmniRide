@@ -29,12 +29,10 @@
                 <label for="tipo">Tipo Fermata *:</label>
                 <select id="tipo" name="tipo" class="form-input" required>
                     <option value="">Seleziona il tipo di fermata</option>
-                    <option value="AUTOBUS">Fermata Autobus</option>
-                    <option value="METRO">Stazione Metro</option>
-                    <option value="TRENO">Stazione Treno</option>
-                    <option value="TRAM">Fermata Tram</option>
-                    <option value="AEROPORTO">Aeroporto</option>
-                    <option value="PORTO">Porto</option>
+                    <option value="URBANA">Fermata Urbana</option>
+                    <option value="EXTRAURBANA"></option>
+                    <option value="STAZIONE">Stazione Treno</option>
+                    <option value="FERMATA_NORMALE">Fermata Normale</option>
                 </select>
                 <div class="help-text">Seleziona il tipo di trasporto per questa fermata</div>
             </div>
