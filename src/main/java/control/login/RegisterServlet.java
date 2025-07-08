@@ -28,6 +28,7 @@ public class RegisterServlet extends HttpServlet {
         String nome = req.getParameter("nome");
         String cognome = req.getParameter("cognome");
         String email = req.getParameter("email");
+        email = email.toLowerCase();
         String password = req.getParameter("password");
 
         // Normalizzazione e validazione input usando ValidationUtils
