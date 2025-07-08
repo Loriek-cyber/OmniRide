@@ -135,4 +135,6 @@ public class TrattaDAO {
                 .mapToInt(FermataTratta::getTempoProssimaFermata)
                 .sum();
     }
+
+
 }

@@ -9,15 +9,22 @@
     </div>
 
     <nav class="main-nav">
-        <a href="${pageContext.request.contextPath}/visualizzaTratte">Tratte</a>
-        <a href="${pageContext.request.contextPath}/visualizzaAvvisi">Avvisi</a>
-        <a href="${pageContext.request.contextPath}/about.jsp">Chi Siamo</a>
+        <a href="${pageContext.request.contextPath}/biglietti.jsp">Biglietti</a>
+        <a href="#">Ricerca Avanzata</a>
+        <a href="${pageContext.request.contextPath}/avvisi.jsp">Avvisi</a>
+        <a href="#">Car-pooling</a>
     </nav>
 
     <div class="user-actions">
         <c:choose>
             <%-- Caso 1: L'utente è loggato --%>
             <c:when test="${not empty sessionScope.utente}">
+                <a href="#" class="btnHeader-icon" title="Portafoglio">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21 8V18C21 19.1046 20.1046 20 19 20H5C3.89543 20 3 19.1046 3 18V6C3 4.89543 3.89543 4 5 4H17C18.1046 4 19 4.89543 19 6V8H21ZM19 8H17V6H5V18H19V8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M17 10H15C13.8954 10 13 10.8954 13 12C13 13.1046 13.8954 14 15 14H17V10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
                 <a href="${pageContext.request.contextPath}/biglietti.jsp" class="btnHeader-icon" title="I Miei Biglietti">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M20 12V8H4V12M20 12V16H4V12M20 12H16M4 12H8M20 8V6C20 5.44772 19.5523 5 19 5H5C4.44772 5 4 5.44772 4 6V8M20 8H4M20 16V18C20 18.5523 19.5523 19 19 19H5C4.44772 19 4 18.5523 4 18V16M20 16H4M8 12H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>

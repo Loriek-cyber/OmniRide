@@ -80,7 +80,6 @@ public class UtenteDAO {
             ps.setTimestamp(5, nuovoUtente.getDataRegistrazione());
             ps.setString(6, nuovoUtente.getRuolo());
             ps.setBytes(7, nuovoUtente.getAvatar());
-
             if(ps.executeUpdate()>=1){
                 return true;
             }else return false;
