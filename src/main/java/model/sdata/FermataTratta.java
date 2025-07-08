@@ -22,6 +22,14 @@ public class FermataTratta implements Serializable {
         this.tempoProssimaFermata = tempoProssimaFermata;
     }
 
+    //costruttore singolo
+
+    public FermataTratta(Long idTratta, Fermata fermata,int tempoProssimaFermata) {
+        this.idTratta = idTratta;
+        this.fermata = fermata;
+        this.tempoProssimaFermata = tempoProssimaFermata;
+    }
+
     // Getters e Setters per tutti i campi
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

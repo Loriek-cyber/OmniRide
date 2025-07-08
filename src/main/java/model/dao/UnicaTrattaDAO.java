@@ -87,4 +87,45 @@ public class UnicaTrattaDAO {
         }
         return utl;
     }
+
+    /**
+     * Elimina una unica tratta dal database.
+     *
+     * @param id L'ID della unica tratta da eliminare.
+     * @return true se l'eliminazione ha avuto successo.
+     * @throws SQLException in caso di errore del database.
+     */
+    public static boolean delete(Long id) throws SQLException {
+        String sql = "DELETE FROM Unica_Tratta WHERE id = ?";
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, id);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * Recupera tutte le unica tratte dal database.
+     *
+     * @return Lista di tutte le unica tratte.
+     * @throws SQLException in caso di errore del database.
+     */
+    public static List<UnicaTratta> getAll() throws SQLException {
+        String sql = "SELECT * FROM Unica_Tratta";
+        List<UnicaTratta> unicaTratte = new ArrayList<>();
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                unicaTratte.add(getUTfromSet(rs));
+            }
+        }
+        return unicaTratte;
+    }
+
+    /**
+     * Alias per compatibilità con codice esistente.
+     * @deprecated Usare getAll() con filtro per tratta specifica invece
+     */
+
 }

@@ -49,7 +49,7 @@ public class AddTrattaAdminServlet extends HttpServlet {
             Tratta nuovaTratta = createTratta(validation, aziendaDefault);
             
             // Salvataggio nel database
-            Long trattaId = TrattaDAO.insertTratta(nuovaTratta);
+            Long trattaId = TrattaDAO.create(nuovaTratta);
             
             // Creazione delle relazioni fermata-tratta
             createFermataTrattaRelations(trattaId, validation.getFermateSelezionate(), validation.getTempiTraFermate());
@@ -191,7 +191,6 @@ public class AddTrattaAdminServlet extends HttpServlet {
             FermataTratta fermataTratta = new FermataTratta(
                 trattaId,
                 fermataCorrente,
-                prossimaFermata,
                 tempoProssimaFermata
             );
             

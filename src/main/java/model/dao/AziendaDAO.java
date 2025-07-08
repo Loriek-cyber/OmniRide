@@ -106,7 +106,7 @@ public class AziendaDAO {
      * @return Una lista di oggetti Azienda.
      * @throws SQLException in caso di errore del database.
      */
-    public static List<Azienda> doRetrieveAll() throws SQLException {
+    public static List<Azienda> getAll() throws SQLException {
         String sql = "SELECT * FROM Azienda";
         List<Azienda> aziende = new ArrayList<>();
         
@@ -119,5 +119,31 @@ public class AziendaDAO {
             }
             return aziende;
         }
+    }
+
+    /**
+     * Elimina un'azienda dal database.
+     *
+     * @param id L'ID dell'azienda da eliminare.
+     * @return true se l'eliminazione ha avuto successo, false altrimenti.
+     * @throws SQLException in caso di errore del database.
+     */
+    public static boolean delete(Long id) throws SQLException {
+        String sql = "DELETE FROM Azienda WHERE id = ?";
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setLong(1, id);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * Alias per compatibilità con codice esistente.
+     * @deprecated Usare getAll() invece
+     */
+    @Deprecated
+    public static List<Azienda> doRetrieveAll() throws SQLException {
+        return getAll();
     }
 }

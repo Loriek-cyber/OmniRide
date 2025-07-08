@@ -118,4 +118,45 @@ public class DipendentiDAO {
         }
         return dipendenti;
     }
+
+    /**
+     * Elimina un dipendente dal database.
+     *
+     * @param idUtente L'ID dell'utente.
+     * @param idAzienda L'ID dell'azienda.
+     * @return true se l'eliminazione ha avuto successo.
+     * @throws SQLException in caso di errore del database.
+     */
+    public static boolean delete(Long idUtente, Long idAzienda) throws SQLException {
+        String sql = "DELETE FROM Dipendente WHERE id_utente = ? AND id_azienda = ?";
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setLong(1, idUtente);
+            ps.setLong(2, idAzienda);
+
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * Recupera tutti i dipendenti del database.
+     *
+     * @return Una lista di oggetti Dipendenti.
+     * @throws SQLException in caso di errore del database.
+     */
+    public static List<Dipendenti> getAll() throws SQLException {
+        String sql = "SELECT * FROM Dipendente";
+        List<Dipendenti> dipendenti = new ArrayList<>();
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    dipendenti.add(extractDipendenteFromResultSet(rs));
+                }
+            }
+        }
+        return dipendenti;
+    }
 }

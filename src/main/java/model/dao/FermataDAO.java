@@ -8,7 +8,7 @@ import java.util.List;
 
 public class FermataDAO {
 
-    public static Fermata doRetrieveById(long id) throws SQLException {
+    public static Fermata getById(long id) throws SQLException {
         try (Connection con = DBConnector.getConnection()) {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM Fermata WHERE id = ?");
             ps.setLong(1, id);
@@ -21,7 +21,7 @@ public class FermataDAO {
         }
     }
 
-    public static List<Fermata> doRetrieveAll() throws SQLException {
+    public static List<Fermata> getAll() throws SQLException {
         List<Fermata> fermate = new ArrayList<>();
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT * FROM Fermata");
@@ -167,5 +167,29 @@ public class FermataDAO {
             }
             return fermate;
         }
+    }
+
+    // Metodi con nomi standardizzati
+    public static Long create(Fermata fermata) throws SQLException {
+        return insertFermata(fermata);
+    }
+
+    public static boolean update(Fermata fermata) throws SQLException {
+        return updateFermata(fermata);
+    }
+
+    public static boolean delete(Long id) throws SQLException {
+        return deleteFermata(id);
+    }
+
+    // Metodi per compatibilità con codice esistente
+    @Deprecated
+    public static Fermata doRetrieveById(long id) throws SQLException {
+        return getById(id);
+    }
+
+    @Deprecated
+    public static List<Fermata> doRetrieveAll() throws SQLException {
+        return getAll();
     }
 }

@@ -55,7 +55,7 @@ public class UtenteDAO {
         return null;
     }
 
-    public static List<Utente> getAllUtenti() throws SQLException{
+    public static List<Utente> getAll() throws SQLException{
         String QRstr="SELECT * FROM Utente";
         try(Connection con=DBConnector.getConnection();
             PreparedStatement ps=con.prepareStatement(QRstr); 
@@ -113,5 +113,30 @@ public class UtenteDAO {
             }else return false;
         }
 
+    }
+
+    /**
+     * Elimina un utente dal database.
+     *
+     * @param id L'ID dell'utente da eliminare.
+     * @return true se l'eliminazione ha avuto successo.
+     * @throws SQLException in caso di errore del database.
+     */
+    public static boolean delete(Long id) throws SQLException {
+        String sql = "DELETE FROM Utente WHERE id = ?";
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, id);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * Alias per compatibilità con codice esistente.
+     * @deprecated Usare getAll() invece
+     */
+    @Deprecated
+    public static List<Utente> getAllUtenti() throws SQLException {
+        return getAll();
     }
 }

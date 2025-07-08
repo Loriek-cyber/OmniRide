@@ -19,6 +19,20 @@ public class FermataTrattaDAO {
         return ft;
     }
 
+    public static FermataTratta getById(Long id) throws SQLException {
+        String sql = "SELECT * FROM Fermata_Tratta WHERE id = ?";
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return extractFermataTrattaFromResultSet(rs);
+                }
+            }
+        }
+        return null;
+    }
+
     public static void updateFermateForTratta(Long idTratta, List<FermataTratta> nuoveFermate) throws SQLException {
         String deleteSql = "DELETE FROM Fermata_Tratta WHERE id_tratta = ?";
         String insertSql = "INSERT INTO Fermata_Tratta (id_tratta, id_fermata, sequenza, tempo_prossima_fermata) VALUES (?, ?, ?, ?)";

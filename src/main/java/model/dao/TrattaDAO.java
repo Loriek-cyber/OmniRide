@@ -82,7 +82,7 @@ public class TrattaDAO {
         }
     }
 
-    public static List<Tratta> getAllTratte() throws SQLException {
+    public static List<Tratta> getAll() throws SQLException {
         List<Tratta> tratte = new ArrayList<>();
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(TRATTA_ALL);
@@ -134,5 +134,22 @@ public class TrattaDAO {
         return fermate.stream()
                 .mapToInt(FermataTratta::getTempoProssimaFermata)
                 .sum();
+    }
+
+    /**
+     * Elimina una tratta dal database.
+     *
+     * @param id L'ID della tratta da eliminare.
+     * @return true se l'eliminazione ha avuto successo.
+     * @throws SQLException in caso di errore del database.
+     */
+    public static boolean delete(Long id) throws SQLException {
+        return deleteTratta(id);
+    }
+
+    // Metodi per compatibilità con codice esistente
+    @Deprecated
+    public static List<Tratta> getAllTratte() throws SQLException {
+        return getAll();
     }
 }

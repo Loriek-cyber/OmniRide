@@ -182,4 +182,20 @@ public class OrarioTrattaDAO {
         }
         return orari;
     }
+
+    /**
+     * Cancella un orario tramite il suo ID.
+     *
+     * @param id L'ID dell'orario da cancellare.
+     * @return true se la cancellazione ha avuto successo.
+     * @throws SQLException in caso di errore del database.
+     */
+    public static boolean delete(Long id) throws SQLException {
+        String sql = "DELETE FROM Tratta_Orari WHERE id = ?";
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, id);
+            return ps.executeUpdate() > 0;
+        }
+    }
 }

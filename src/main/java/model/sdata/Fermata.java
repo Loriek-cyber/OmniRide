@@ -28,6 +28,8 @@ public class Fermata implements Serializable {
         this.tipo = TipoFermata.URBANA;
     }
 
+
+
     // Getters e Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

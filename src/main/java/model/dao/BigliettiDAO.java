@@ -23,7 +23,7 @@ public class BigliettiDAO {
 
     }
 
-    public static Biglietto GetBigliettoFromID(Long id) throws  SQLException {
+    public static Biglietto getById(Long id) throws SQLException {
         try(Connection conn = DBConnector.getConnection()){
             String sql = "SELECT * FROM Biglietto WHERE id = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -70,7 +70,7 @@ public class BigliettiDAO {
      * @return L'ID del biglietto inserito, null se l'inserimento fallisce
      * @throws SQLException Se c'è un errore nel database
      */
-    public static Long insertBiglietto(Biglietto biglietto) throws SQLException {
+    public static Long create(Biglietto biglietto) throws SQLException {
         String sql = "INSERT INTO Biglietto (id_utente, id_tratta, data_acquisto, prezzo, stato) VALUES (?, ?, ?, ?, ?)";
         
         try (Connection conn = DBConnector.getConnection();
@@ -138,6 +138,84 @@ public class BigliettiDAO {
         }
     }
 
-}
+    /**
+     * Aggiorna un biglietto completo
+     * @param biglietto Il biglietto da aggiornare
+     * @return true se l'aggiornamento è riuscito, false altrimenti
+     * @throws SQLException Se c'è un errore nel database
+     */
+    public static boolean update(Biglietto biglietto) throws SQLException {
+        String sql = "UPDATE Biglietto SET id_utente = ?, id_tratta = ?, data_acquisto = ?, data_convalida = ?, prezzo = ?, stato = ? WHERE id = ?";
+        
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setLong(1, biglietto.getId_utente());
+            ps.setLong(2, biglietto.getId_tratta());
+            ps.setTimestamp(3, biglietto.getDataAquisto());
+            ps.setTimestamp(4, biglietto.getDataConvalida());
+            ps.setDouble(5, biglietto.getPrezzo());
+            ps.setString(6, biglietto.getStato().name());
+            ps.setLong(7, biglietto.getId());
+            
+            return ps.executeUpdate() > 0;
+        }
+    }
 
+    /**
+     * Elimina un biglietto dal database
+     * @param id L'ID del biglietto da eliminare
+     * @return true se l'eliminazione è riuscita, false altrimenti
+     * @throws SQLException Se c'è un errore nel database
+     */
+    public static boolean delete(Long id) throws SQLException {
+        String sql = "DELETE FROM Biglietto WHERE id = ?";
+        
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setLong(1, id);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * Recupera tutti i biglietti dal database
+     * @return Lista di tutti i biglietti
+     * @throws SQLException Se c'è un errore nel database
+     */
+    public static List<Biglietto> getAll() throws SQLException {
+        String sql = "SELECT * FROM Biglietto";
+        List<Biglietto> biglietti = new ArrayList<>();
+        
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
+            while (rs.next()) {
+                biglietti.add(getBfromSet(rs));
+            }
+            return biglietti;
+        }
+    }
+
+    /**
+     * Alias per compatibilità con codice esistente
+     * @deprecated Usare getById() invece
+     */
+    @Deprecated
+    public static Biglietto GetBigliettoFromID(Long id) throws SQLException {
+        return getById(id);
+    }
+
+    /**
+     * Alias per compatibilità con codice esistente
+     * @deprecated Usare create() invece
+     */
+    @Deprecated
+    public static Long insertBiglietto(Biglietto biglietto) throws SQLException {
+        return create(biglietto);
+    }
+
+}
 

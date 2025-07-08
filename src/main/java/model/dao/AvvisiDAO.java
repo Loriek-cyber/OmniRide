@@ -170,4 +170,35 @@ public class AvvisiDAO {
             return null;
         }
     }
+
+    public static boolean delete(Long id) throws SQLException {
+        String deleteAvvisiTratteSQL = "DELETE FROM Avvisi_tratte WHERE avviso_id = ?";
+        String deleteAvvisoSQL = "DELETE FROM Avvisi WHERE id = ?";
+        
+        try (Connection conn = DBConnector.getConnection()) {
+            conn.setAutoCommit(false);
+            
+            // Prima elimina le relazioni con le tratte
+            try (PreparedStatement psTratte = conn.prepareStatement(deleteAvvisiTratteSQL)) {
+                psTratte.setLong(1, id);
+                psTratte.executeUpdate();
+            }
+            
+            // Poi elimina l'avviso
+            try (PreparedStatement psAvviso = conn.prepareStatement(deleteAvvisoSQL)) {
+                psAvviso.setLong(1, id);
+                int rowsAffected = psAvviso.executeUpdate();
+                conn.commit();
+                return rowsAffected > 0;
+            }
+            
+        } catch (SQLException e) {
+            try (Connection connRollback = DBConnector.getConnection()) {
+                if (connRollback != null) connRollback.rollback();
+            } catch (SQLException ex) {
+                e.addSuppressed(ex);
+            }
+            throw e;
+        }
+    }
 }
