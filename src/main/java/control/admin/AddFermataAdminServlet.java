@@ -44,7 +44,7 @@ public class AddFermataAdminServlet extends HttpServlet {
             Fermata fermata = createFermata(validation, coordinate);
             
             // Salva nel database
-            Long fermataId = FermataDAO.insertFermata(fermata);
+            Long fermataId = FermataDAO.create(fermata);
             
             if (fermataId != null) {
                 // Redirect con messaggio di successo

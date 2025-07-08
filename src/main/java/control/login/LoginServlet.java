@@ -35,7 +35,7 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String email = req.getParameter("email");
         String password = req.getParameter("password");
-
+        email = email.toLowerCase();
         // Debug logging
         System.out.println("[LOGIN DEBUG] Tentativo di login per email: " + email);
         System.out.println("[LOGIN DEBUG] Password ricevuta: " + (password != null ? "[PRESENTE]" : "[ASSENTE]"));

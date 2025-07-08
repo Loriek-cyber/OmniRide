@@ -49,7 +49,7 @@ public class AddTrattaAdminServlet extends HttpServlet {
             Tratta nuovaTratta = createTratta(validation, aziendaDefault);
             
             // Salvataggio nel database
-            Long trattaId = TrattaDAO.insertTratta(nuovaTratta);
+            Long trattaId = TrattaDAO.create(nuovaTratta);
             
             // Creazione delle relazioni fermata-tratta
             createFermataTrattaRelations(trattaId, validation.getFermateSelezionate(), validation.getTempiTraFermate());
@@ -179,12 +179,12 @@ public class AddTrattaAdminServlet extends HttpServlet {
      */
     private void createFermataTrattaRelations(Long trattaId, List<Long> fermateIds, List<Integer> tempi) throws SQLException {
         for (int i = 0; i < fermateIds.size(); i++) {
-            Fermata fermataCorrente = FermataDAO.doRetrieveById(fermateIds.get(i));
+            Fermata fermataCorrente = FermataDAO.getById(fermateIds.get(i));
             Fermata prossimaFermata = null;
             int tempoProssimaFermata = 0;
             
             if (i < fermateIds.size() - 1) {
-                prossimaFermata = FermataDAO.doRetrieveById(fermateIds.get(i + 1));
+                prossimaFermata = FermataDAO.getById(fermateIds.get(i + 1));
                 tempoProssimaFermata = tempi.get(i);
             }
             

@@ -48,7 +48,7 @@ public class AddFermataServlet extends HttpServlet {
             resp.sendError(534,"Errore nella geolock");
         }
         try {
-            FermataDAO.insertFermata(fermata);
+            FermataDAO.create(fermata);
         } catch (SQLException e) {
             resp.sendError(500);
         }

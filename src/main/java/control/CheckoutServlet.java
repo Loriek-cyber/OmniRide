@@ -134,18 +134,15 @@ public class CheckoutServlet extends HttpServlet {
         // Crea un biglietto per ogni tratta nel carrello
         for (Tratta tratta : carrello.values()) {
             Biglietto biglietto = new Biglietto();
-            biglietto.setId_utente(utente.getId());
-            biglietto.setId_tratta(tratta.getId());
-            biglietto.setDataAquisto(dataAcquisto);
-            biglietto.setPrezzo(tratta.getCosto());
+            biglietto.setIdUtente(utente.getId());
+            biglietto.setIdTratta(tratta.getId());
+            biglietto.setDataAcquisto(dataAcquisto);
+            biglietto.setPrezzoPagato(tratta.getCosto());
             biglietto.setStato(Biglietto.StatoBiglietto.ACQUISTATO);
             
-            Long bigliettoId = BigliettiDAO.insertBiglietto(biglietto);
-            if (bigliettoId == null) {
-                return false;
-            }
+            Long bigliettoId = BigliettiDAO.create(biglietto);
         }
-        
+
         return true;
     }
     

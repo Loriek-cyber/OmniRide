@@ -53,8 +53,8 @@ public class RicercaPercorsoServlet extends HttpServlet {
             }
             
             // Recupera le fermate
-            Fermata partenza = FermataDAO.doRetrieveById(validation.getPartenzaId());
-            Fermata destinazione = FermataDAO.doRetrieveById(validation.getDestinazioneId());
+            Fermata partenza = FermataDAO.getById(validation.getPartenzaId());
+            Fermata destinazione = FermataDAO.getById(validation.getDestinazioneId());
             
             if (partenza == null || destinazione == null) {
                 handleValidationError(request, response, "Fermate selezionate non valide");

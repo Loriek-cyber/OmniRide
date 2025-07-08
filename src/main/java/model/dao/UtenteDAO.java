@@ -29,40 +29,37 @@ public class UtenteDAO {
 
     public static Utente findByEmail(String email) throws SQLException  {
         String QRsql="SELECT * FROM Utente WHERE email=?";
-        try(Connection con=DBConnector.getConnection()){
-            //preaprato la query
-            PreparedStatement ps = con.prepareStatement(QRsql);
+        try(Connection con=DBConnector.getConnection();
+            PreparedStatement ps = con.prepareStatement(QRsql)){
             ps.setString(1,email);
-            //eseguito la quety
-            ResultSet rs = ps.executeQuery();
-            /*in poche parole
-            * 1) la query dice che colonna trovare
-            * 2) ps.string(1, email) dice che alla primo punto interrogativo della query deve inserire l'email passata come stringa, questo permete di trovare l'utente e di stampare l'intera riga*/
-            if(rs.next()) {
-                return getUtenteFromSet(rs);
+            try(ResultSet rs = ps.executeQuery()){
+                if(rs.next()) {
+                    return getUtenteFromSet(rs);
+                }
             }
         }
         return null;
     }
 
-    public static Utente findById(Long id) throws SQLException{
+    public static Utente getById(Long id) throws SQLException{
         String QRstr="SELECT * FROM Utente WHERE id=?";
-        try(Connection con=DBConnector.getConnection()){
-          PreparedStatement ps=con.prepareStatement(QRstr);
-          ps.setLong(1, id);
-          ResultSet rs=ps.executeQuery();
-          if(rs.next()) {
-              return getUtenteFromSet(rs);
-          }
+        try(Connection con=DBConnector.getConnection();
+            PreparedStatement ps=con.prepareStatement(QRstr)){
+            ps.setLong(1, id);
+            try(ResultSet rs=ps.executeQuery()){
+                if(rs.next()) {
+                    return getUtenteFromSet(rs);
+                }
+            }
         }
         return null;
     }
 
     public static List<Utente> getAllUtenti() throws SQLException{
         String QRstr="SELECT * FROM Utente";
-        try(Connection con=DBConnector.getConnection()){
-            PreparedStatement ps=con.prepareStatement(QRstr);
-            ResultSet rs=ps.executeQuery();
+        try(Connection con=DBConnector.getConnection();
+            PreparedStatement ps=con.prepareStatement(QRstr); 
+            ResultSet rs=ps.executeQuery()){
             List<Utente> Utenti=new ArrayList<>();
             while(rs.next()){
                 Utenti.add(getUtenteFromSet(rs));
@@ -71,12 +68,11 @@ public class UtenteDAO {
         }
     }
 
-
-    public boolean create(Utente nuovoUtente) throws SQLException {
+    public static boolean create(Utente nuovoUtente) throws SQLException {
         String QRstr="INSERT INTO Utente (nome, cognome, email, password_hash, data_registrazione, ruolo, avatar) " +
                 "VALUES (?,?,?,?,?,?,?) ";
-        try(Connection con=DBConnector.getConnection()){
-            PreparedStatement ps=con.prepareStatement(QRstr);
+        try(Connection con=DBConnector.getConnection();
+            PreparedStatement ps=con.prepareStatement(QRstr)){
             ps.setString(1, nuovoUtente.getNome());
             ps.setString(2, nuovoUtente.getCognome());
             ps.setString(3, nuovoUtente.getEmail());
@@ -92,16 +88,16 @@ public class UtenteDAO {
         }
     }
 
-    public byte[] getAvatarByUserId(Long userId) throws SQLException{
-        return findById(userId).getAvatar();
+    public static byte[] getAvatarByUserId(Long userId) throws SQLException{
+        return getById(userId).getAvatar();
     }
 
     public static boolean update(Utente utenteInSessione) throws SQLException {
         String sql = "UPDATE Utente " +
                 "SET nome=?,cognome=?,email=?,password_hash=?,data_registrazione=?,ruolo=?,avatar=?" +
                 " WHERE id=?";
-        try (Connection conn = DBConnector.getConnection()){
-            PreparedStatement ps = conn.prepareStatement(sql);
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)){
             ps.setLong(8,utenteInSessione.getId());
 
             ps.setString(1, utenteInSessione.getNome());
