@@ -1,5 +1,4 @@
 package control.error;
-import error.ErrorPage;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.ServletException;
@@ -12,10 +11,17 @@ import java.io.IOException;
 public class ErrorServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ErrorPage error = (ErrorPage)  request.getAttribute("error");
-        if (error != null) {
-            request.getRequestDispatcher("error.jsp").forward(request, response);
+        String errorMessage = "Errore sconosciuto.";
+        Integer errorCode = 500;
+        if(request.getAttribute("errorCode") != null){
+            errorCode = (Integer) request.getAttribute("errorCode");
         }
+        if(request.getAttribute("errorMessage") != null){
+            errorMessage = (String) request.getAttribute("errorMessage");
+        }
+        request.setAttribute("errorMessage", errorMessage);
+        request.setAttribute("errorCode", errorCode);
+        request.getRequestDispatcher("/error.jsp").forward(request, response);
         request.getRequestDispatcher("index.jsp").forward(request, response);
     }
 

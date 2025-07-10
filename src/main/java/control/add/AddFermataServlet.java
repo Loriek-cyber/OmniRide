@@ -1,12 +1,16 @@
 package control.add;
 
-import error.ErrorPage;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+import model.dao.AziendaDAO;
+import model.dao.DipendentiDAO;
 import model.dao.FermataDAO;
 import model.sdata.Coordinate;
 import model.sdata.Fermata;
+import model.udata.Azienda;
+import model.udata.Dipendenti;
+import model.udata.Utente;
 import model.util.Geolock;
 
 import java.io.IOException;
@@ -14,45 +18,69 @@ import java.sql.SQLException;
 
 @WebServlet(name = "addFermata", value = "/prvAzienda/addFermata")
 public class AddFermataServlet extends HttpServlet {
-    
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Mostra il form per aggiungere una fermata
         req.getRequestDispatcher("/prvAdmin/addFermata.jsp").forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String name = req.getParameter("nome");
-        if(name == null || name.equals("")) {
-            doGet(req, resp);
+        HttpSession session = req.getSession(false); // false: non crea nuova sessione se non esiste
+
+        Utente utente = (session != null) ? (Utente) session.getAttribute("utente") : null;
+        if (utente == null) {
+            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Utente non autenticato.");
+            return;
         }
+
+        //Ho rimosso l'autorizzazione per le aziende per problemi
+
+
+        String nome = req.getParameter("nome");
         String indirizzo = req.getParameter("indirizzo");
-        if(indirizzo == null || indirizzo.equals("")) {
-            doGet(req, resp);
+        String tipoParam = req.getParameter("tipo");
+
+        if (nome == null || indirizzo == null || tipoParam == null ||
+                nome.isBlank() || indirizzo.isBlank() || tipoParam.isBlank()) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parametri mancanti o non validi.");
+            return;
         }
 
-        String tipo = req.getParameter("tipo");
-        if(tipo == null || tipo.equals("")) {
-            doGet(req, resp);
-        }
+        //da Aggiungere un altro controllo dei dati in modo da vedere se una fermata simile esiste
 
-        Fermata fermata = new Fermata();
-        fermata.setNome(name);
-        fermata.setIndirizzo(indirizzo);
-        fermata.setTipo(Fermata.TipoFermata.valueOf(tipo.toUpperCase()));
-        fermata.setAttiva(true);
+        Fermata.TipoFermata tipoFermata;
         try {
-            fermata.setCoordinate(Geolock.getCoordinatesFromAddress(fermata.getIndirizzo()));
+            tipoFermata = Fermata.TipoFermata.valueOf(tipoParam);
+        } catch (IllegalArgumentException e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Tipo fermata non valido.");
+            return;
+        }
+
+        Coordinate coord;
+        try {
+            coord = Geolock.getCoordinatesFromAddress(indirizzo);
         } catch (Exception e) {
-            resp.sendError(534,"Errore nella geolock");
+            // e.printStackTrace(); // Debug log
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore con le risorse esterne (GeoLock).");
+            return;
         }
+
+        Fermata nuovaFermata = new Fermata();
+        nuovaFermata.setNome(nome);
+        nuovaFermata.setIndirizzo(indirizzo);
+        nuovaFermata.setCoordinate(coord);
+        nuovaFermata.setTipo(tipoFermata);
+
         try {
-            FermataDAO.insertFermata(fermata);
+            FermataDAO.create(nuovaFermata);
         } catch (SQLException e) {
-            resp.sendError(500);
+            // e.printStackTrace(); // Debug log
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore durante la creazione della fermata.");
+            return;
         }
 
-
+        // Reindirizza alla dashboard azienda
+        resp.sendRedirect(req.getContextPath() + "/prvAzienda/dashboard");
     }
 }

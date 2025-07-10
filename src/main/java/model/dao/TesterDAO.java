@@ -3,6 +3,8 @@ package model.dao;
 import model.sdata.FermataTratta;
 import model.sdata.Tratta;
 import model.sdata.UnicaTratta;
+import model.udata.Azienda;
+import model.udata.Utente;
 
 import java.sql.SQLException;
 import java.time.LocalTime;
@@ -11,17 +13,11 @@ import java.util.List;
 public class TesterDAO {
     //questa è la classe in cui testo i vari elementi del programma
     public static void main(String[] args) throws SQLException {
-        List<Tratta> allTratte = TrattaDAO.getAllTratte();
-        for (Tratta tratta : allTratte) {
-            System.out.println(tratta.getNome());
+        Long id = 1L;
+        Azienda azienda = AziendaDAO.getById(id);
+        id = 2L;
+        Utente utente = UtenteDAO.getById(id);
 
-            for(UnicaTratta unica : tratta.getUnicaTrattaList()){
-                for(FermataTratta fermata : tratta.getFermataTrattaList()){
-                    System.out.print(fermata.getFermata().getNome());
-                    System.out.print(fermata.getFermata().getIndirizzo());
-                    
-                }
-            }
-        }
+        DipendentiDAO.combine(azienda,utente,"GESTORE");
     }
 }

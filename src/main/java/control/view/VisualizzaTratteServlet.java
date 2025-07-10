@@ -1,6 +1,5 @@
 package control.view;
 
-import error.ErrorPage;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,9 +16,9 @@ public class VisualizzaTratteServlet extends HttpServlet {
         try {
             req.setAttribute("tratte", TrattaDAO.getAllTratte());
         } catch (SQLException e) {
-            ErrorPage error = new ErrorPage(500,"Errore con il Database");
-            req.setAttribute("error", error);
-            req.getRequestDispatcher("/error").forward(req, resp);
+            req.setAttribute("errorMessage", "Errore con il Database");
+            req.setAttribute("errorCode", 500);
+            req.getRequestDispatcher("/error.jsp").forward(req, resp);
         } finally {
             req.getRequestDispatcher("tratte.jsp").forward(req, resp);
         }

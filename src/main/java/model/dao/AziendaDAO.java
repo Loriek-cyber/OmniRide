@@ -28,6 +28,9 @@ public class AziendaDAO {
         return azienda;
     }
 
+
+
+
     /**
      * Inserisce una nuova azienda nel database.
      *
@@ -135,6 +138,18 @@ public class AziendaDAO {
             
             ps.setLong(1, id);
             return ps.executeUpdate() > 0;
+        }
+    }
+
+
+
+    public static Azienda fromIDutente(Long id) throws SQLException {
+        String sql = "SELECT * FROM Dipendente WHERE id_utente = ?";
+        try (Connection con = DBConnector.getConnection()){
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setLong(1, id);
+            ResultSet rs = ps.executeQuery();
+            return getById(rs.getLong("id_azienda"));
         }
     }
 

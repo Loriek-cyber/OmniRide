@@ -1,6 +1,4 @@
 package control.view;
-
-import error.ErrorPage;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -22,8 +20,7 @@ public class VisualizzaAvvisiServlet extends HttpServlet {
             req.setAttribute("avvisi", avvisi);
             req.getRequestDispatcher("/avvisi.jsp").forward(req, resp);
         } catch (SQLException e) {
-            req.setAttribute("error", new ErrorPage(500,"Errore con il Database"));
-            req.getRequestDispatcher("/error").forward(req, resp);
+            resp.sendError(500);
         }
     }
 

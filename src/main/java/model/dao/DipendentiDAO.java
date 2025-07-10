@@ -1,9 +1,12 @@
 package model.dao;
 
 import model.db.DBConnector;
+import model.udata.Azienda;
 import model.udata.Dipendenti;
+import model.udata.Utente;
 
 import java.sql.*;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +49,28 @@ public class DipendentiDAO {
             ps.setBoolean(5, nuovoDipendente.isAttivo());
 
             return ps.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     *
+     * @param azienda azienda di interesse con il quale associare l'utente
+     * @param utente, utente che sarà assunto dall'azienda
+     * @return
+     * @throws SQLException
+     */
+
+    public static boolean combine(Azienda azienda, Utente utente,String lavoro) throws SQLException {
+
+        Dipendenti  dipendente = new Dipendenti();
+        dipendente.setUtente(utente);
+        dipendente.setLavoro(Dipendenti.Lavoro.valueOf(lavoro.toUpperCase()));
+        dipendente.setAzienda(azienda);
+        dipendente.setDataAssunzione(new Timestamp(System.currentTimeMillis()));
+
+        try (Connection con = DBConnector.getConnection()) {
+            create(dipendente);
+            return true;
         }
     }
 
@@ -159,4 +184,6 @@ public class DipendentiDAO {
         }
         return dipendenti;
     }
+
+
 }

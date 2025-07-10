@@ -30,7 +30,7 @@
                 <select id="tipo" name="tipo" class="form-input" required>
                     <option value="">Seleziona il tipo di fermata</option>
                     <option value="URBANA">Fermata Urbana</option>
-                    <option value="EXTRAURBANA"></option>
+                    <option value="EXTRAURBANA">Fermata Extraurbana</option>
                     <option value="STAZIONE">Stazione Treno</option>
                     <option value="FERMATA_NORMALE">Fermata Normale</option>
                 </select>
