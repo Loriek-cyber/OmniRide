@@ -1,0 +1,70 @@
+/* Stili specifici per il portafoglio */
+.wallet-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.wallet-section {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+}
+.wallet-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.wallet-section h3 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 1.8em;
+    border-left: 4px solid #007bff;
+    padding-left: 10px;
+}
+.ticket-card, .subscription-card, .card-item {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.ticket-info, .subscription-info, .card-info {
+    flex-grow: 1;
+}
+.ticket-actions, .subscription-actions, .card-actions {
+    margin-left: 20px;
+}
+.ticket-status {
+    font-weight: bold;
+    color: #28a745; /* Green for active */
+}
+.ticket-status.inactive {
+    color: #ffc107; /* Yellow for inactive */
+}
+.ticket-status.expired {
+    color: #dc3545; /* Red for expired */
+}
+.btn-activate {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.btn-activate:hover {
+    background-color: #0056b3;
+}
+.empty-state {
+    text-align: center;
+    color: #666;
+    padding: 20px;
+    border: 1px dashed #ddd;
+    border-radius: 5px;
+}
