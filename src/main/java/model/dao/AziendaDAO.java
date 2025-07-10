@@ -144,13 +144,17 @@ public class AziendaDAO {
 
 
     public static Azienda fromIDutente(Long id) throws SQLException {
-        String sql = "SELECT * FROM Dipendente WHERE id_utente = ?";
-        try (Connection con = DBConnector.getConnection()){
-            PreparedStatement ps = con.prepareStatement(sql);
+        String sql = "SELECT id_azienda FROM Dipendente WHERE id_utente = ? AND attivo = 1";
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, id);
-            ResultSet rs = ps.executeQuery();
-            return getById(rs.getLong("id_azienda"));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return getById(rs.getLong("id_azienda"));
+                }
+            }
         }
+        return null;
     }
 
     

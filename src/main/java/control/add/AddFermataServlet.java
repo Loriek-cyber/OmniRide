@@ -3,26 +3,24 @@ package control.add;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import model.dao.AziendaDAO;
-import model.dao.DipendentiDAO;
 import model.dao.FermataDAO;
 import model.sdata.Coordinate;
 import model.sdata.Fermata;
-import model.udata.Azienda;
-import model.udata.Dipendenti;
 import model.udata.Utente;
 import model.util.Geolock;
-
 import java.io.IOException;
 import java.sql.SQLException;
+
 
 @WebServlet(name = "addFermata", value = "/prvAzienda/addFermata")
 public class AddFermataServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("/prvAdmin/addFermata.jsp").forward(req, resp);
+        req.getRequestDispatcher("/prvAzienda/addFermata.jsp").forward(req, resp);
     }
+
+
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

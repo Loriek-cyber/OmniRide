@@ -9,7 +9,7 @@ import java.util.List;
 public class TrattaDAO {
     private static final String TRATTA_ALL = "SELECT * FROM Tratta WHERE attiva = 1";
     private static final String TRATTA_BY_ID = "SELECT * FROM Tratta WHERE id = ?";
-    private static final String TRATTA_BY_AZIENDA = "SELECT * FROM Tratta WHERE id_azienda = ? AND attiva = 1";
+    private static final String TRATTA_BY_AZIENDA = "SELECT * FROM Tratta WHERE id_azienda = ?";
     private static final String INSERT_TRATTA = "INSERT INTO Tratta (nome, id_azienda, costo, attiva) VALUES (?, ?, ?, 1)";
     private static final String UPDATE_TRATTA = "UPDATE Tratta SET nome = ?, costo = ?, attiva = ? WHERE id = ?";
     private static final String DELETE_TRATTA = "UPDATE Tratta SET attiva = 0 WHERE id = ?";
@@ -19,19 +19,9 @@ public class TrattaDAO {
         Azienda azienda = AziendaDAO.getById(rs.getLong("id_azienda"));
         List<FermataTratta> fermataTrattaList = FermataTrattaDAO.findFermateByTrattaId(trattaId);
         List<OrarioTratta> orariTratta = OrarioTrattaDAO.findOrariByTrattaId(trattaId);
-        
-        Tratta tratta = new Tratta(
-                trattaId,
-                rs.getString("nome"),
-                azienda,
-                null, 
-                fermataTrattaList,
-                rs.getDouble("costo")
-        );
-        
-        tratta.setOrari(orariTratta);
+        double costo = rs.getDouble("costo");
+        Tratta tratta = new Tratta(trattaId,rs.getString("nome"),azienda,fermataTrattaList,orariTratta,costo);
         tratta.setAttiva(rs.getBoolean("attiva"));
-        
         return tratta;
     }
 
@@ -62,13 +52,25 @@ public class TrattaDAO {
             
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    return generatedKeys.getLong(1);
+                    Long id_tratta = generatedKeys.getLong(1);
+                    for(FermataTratta fermataTratta:nuovaTratta.getFermataTrattaList()){
+                        fermataTratta.setIdTratta(id_tratta);
+                        FermataTrattaDAO.create(fermataTratta);
+                    }
+
+                    for(OrarioTratta orarioTratta:nuovaTratta.getOrari()){
+                        orarioTratta.setTrattaId(id_tratta);
+                        OrarioTrattaDAO.create(orarioTratta);
+                    }
+                    return id_tratta;
                 } else {
                     throw new SQLException("Creazione tratta fallita, nessun ID generato.");
                 }
             }
         }
     }
+
+
     
     public static boolean update(Tratta trattaInSessione) throws SQLException {
         try (Connection con = DBConnector.getConnection();

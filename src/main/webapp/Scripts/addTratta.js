@@ -35,7 +35,17 @@ function initializeForm() {
     selectedFermataForAdd = null;
     fermataCounter = 0; // Reset del contatore ID fermate
     
+    // DEBUG: Verifica elementi chiave
+    const searchInput = document.getElementById('fermataSearch');
+    const addBtn = document.getElementById('addFermataBtn');
+    console.log('DEBUG - Elementi trovati:', {
+        searchInput: !!searchInput,
+        addBtn: !!addBtn,
+        addBtnDisabled: addBtn ? addBtn.disabled : 'N/A'
+    });
+    
     // Verifica che i dati delle fermate siano disponibili
+    console.log('DEBUG - window.fermateData:', window.fermateData);
     if (!window.fermateData || window.fermateData.length === 0) {
         console.warn('Nessuna fermata disponibile per la ricerca');
         showNoFermateMessage();
@@ -505,7 +515,7 @@ function displaySearchResults(results) {
         resultItem.innerHTML = `
             <div class="fermata-info">
                 <div class="fermata-name">${fermata.nome}</div>
-                <div class="fermata-address">${fermata.indirizzo || 'Indirizzo non specificato'}</div>
+                ${fermata.nome !== fermata.indirizzo ? `<div class="fermata-address">${fermata.indirizzo || 'Indirizzo non specificato'}</div>` : ''}
             </div>
         `;
         
@@ -533,18 +543,27 @@ function hideSearchResults() {
  * Seleziona una fermata per l'aggiunta
  */
 function selectFermataForAdd(fermata) {
+    console.log('DEBUG - selectFermataForAdd chiamata con:', fermata);
     selectedFermataForAdd = fermata;
     
     // Aggiorna il campo di ricerca
     const searchInput = document.getElementById('fermataSearch');
     if (searchInput) {
         searchInput.value = `${fermata.nome} - ${fermata.indirizzo || 'Indirizzo non specificato'}`;
+        console.log('DEBUG - Campo di ricerca aggiornato:', searchInput.value);
+    } else {
+        console.error('DEBUG - Campo di ricerca non trovato!');
     }
     
     // Abilita il pulsante aggiungi
     const addBtn = document.getElementById('addFermataBtn');
+    console.log('DEBUG - Pulsante trovato:', !!addBtn);
     if (addBtn) {
+        console.log('DEBUG - Stato pulsante prima:', addBtn.disabled);
         addBtn.disabled = false;
+        console.log('DEBUG - Stato pulsante dopo:', addBtn.disabled);
+    } else {
+        console.error('DEBUG - Pulsante addFermataBtn non trovato!');
     }
     
     hideSearchResults();
@@ -847,13 +866,27 @@ function prepareFormData() {
     // I giorni sono già gestiti come checkbox con name="giorni"
     // Il servlet riceverà automaticamente tutti i valori selezionati
     
+const tempoTotale = calcolaTempotTotaleTratta();
+
     console.log('Dati preparati:', {
         fermate: fermateIds,
         fermateSequenceIds: fermateSequenceIds,
         tempi: tempiPercorrenza,
         orari: orariValidi,
-        giorni: Array.from(document.querySelectorAll('input[name="giorni"]:checked')).map(cb => cb.value)
+        giorni: Array.from(document.querySelectorAll('input[name="giorni"]:checked')).map(cb => cb.value),
+        tempoTotale: tempoTotale
     });
+
+    // Aggiorna il campo hidden del tempo totale
+    let tempoTotaleInput = document.getElementById('tempoTotale');
+    if (!tempoTotaleInput) {
+        tempoTotaleInput = document.createElement('input');
+        tempoTotaleInput.type = 'hidden';
+        tempoTotaleInput.id = 'tempoTotale';
+        tempoTotaleInput.name = 'tempoTotale';
+        document.getElementById('addTrattaForm').appendChild(tempoTotaleInput);
+    }
+    tempoTotaleInput.value = tempoTotale;
 }
 
 /**

@@ -96,15 +96,11 @@
                         <div class="stat-label">Tratte Attive</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value">45</div>
-                        <div class="stat-label">Fermate Gestite</div>
-                    </div>
-                    <div class="stat-card">
                         <div class="stat-value">1,234</div>
                         <div class="stat-label">Passeggeri Oggi</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value">€2,450</div>
+                        <div class="stat-value"></div>
                         <div class="stat-label">Ricavi Mensili</div>
                     </div>
                 </div>

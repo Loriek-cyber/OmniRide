@@ -12,25 +12,22 @@ public class Tratta implements Serializable {
     private Long id;
     private String nome;
     private Azienda azienda;
-    private List<UnicaTratta> unicaTrattaList; // Mantenuto per compatibilità
     private List<FermataTratta> fermataTrattaList;
     private List<OrarioTratta> orari; // Nuova gestione orari semplificata
     private double costo;
     private boolean attiva; // Nuovo campo per gestire tratte attive/disattive
 
     public Tratta() {
-        this.unicaTrattaList = new ArrayList<>();
-        this.fermataTrattaList = new ArrayList<>();
     }
 
     // Costruttore pulito senza parametri inutilizzati
-    public Tratta(Long id, String nome, Azienda azienda, List<UnicaTratta> unicaTrattaList, List<FermataTratta> fermataTrattaList, Double costo) {
+    public Tratta(Long id, String nome, Azienda azienda, List<FermataTratta> fermataTrattaList,List<OrarioTratta> orari, Double costo) {
         this.id = id;
         this.nome = nome;
         this.azienda = azienda;
-        this.unicaTrattaList = unicaTrattaList != null ? unicaTrattaList : new ArrayList<>();
         this.fermataTrattaList = fermataTrattaList != null ? fermataTrattaList : new ArrayList<>();
         this.costo = costo;
+        this.orari = orari != null ? orari : new ArrayList<>();
     }
 
     public boolean FermataIN(Fermata fermata) {
@@ -101,8 +98,6 @@ public class Tratta implements Serializable {
     public void setAzienda(Azienda azienda) {this.azienda = azienda;}
     public List<FermataTratta> getFermataTrattaList() {return fermataTrattaList;}
     public void setFermataTrattaList(List<FermataTratta> fermataTrattaList) {this.fermataTrattaList = fermataTrattaList;}
-    public List<UnicaTratta> getUnicaTrattaList() {return unicaTrattaList;}
-    public void setUnicaTrattaList(List<UnicaTratta> unicaTrattaList) {this.unicaTrattaList = unicaTrattaList;}
     public double getCosto(){return costo;}
     public void setCosto(double costo){this.costo = costo;}
     
@@ -153,29 +148,5 @@ public class Tratta implements Serializable {
      */
     public boolean hasOrariAttivi() {
         return orari != null && orari.stream().anyMatch(OrarioTratta::isAttivo);
-    }
-
-    @Override
-    public String toString() {
-        return "Tratta{" +
-                "id=" + id +
-                ", nome='" + nome +
-                ", azienda=" + (azienda != null ? azienda.toString() : "null") +
-                ", unicaTrattaList=" + (unicaTrattaList != null ? unicaTrattaList.toString() : "null") +
-                ", fermataTrattaList=" + (fermataTrattaList != null ? fermataTrattaList.toString() : "null") +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Tratta tratta = (Tratta) o;
-        return Objects.equals(id, tratta.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }

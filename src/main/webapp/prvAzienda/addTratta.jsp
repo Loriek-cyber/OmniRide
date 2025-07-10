@@ -88,31 +88,31 @@
                     <label>Giorni di Servizio *:</label>
                     <div class="days-container">
                         <div class="day-item">
-                            <input type="checkbox" id="lunedi" name="giorni" value="1">
+                            <input type="checkbox" id="lunedi" name="giorni" value="LUN">
                             <label for="lunedi">Lunedì</label>
                         </div>
                         <div class="day-item">
-                            <input type="checkbox" id="martedi" name="giorni" value="2">
+                            <input type="checkbox" id="martedi" name="giorni" value="MAR">
                             <label for="martedi">Martedì</label>
                         </div>
                         <div class="day-item">
-                            <input type="checkbox" id="mercoledi" name="giorni" value="3">
+                            <input type="checkbox" id="mercoledi" name="giorni" value="MER">
                             <label for="mercoledi">Mercoledì</label>
                         </div>
                         <div class="day-item">
-                            <input type="checkbox" id="giovedi" name="giorni" value="4">
+                            <input type="checkbox" id="giovedi" name="giorni" value="GIO">
                             <label for="giovedi">Giovedì</label>
                         </div>
                         <div class="day-item">
-                            <input type="checkbox" id="venerdi" name="giorni" value="5">
+                            <input type="checkbox" id="venerdi" name="giorni" value="VEN">
                             <label for="venerdi">Venerdì</label>
                         </div>
                         <div class="day-item">
-                            <input type="checkbox" id="sabato" name="giorni" value="6">
+                            <input type="checkbox" id="sabato" name="giorni" value="SAB">
                             <label for="sabato">Sabato</label>
                         </div>
                         <div class="day-item">
-                            <input type="checkbox" id="domenica" name="giorni" value="0">
+                            <input type="checkbox" id="domenica" name="giorni" value="DOM">
                             <label for="domenica">Domenica</label>
                         </div>
                     </div>
@@ -124,7 +124,7 @@
             <input type="hidden" id="fermateSelezionate" name="fermateSelezionate" value="">
             <input type="hidden" id="tempiTraFermate" name="tempiTraFermate" value="">
 
-            <button type="submit" class="submit-btn" id="submitBtn">Crea Tratta</button>
+            <button type="submit" class="submit-btn">Crea Tratta</button>
         </form>
     </div>
 

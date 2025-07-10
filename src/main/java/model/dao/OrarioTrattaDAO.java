@@ -18,24 +18,12 @@ public class OrarioTrattaDAO {
         
         orario.setId(rs.getLong("id"));
         orario.setTrattaId(rs.getLong("id_tratta"));
-        orario.setOraPartenza(rs.getTime("ora_partenza").toLocalTime());
-        
-        Time oraArrivo = rs.getTime("ora_arrivo");
-        if (oraArrivo != null) {
-            orario.setOraArrivo(oraArrivo.toLocalTime());
-        }
-        
+        orario.setOraPartenza(rs.getTime("ora_partenza"));
+        orario.setOraArrivo(rs.getTime("ora_arrivo"));
         orario.setGiorniSettimana(rs.getString("giorni_settimana"));
-        
-        try {
-            orario.setTipoServizio(OrarioTratta.TipoServizio.valueOf(rs.getString("tipo_servizio")));
-        } catch (IllegalArgumentException e) {
-            orario.setTipoServizio(OrarioTratta.TipoServizio.NORMALE); // Default
-        }
-        
+        orario.setGiorniSettimana(rs.getString("giorni_settimana"));
         orario.setAttivo(rs.getBoolean("attivo"));
         orario.setNote(rs.getString("note"));
-        
         return orario;
     }
 
@@ -54,8 +42,8 @@ public class OrarioTrattaDAO {
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
             ps.setLong(1, nuovoOrarioTratta.getTrattaId());
-            ps.setTime(2, Time.valueOf(nuovoOrarioTratta.getOraPartenza()));
-            ps.setTime(3, nuovoOrarioTratta.getOraArrivo() != null ? Time.valueOf(nuovoOrarioTratta.getOraArrivo()) : null);
+            ps.setTime(2, nuovoOrarioTratta.getOraPartenza());
+            ps.setTime(3, nuovoOrarioTratta.getOraArrivo());
             ps.setString(4, nuovoOrarioTratta.getGiorniSettimana());
             ps.setString(5, nuovoOrarioTratta.getTipoServizio().name());
             ps.setBoolean(6, nuovoOrarioTratta.isAttivo());
@@ -89,14 +77,13 @@ public class OrarioTrattaDAO {
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
-            ps.setTime(1, Time.valueOf(OrarioTrattaInSessione.getOraPartenza()));
-            ps.setTime(2, OrarioTrattaInSessione.getOraArrivo() != null ? Time.valueOf(OrarioTrattaInSessione.getOraArrivo()) : null);
+            ps.setTime(1, OrarioTrattaInSessione.getOraPartenza());
+            ps.setTime(2, OrarioTrattaInSessione.getOraArrivo());
             ps.setString(3, OrarioTrattaInSessione.getGiorniSettimana());
             ps.setString(4, OrarioTrattaInSessione.getTipoServizio().name());
             ps.setBoolean(6, OrarioTrattaInSessione.isAttivo());
             ps.setString(7, OrarioTrattaInSessione.getNote());
             ps.setLong(8, OrarioTrattaInSessione.getId());
-            
             return ps.executeUpdate() > 0;
         }
     }
@@ -134,7 +121,6 @@ public class OrarioTrattaDAO {
         String sql = "UPDATE Tratta_Orari SET attivo = 0 WHERE id = ?";
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            
             ps.setLong(1, id);
             return ps.executeUpdate() > 0;
         }
@@ -153,7 +139,6 @@ public class OrarioTrattaDAO {
         
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            
             ps.setLong(1, trattaId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {

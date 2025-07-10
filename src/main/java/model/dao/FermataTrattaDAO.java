@@ -116,10 +116,7 @@ public class FermataTrattaDAO {
             ps.setLong(1, fermataTratta.getIdTratta());
             ps.setLong(2, fermataTratta.getFermata().getId());
             ps.setInt(3, fermataTratta.getTempoProssimaFermata());
-            
-            // Calcola la sequenza automaticamente
-            int sequenza = getNextSequenza(fermataTratta.getIdTratta());
-            ps.setInt(4, sequenza);
+            ps.setInt(4, fermataTratta.getSequenza());
             
             int affectedRows = ps.executeUpdate();
             
@@ -188,12 +185,10 @@ public class FermataTrattaDAO {
         
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            
             ps.setInt(1, fermataTratta.getTempoProssimaFermata());
             ps.setLong(2, fermataTratta.getIdTratta());
             ps.setLong(3, fermataTratta.getFermata().getId());
             ps.setInt(4, sequenza);
-            
             return ps.executeUpdate() > 0;
         }
     }

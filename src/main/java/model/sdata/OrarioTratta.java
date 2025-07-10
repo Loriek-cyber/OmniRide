@@ -1,6 +1,7 @@
 package model.sdata;
 
 import java.io.Serializable;
+import java.sql.Time;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
@@ -10,8 +11,8 @@ public class OrarioTratta{
     
     private Long id;
     private Long trattaId;
-    private LocalTime oraPartenza;
-    private LocalTime oraArrivo;
+    private Time oraPartenza;
+    private Time oraArrivo;
     private String giorniSettimana; // Formato: "LUN,MAR,MER,GIO,VEN"
     private TipoServizio tipoServizio;
     private boolean attivo;
@@ -41,14 +42,14 @@ public class OrarioTratta{
         this.tipoServizio = TipoServizio.NORMALE;
     }
     
-    public OrarioTratta(Long trattaId, LocalTime oraPartenza, String giorniSettimana) {
+    public OrarioTratta(Long trattaId, Time oraPartenza, String giorniSettimana) {
         this();
         this.trattaId = trattaId;
         this.oraPartenza = oraPartenza;
         this.giorniSettimana = giorniSettimana;
     }
     
-    public OrarioTratta(Long id, Long trattaId, LocalTime oraPartenza, LocalTime oraArrivo, 
+    public OrarioTratta(Long id, Long trattaId, Time oraPartenza, Time oraArrivo,
                        String giorniSettimana, TipoServizio tipoServizio, boolean attivo, String note) {
         this.id = id;
         this.trattaId = trattaId;
@@ -77,15 +78,6 @@ public class OrarioTratta{
      */
     public boolean isValidoPerGiorno(String giorno) {
         return giorniSettimana != null && giorniSettimana.contains(giorno.toUpperCase());
-    }
-    
-    /**
-     * Calcola l'orario di arrivo basato sul tempo di percorrenza totale
-     */
-    public void calcolaOraArrivo(int minutiPercorrenza) {
-        if (oraPartenza != null) {
-            this.oraArrivo = oraPartenza.plusMinutes(minutiPercorrenza);
-        }
     }
     
     /**
@@ -130,11 +122,11 @@ public class OrarioTratta{
     public Long getTrattaId() { return trattaId; }
     public void setTrattaId(Long trattaId) { this.trattaId = trattaId; }
     
-    public LocalTime getOraPartenza() { return oraPartenza; }
-    public void setOraPartenza(LocalTime oraPartenza) { this.oraPartenza = oraPartenza; }
+    public Time getOraPartenza() { return oraPartenza; }
+    public void setOraPartenza(Time oraPartenza) { this.oraPartenza = oraPartenza; }
     
-    public LocalTime getOraArrivo() { return oraArrivo; }
-    public void setOraArrivo(LocalTime oraArrivo) { this.oraArrivo = oraArrivo; }
+    public Time getOraArrivo() { return oraArrivo; }
+    public void setOraArrivo(Time oraArrivo) { this.oraArrivo = oraArrivo; }
     
     public String getGiorniSettimana() { return giorniSettimana; }
     public void setGiorniSettimana(String giorniSettimana) { this.giorniSettimana = giorniSettimana; }
@@ -152,7 +144,6 @@ public class OrarioTratta{
     @Override
     public String toString() {
         return "OrarioTratta{" +
-                "id=" + id +
                 ", trattaId=" + trattaId +
                 ", oraPartenza=" + (oraPartenza != null ? oraPartenza.toString() : "null") +
                 ", oraArrivo=" + (oraArrivo != null ? oraArrivo.toString() : "null") +
@@ -161,18 +152,5 @@ public class OrarioTratta{
                 ", attivo=" + attivo +
                 ", note='" + note + '\'' +
                 '}';
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        OrarioTratta that = (OrarioTratta) o;
-        return Objects.equals(id, that.id);
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }
