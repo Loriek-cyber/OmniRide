@@ -8,6 +8,7 @@ let selectedFermate = [];
 let selectedFermataForAdd = null;
 let searchTimeout = null;
 let orariInizio = []; // Array per gestire più orari
+let fermataCounter = 0; // Contatore per assegnare ID numerici alle fermate
 let formValidator = {
     nome: false,
     costo: false,
@@ -32,6 +33,7 @@ function initializeForm() {
     // Reset dello stato iniziale
     selectedFermate = [];
     selectedFermataForAdd = null;
+    fermataCounter = 0; // Reset del contatore ID fermate
     
     // Verifica che i dati delle fermate siano disponibili
     if (!window.fermateData || window.fermateData.length === 0) {
@@ -356,10 +358,6 @@ function handleFormSubmit(event) {
         event.preventDefault();
         return false;
     }
-    
-    // Mostra indicatore di caricamento
-    showSubmitLoading();
-    
     return true;
 }
 
@@ -404,17 +402,6 @@ function showGeneralError() {
     // Rimuovi la classe 
 }
 
-/**
- * Mostra l'indicatore di caricamento durante il submit
- */
-function showSubmitLoading() {
-    const submitBtn = document.querySelector('.submit-btn');
-    if (submitBtn) {
-        submitBtn.textContent = 'Creazione in corso...';
-        submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.7';
-    }
-}
 
 /**
  * Mostra un alert personalizzato
@@ -569,8 +556,15 @@ function selectFermataForAdd(fermata) {
 function handleAddFermata() {
     if (!selectedFermataForAdd) return;
     
+    // Incrementa il contatore e assegna un ID numerico specifico
+    fermataCounter++;
+    const fermataConId = {
+        ...selectedFermataForAdd,
+        fermataSequenceId: fermataCounter // ID numerico specifico per questa fermata nella tratta
+    };
+    
     // Aggiungi la fermata alla lista
-    selectedFermate.push(selectedFermataForAdd);
+    selectedFermate.push(fermataConId);
     
     // Aggiorna la visualizzazione
     updateSelectedFermateDisplay();
@@ -581,7 +575,7 @@ function handleAddFermata() {
     // Aggiorna la validazione
     updateFormValidation();
     
-    console.log('Fermata aggiunta:', selectedFermataForAdd);
+    console.log('Fermata aggiunta con ID sequenza:', fermataConId);
 }
 
 /**
@@ -620,10 +614,11 @@ function createSelectedFermataItem(fermata, index) {
     const showTempoInput = !isLast;
     
     item.innerHTML = `
-        <div class="fermata-order">${index + 1}</div>
+        <div class="fermata-order">${fermata.fermataSequenceId}</div>
         <div class="fermata-details">
             <div class="fermata-name">${fermata.nome}</div>
             <div class="fermata-address">${fermata.indirizzo || 'Indirizzo non specificato'}</div>
+            <div class="fermata-ids">ID Fermata: ${fermata.id} | ID Sequenza: ${fermata.fermataSequenceId}</div>
         </div>
         ${showTempoInput ? `
             <div class="tempo-input-container">
@@ -633,7 +628,8 @@ function createSelectedFermataItem(fermata, index) {
                        placeholder="5" 
                        min="1" 
                        step="1" 
-                       data-fermata-id="${fermata.id}">
+                       data-fermata-id="${fermata.id}"
+                       data-sequence-id="${fermata.fermataSequenceId}">
             </div>
         ` : ''}
         <button type="button" class="remove-fermata-btn" data-fermata-id="${fermata.id}">
@@ -668,6 +664,26 @@ function removeFermata(fermataId) {
     selectedFermate = selectedFermate.filter(fermata => fermata.id !== fermataId);
     updateSelectedFermateDisplay();
     updateFormValidation();
+    
+    // Riorganizza gli ID sequenza delle fermate rimaste
+    reorganizeSequenceIds();
+}
+
+/**
+ * Riorganizza gli ID sequenza delle fermate dopo una rimozione
+ */
+function reorganizeSequenceIds() {
+    selectedFermate.forEach((fermata, index) => {
+        fermata.fermataSequenceId = index + 1; // Riassegna ID sequenziali a partire da 1
+    });
+    
+    // Aggiorna il contatore
+    fermataCounter = selectedFermate.length;
+    
+    // Aggiorna la visualizzazione per riflettere i nuovi ID
+    updateSelectedFermateDisplay();
+    
+    console.log('ID sequenza riorganizzati:', selectedFermate.map(f => ({ id: f.id, sequenceId: f.fermataSequenceId })));
 }
 
 /**
@@ -773,32 +789,71 @@ function showNoFermateMessage() {
 }
 
 /**
- * Prepara i dati per il submit del form
+ * Prepara i dati per il submit del form usando parametri semplici
  */
 function prepareFormData() {
     // Prepara i dati delle fermate
-    const fermateIds = selectedFermate.map(fermata => fermata.id).join(',');
-    const fermateInput = document.getElementById('fermateSelezionate');
-    if (fermateInput) {
-        fermateInput.value = fermateIds;
-    }
+    const fermateIds = [];
+    const fermateSequenceIds = [];
+    const tempiPercorrenza = [];
     
-    // Prepara i dati dei tempi
-    const tempoInputs = document.querySelectorAll('.tempo-input');
-    const tempi = [];
-    tempoInputs.forEach(input => {
-        const value = parseInt(input.value);
-        if (!isNaN(value) && value > 0) {
-            tempi.push(value);
-        } else {
-            tempi.push(0); // Valore di default
+    selectedFermate.forEach((fermata, index) => {
+        fermateIds.push(fermata.id);
+        fermateSequenceIds.push(fermata.fermataSequenceId);
+        
+        // Per tutte le fermate tranne l'ultima, prendi il tempo
+        if (index < selectedFermate.length - 1) {
+            const tempoInput = document.querySelector(`.tempo-input[data-fermata-id="${fermata.id}"]`);
+            const tempo = tempoInput ? parseInt(tempoInput.value) || 0 : 0;
+            tempiPercorrenza.push(tempo);
         }
     });
     
+    // Aggiorna il campo hidden delle fermate
+    const fermateInput = document.getElementById('fermateSelezionate');
+    if (fermateInput) {
+        fermateInput.value = fermateIds.join(',');
+    }
+    
+    // Aggiorna il campo hidden degli ID sequenza
+    let sequenceInput = document.getElementById('fermateSequenceIds');
+    if (!sequenceInput) {
+        sequenceInput = document.createElement('input');
+        sequenceInput.type = 'hidden';
+        sequenceInput.id = 'fermateSequenceIds';
+        sequenceInput.name = 'fermateSequenceIds';
+        document.getElementById('addTrattaForm').appendChild(sequenceInput);
+    }
+    sequenceInput.value = fermateSequenceIds.join(',');
+    
+    // Aggiorna il campo hidden dei tempi
     const tempiInput = document.getElementById('tempiTraFermate');
     if (tempiInput) {
-        tempiInput.value = tempi.join(',');
+        tempiInput.value = tempiPercorrenza.join(',');
     }
+    
+    // Prepara gli orari in un campo hidden
+    const orariValidi = orariInizio.filter(orario => orario && orario.trim() !== '');
+    let orariInput = document.getElementById('orariInizio');
+    if (!orariInput) {
+        orariInput = document.createElement('input');
+        orariInput.type = 'hidden';
+        orariInput.id = 'orariInizio';
+        orariInput.name = 'orariInizio';
+        document.getElementById('addTrattaForm').appendChild(orariInput);
+    }
+    orariInput.value = orariValidi.join(',');
+    
+    // I giorni sono già gestiti come checkbox con name="giorni"
+    // Il servlet riceverà automaticamente tutti i valori selezionati
+    
+    console.log('Dati preparati:', {
+        fermate: fermateIds,
+        fermateSequenceIds: fermateSequenceIds,
+        tempi: tempiPercorrenza,
+        orari: orariValidi,
+        giorni: Array.from(document.querySelectorAll('input[name="giorni"]:checked')).map(cb => cb.value)
+    });
 }
 
 /**
@@ -837,10 +892,6 @@ function handleFormSubmit(event) {
         showAlert('Seleziona almeno 2 fermate per creare una tratta.');
         return false;
     }
-    
-    // Mostra indicatore di caricamento
-    showSubmitLoading();
-    
     return true;
 }
 

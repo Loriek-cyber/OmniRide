@@ -199,23 +199,5 @@ public class BigliettiDAO {
         }
     }
 
-    /**
-     * Alias per compatibilità con codice esistente
-     * @deprecated Usare getById() invece
-     */
-    @Deprecated
-    public static Biglietto GetBigliettoFromID(Long id) throws SQLException {
-        return getById(id);
-    }
-
-    /**
-     * Alias per compatibilità con codice esistente
-     * @deprecated Usare create() invece
-     */
-    @Deprecated
-    public static Long insertBiglietto(Biglietto biglietto) throws SQLException {
-        return create(biglietto);
-    }
-
 }
 

@@ -5,12 +5,9 @@
     Fermata fermata = (Fermata) request.getAttribute("fermata");
     if (fermata != null) {
 %>
-<div>
-    <p>ID: <%= fermata.getId() %></p>
+<div class="fermata-item">
     <p>Nome: <%= fermata.getNome() %></p>
-    <p>Latitudine: <%= fermata.getLat() %></p>
-    <p>Longitudine: <%= fermata.getLon() %></p>
+    <p>Indirizzo <%= fermata.getIndirizzo()%></p>
 </div>
-<%
-    }
+<%}
 %>

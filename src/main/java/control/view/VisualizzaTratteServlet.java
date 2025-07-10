@@ -14,7 +14,7 @@ public class VisualizzaTratteServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            req.setAttribute("tratte", TrattaDAO.getAllTratte());
+            req.setAttribute("tratte", TrattaDAO.getAll());
         } catch (SQLException e) {
             req.setAttribute("errorMessage", "Errore con il Database");
             req.setAttribute("errorCode", 500);

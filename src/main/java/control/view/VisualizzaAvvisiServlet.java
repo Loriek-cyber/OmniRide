@@ -16,8 +16,7 @@ public class VisualizzaAvvisiServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            List<Avvisi> avvisi = AvvisiDAO.getAllAvvisi();
-            req.setAttribute("avvisi", avvisi);
+            req.setAttribute("avvisi", AvvisiDAO.getAllAvvisi());
             req.getRequestDispatcher("/avvisi.jsp").forward(req, resp);
         } catch (SQLException e) {
             resp.sendError(500);

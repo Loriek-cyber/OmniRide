@@ -33,11 +33,6 @@ public class OrarioTrattaDAO {
             orario.setTipoServizio(OrarioTratta.TipoServizio.NORMALE); // Default
         }
         
-        orario.setFrequenzaMinuti(rs.getInt("frequenza_minuti"));
-        if (rs.wasNull()) {
-            orario.setFrequenzaMinuti(null);
-        }
-        
         orario.setAttivo(rs.getBoolean("attivo"));
         orario.setNote(rs.getString("note"));
         
@@ -53,7 +48,7 @@ public class OrarioTrattaDAO {
      */
     public static Long create(OrarioTratta nuovoOrarioTratta) throws SQLException {
         String sql = "INSERT INTO Tratta_Orari (id_tratta, ora_partenza, ora_arrivo, giorni_settimana, " +
-                     "tipo_servizio, frequenza_minuti, attivo, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                     "tipo_servizio, attivo, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -63,15 +58,8 @@ public class OrarioTrattaDAO {
             ps.setTime(3, nuovoOrarioTratta.getOraArrivo() != null ? Time.valueOf(nuovoOrarioTratta.getOraArrivo()) : null);
             ps.setString(4, nuovoOrarioTratta.getGiorniSettimana());
             ps.setString(5, nuovoOrarioTratta.getTipoServizio().name());
-            
-            if (nuovoOrarioTratta.getFrequenzaMinuti() != null) {
-                ps.setInt(6, nuovoOrarioTratta.getFrequenzaMinuti());
-            } else {
-                ps.setNull(6, Types.INTEGER);
-            }
-            
-            ps.setBoolean(7, nuovoOrarioTratta.isAttivo());
-            ps.setString(8, nuovoOrarioTratta.getNote());
+            ps.setBoolean(6, nuovoOrarioTratta.isAttivo());
+            ps.setString(7, nuovoOrarioTratta.getNote());
             
             if (ps.executeUpdate() == 0) {
                 throw new SQLException("Creazione orario fallita, nessuna riga modificata.");
@@ -105,13 +93,6 @@ public class OrarioTrattaDAO {
             ps.setTime(2, OrarioTrattaInSessione.getOraArrivo() != null ? Time.valueOf(OrarioTrattaInSessione.getOraArrivo()) : null);
             ps.setString(3, OrarioTrattaInSessione.getGiorniSettimana());
             ps.setString(4, OrarioTrattaInSessione.getTipoServizio().name());
-            
-            if (OrarioTrattaInSessione.getFrequenzaMinuti() != null) {
-                ps.setInt(5, OrarioTrattaInSessione.getFrequenzaMinuti());
-            } else {
-                ps.setNull(5, Types.INTEGER);
-            }
-            
             ps.setBoolean(6, OrarioTrattaInSessione.isAttivo());
             ps.setString(7, OrarioTrattaInSessione.getNote());
             ps.setLong(8, OrarioTrattaInSessione.getId());

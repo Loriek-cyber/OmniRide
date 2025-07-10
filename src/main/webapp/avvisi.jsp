@@ -11,7 +11,7 @@
 </head>
 <body>
     <%@include file="import/header.jsp"%>
-    <%@include file="import/avvisi.jsp"%>
+    <%@include file="import/components/avvisi.jsp"%>
     <%@include file="import/footer.jsp"%>
 </body>
 </html>

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="model.udata.Biglietto" %>
+<%@ page import="model.udata.Azienda" %>
 
 <%
     Biglietto biglietto = (Biglietto) request.getAttribute("biglietto");

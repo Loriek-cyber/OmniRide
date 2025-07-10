@@ -7,25 +7,39 @@
     <title>Aggiungi Tratta - Omniride</title>
     <%@ include file="../import/metadata.jsp" %>
 </head>
+<%-- Mostra un messaggio di errore se esiste --%>
+<%
+    String errore = (String) request.getAttribute("errore");
+    if (errore == null) {
+        errore = (String) session.getAttribute("errore");
+        session.removeAttribute("errore"); // rimuove dopo averlo mostrato
+    }
+%>
+
+<% if (errore != null) { %>
+<div style="color: red; background-color: #ffe6e6; border: 1px solid red; padding: 10px; margin: 10px 0; text-align: center;">
+    <strong><%= errore %></strong>
+</div>
+<% } %>
 <body>
     <div class="add-tratta-container">
         <a href="../dashboard" class="back-link">← Torna alla Dashboard</a>
         <h1 class="add-tratta-title">Aggiungi Nuova Tratta</h1>
-        
+
         <form action="addTratta" method="post" id="addTrattaForm">
             <!-- Informazioni Base -->
             <div class="form-section">
                 <h2>Informazioni Base</h2>
                 <div class="form-group">
                     <label for="nome">Nome Tratta *:</label>
-                    <input type="text" id="nome" name="nome" class="form-input" required 
+                    <input type="text" id="nome" name="nome" class="form-input" required
                            placeholder="Es: Linea 1 - Centro-Periferia">
                     <div class="help-text">Inserisci un nome descrittivo per la tratta</div>
                 </div>
 
                 <div class="form-group">
                     <label for="costo">Costo (€) *:</label>
-                    <input type="number" id="costo" name="costo" class="form-input" 
+                    <input type="number" id="costo" name="costo" class="form-input"
                            step="0.01" min="0.01" required placeholder="Es: 2.50">
                     <div class="help-text">Inserisci il costo del biglietto per l'intera tratta</div>
                 </div>
@@ -35,11 +49,11 @@
             <div class="form-section">
                 <h2>Percorso Tratta</h2>
                 <div class="help-text">Aggiungi le fermate in ordine di percorrenza. Puoi cercare per nome o indirizzo.</div>
-                
+
                 <div class="fermate-selected-container">
                     <div class="fermata-search-container">
                         <div class="search-box">
-                            <input type="text" id="fermataSearch" class="search-input" 
+                            <input type="text" id="fermataSearch" class="search-input"
                                    placeholder="Cerca fermata per nome o indirizzo...">
                             <div class="search-results" id="searchResults"></div>
                         </div>
@@ -47,7 +61,7 @@
                             <span class="icon">+</span> Aggiungi Fermata
                         </button>
                     </div>
-                    
+
                     <div class="selected-fermate" id="selectedFermate">
                         <div class="empty-state" id="emptyState">
                             <p>Nessuna fermata selezionata</p>
@@ -69,7 +83,7 @@
                 <button type="button" class="add-orario-btn" id="addOrarioBtn">+	Aggiungi Orario</button>
                 <div class="help-text">Aggiungi uno o pi&ugrave; orari di partenza per la tratta.</div>
             </div>
-                
+
                 <div class="form-group">
                     <label>Giorni di Servizio *:</label>
                     <div class="days-container">
@@ -110,13 +124,15 @@
             <input type="hidden" id="fermateSelezionate" name="fermateSelezionate" value="">
             <input type="hidden" id="tempiTraFermate" name="tempiTraFermate" value="">
 
-            <button type="submit" class="submit-btn" id="submitBtn" disabled>Crea Tratta</button>
+            <button type="submit" class="submit-btn" id="submitBtn">Crea Tratta</button>
         </form>
     </div>
 
     <!-- Dati fermate per JavaScript -->
     <script>
+
         window.fermateData = [
+            //Allora questo è un piccolo parser di informazioni da java a javascript
             <%
                 List<Fermata> fermate = (List<Fermata>) request.getAttribute("fermate");
                 if (fermate != null && !fermate.isEmpty()) {
@@ -135,7 +151,7 @@
             %>
         ];
     </script>
-    
+
     <!-- Script per la gestione del form -->
     <script src="../Scripts/addTratta.js"></script>
 </body>

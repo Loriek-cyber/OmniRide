@@ -6,8 +6,8 @@
     if (coordinata != null) {
 %>
 <div>
-    <p>Latitudine: <%= coordinata.getLat() %></p>
-    <p>Longitudine: <%= coordinata.getLon() %></p>
+    <p>Latitudine: <%= coordinata.getLatitudine() %></p>
+    <p>Longitudine: <%= coordinata.getLongitudine() %></p>
 </div>
 <%
     }

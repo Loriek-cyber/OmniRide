@@ -6,11 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Classe che rappresenta un orario specifico di una tratta.
- * Gestisce orari semplificati con giorni della settimana, frequenza e tipo servizio.
- */
-public class OrarioTratta implements Serializable {
+public class OrarioTratta{
     
     private Long id;
     private Long trattaId;
@@ -18,19 +14,16 @@ public class OrarioTratta implements Serializable {
     private LocalTime oraArrivo;
     private String giorniSettimana; // Formato: "LUN,MAR,MER,GIO,VEN"
     private TipoServizio tipoServizio;
-    private Integer frequenzaMinuti;
     private boolean attivo;
     private String note;
     
-    /**
-     * Enumerazione per i tipi di servizio
-     */
     public enum TipoServizio {
         NORMALE("Servizio Normale"),
         FESTIVO("Servizio Festivo"),
         NOTTURNO("Servizio Notturno"),
-        EXPRESS("Servizio Express");
-        
+        EXPRESS("Servizio Express"),
+        TURISTICO("Servizio Turistico");
+
         private final String descrizione;
         
         TipoServizio(String descrizione) {
@@ -56,15 +49,13 @@ public class OrarioTratta implements Serializable {
     }
     
     public OrarioTratta(Long id, Long trattaId, LocalTime oraPartenza, LocalTime oraArrivo, 
-                       String giorniSettimana, TipoServizio tipoServizio, 
-                       Integer frequenzaMinuti, boolean attivo, String note) {
+                       String giorniSettimana, TipoServizio tipoServizio, boolean attivo, String note) {
         this.id = id;
         this.trattaId = trattaId;
         this.oraPartenza = oraPartenza;
         this.oraArrivo = oraArrivo;
         this.giorniSettimana = giorniSettimana;
         this.tipoServizio = tipoServizio;
-        this.frequenzaMinuti = frequenzaMinuti;
         this.attivo = attivo;
         this.note = note;
     }
@@ -107,9 +98,6 @@ public class OrarioTratta implements Serializable {
         }
         if (oraArrivo != null) {
             sb.append(" - ").append(oraArrivo.toString());
-        }
-        if (frequenzaMinuti != null && frequenzaMinuti > 0) {
-            sb.append(" (ogni ").append(frequenzaMinuti).append(" min)");
         }
         return sb.toString();
     }
@@ -154,9 +142,6 @@ public class OrarioTratta implements Serializable {
     public TipoServizio getTipoServizio() { return tipoServizio; }
     public void setTipoServizio(TipoServizio tipoServizio) { this.tipoServizio = tipoServizio; }
     
-    public Integer getFrequenzaMinuti() { return frequenzaMinuti; }
-    public void setFrequenzaMinuti(Integer frequenzaMinuti) { this.frequenzaMinuti = frequenzaMinuti; }
-    
     public boolean isAttivo() { return attivo; }
     public void setAttivo(boolean attivo) { this.attivo = attivo; }
     
@@ -173,7 +158,6 @@ public class OrarioTratta implements Serializable {
                 ", oraArrivo=" + (oraArrivo != null ? oraArrivo.toString() : "null") +
                 ", giorniSettimana='" + giorniSettimana + '\'' +
                 ", tipoServizio=" + tipoServizio +
-                ", frequenzaMinuti=" + frequenzaMinuti +
                 ", attivo=" + attivo +
                 ", note='" + note + '\'' +
                 '}';

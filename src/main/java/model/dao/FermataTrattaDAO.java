@@ -69,7 +69,7 @@ public class FermataTrattaDAO {
         }
     }
     
-    public static boolean deleteFermataTratta(Long id) throws SQLException {
+    public static boolean delete(Long id) throws SQLException {
         String sql = "DELETE FROM Fermata_Tratta WHERE id = ?";
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -107,7 +107,7 @@ public class FermataTrattaDAO {
      * @return L'ID della relazione inserita, null se l'inserimento fallisce
      * @throws SQLException Se c'è un errore nel database
      */
-    public static Long insertFermataTratta(FermataTratta fermataTratta) throws SQLException {
+    public static Long create(FermataTratta fermataTratta) throws SQLException {
         String sql = "INSERT INTO Fermata_Tratta (id_tratta, id_fermata, tempo_prossima_fermata, sequenza) VALUES (?, ?, ?, ?)";
         
         try (Connection con = DBConnector.getConnection();

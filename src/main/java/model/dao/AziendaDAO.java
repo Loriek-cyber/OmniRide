@@ -153,12 +153,5 @@ public class AziendaDAO {
         }
     }
 
-    /**
-     * Alias per compatibilità con codice esistente.
-     * @deprecated Usare getAll() invece
-     */
-    @Deprecated
-    public static List<Azienda> doRetrieveAll() throws SQLException {
-        return getAll();
-    }
+    
 }

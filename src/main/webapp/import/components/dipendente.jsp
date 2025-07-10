@@ -6,9 +6,8 @@
     if (dipendente != null) {
 %>
 <div>
-    <p>ID: <%= dipendente.getId() %></p>
-    <p>ID Azienda: <%= dipendente.getIdAzienda() %></p>
-    <p>ID Utente: <%= dipendente.getIdUtente() %></p>
+    <p>Nome: <%= dipendente.getUtente().getNome() + " " +dipendente.getUtente().getCognome()%></p>
+    <p>Ruolo: <%= dipendente.getLavoro().toString()%></p>
 </div>
 <%
     }
