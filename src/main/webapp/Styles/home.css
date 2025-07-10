@@ -1,22 +1,29 @@
-/* Stili per la nuova sezione di ricerca centrale */
-.hero-section-search {
-    background-image: url('../Images/background.png'); /* Assicurati che il path sia corretto */
+/* Contenitore principale della home */
+.home-main-container {
+    display: flex;
+    justify-content: flex-end; /* Allinea il contenuto a destra */
+    min-height: 85vh;
+    padding: 2rem;
+    background-image: none;
     background-size: cover;
     background-position: center;
-    padding: 4rem 2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 80vh;
 }
 
-.search-box {
-    background-color: rgba(255, 255, 255, 0.95);
+/* Wrapper per il contenuto a destra */
+.content-wrapper-right {
+    display: flex;
+    flex-direction: column; /* Impila gli elementi verticalmente */
+    align-items: center; /* Centra gli elementi orizzontalmente nel wrapper */
+}
+
+/* Riquadro di ricerca */
+.search-box-left {
+    background-color: rgba(255, 255, 255, 0.98);
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     width: 100%;
-    max-width: 700px;
+    max-width: 550px;
     animation: fadeInUp 0.8s ease-out forwards;
 }
 
@@ -65,7 +72,6 @@
     margin-bottom: 0.5rem;
     color: #555;
 }
-
 .form-group input {
     width: 100%;
     padding: 0.8rem;
@@ -90,7 +96,47 @@
     background-color: #0056b3;
 }
 
-/* Animazione per il riquadro di ricerca */
+.btn-search-main:hover {
+    background-color: #0056b3;
+}
+
+/* Sezione per il pulsante avvisi, posizionata sotto il box di ricerca */
+.avviso-section {
+    width: 100%;
+    max-width: 550px; /* Stessa larghezza del box di ricerca per allineamento */
+    margin: 1.5rem auto 0; /* Spazio sopra e centrato orizzontalmente */
+    text-align: center;
+}
+
+.btn-avviso-home {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem 2.5rem; /* Aumento il padding orizzontale per renderlo più largo */
+    background-color: rgba(255, 223, 186, 0.7); /* Arancio chiaro semi-trasparente */
+    color: #cc5500; /* Arancione scuro per il testo */
+    border: 2px solid; /* Bordo più marcato */
+    border-radius: 12px;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 1.1rem;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.btn-avviso-home:hover {
+    background-color: rgba(255, 223, 186, 0.9); /* Leggermente meno trasparente in hover */
+    transform: translateY(-2px);
+}
+
+.warning-icon {
+    margin-right: 0.8rem;
+    font-size: 1.2em;
+    color: #cc5500; /* Stesso colore del testo per l'icona */
+}
+
+/* Animazione */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -100,4 +146,103 @@
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Stile per il contenitore del tasto avviso */
+.avviso-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 550px;
+}
+
+/* Stile per il tasto avviso */
+.btn-avviso {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    background-color: #d9534f; /* Colore rosso per un avviso più evidente */
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.btn-avviso:hover {
+    background-color: #c9302c;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.btn-avviso i {
+    margin-right: 8px;
+    color: #ffea00; /* Colore giallo per l'icona triangolo */
+}
+
+/* Stile per il contenitore del tasto avviso */
+.avviso-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 550px;
+}
+
+/* Stile per il tasto avviso */
+.btn-avviso {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    background-color: #d9534f; /* Colore rosso per un avviso più evidente */
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.btn-avviso:hover {
+    background-color: #c9302c;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.btn-avviso i {
+    margin-right: 8px;
+    color: #ffea00; /* Colore giallo per l'icona triangolo */
+}
+
+/* Stile per il prompt di registrazione */
+.registration-prompt-text {
+    text-align: center;
+    margin-top: 1.5rem; /* Spazio sopra il prompt, da bilanciare con il padding del main container */
+    margin-bottom: 2rem; /* Spazio sotto il prompt, da bilanciare con il padding del main container */
+    width: 100%;
+    max-width: 550px; /* Stessa larghezza massima degli altri elementi */
+    box-sizing: border-box;
+}
+
+.registration-prompt-text p {
+    color: #333;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.registration-prompt-text a {
+    color: #0066cc;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.registration-prompt-text a:hover {
+    text-decoration: underline;
 }

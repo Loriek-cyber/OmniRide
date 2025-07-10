@@ -1,79 +1,30 @@
-
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
-    <title>Home</title>
-    <%@ include file="import/metadata.jsp" %>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/home.css">
+    <title>OmniRide - Home</title>
+    <jsp:include page="import/metadata.jsp"/>
+    <link rel="stylesheet" href="Styles/home.css">
 </head>
 <body>
-<%@ include file="import/header.jsp" %>
+<jsp:include page="import/header.jsp"/>
 
 <main>
-
-    <div class="search-box">
-        <nav class="search-tabs">
-            <button class="tab-link active" onclick="openTab(event, 'Biglietti')">Biglietti</button>
-            <button class="tab-link" onclick="openTab(event, 'Abbonamenti')">Abbonamenti</button>
-        </nav>
-
-        <div id="Biglietti" class="tab-content active">
-            <form method="get" action="DBtestServlet">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="start">Partenza</label>
-                        <input type="text" id="start" name="start" placeholder="Da dove vuoi partire?">
-                    </div>
-                    <div class="form-group">
-                        <label for="end">Arrivo</label>
-                        <input type="text" id="end" name="end" placeholder="Dove vuoi arrivare?">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="andata">Andata</label>
-                        <input type="date" id="andata" name="andata">
-                    </div>
-                    <div class="form-group">
-                        <label for="ritorno">Ritorno</label>
-                        <input type="date" id="ritorno" name="ritorno">
-                    </div>
-                </div>
-                <button type="submit" class="btn-search-main">Cerca</button>
-            </form>
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1>Benvenuto in OmniRide</h1>
+            <p>La tua soluzione completa per la mobilità urbana. Trova le tratte, acquista i biglietti e viaggia senza pensieri.</p>
+            <div class="hero-buttons">
+                <a href="${pageContext.request.contextPath}/visualizzaTratte" class="btn btn-primary">Scopri le Tratte</a>
+                <a href="${pageContext.request.contextPath}/avvisi" class="btn btn-secondary">Avvisi</a>
+            </div>
         </div>
-
-        <div id="Abbonamenti" class="tab-content">
-            <p>Ricerca abbonamenti non ancora disponibile.</p>
+        <div class="hero-image">
+            <img src="Images/background.png" alt="Autobus in città">
         </div>
-    </div>
-
+    </section>
 </main>
 
-<%@ include file="import/footer.jsp" %>
-
-<script>
-function openTab(evt, tabName) {
-    var i, tabcontent, tablinks;
-    tabcontent = document.getElementsByClassName("tab-content");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-    }
-    tablinks = document.getElementsByClassName("tab-link");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-    document.getElementById(tabName).style.display = "block";
-    evt.currentTarget.className += " active";
-}
-
-// Imposta la prima tab come attiva di default
-document.addEventListener("DOMContentLoaded", function() {
-    document.getElementsByClassName('tab-link')[0].click();
-});
-</script>
-
+<jsp:include page="import/footer.jsp"/>
 </body>
 </html>
