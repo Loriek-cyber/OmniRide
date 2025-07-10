@@ -88,6 +88,32 @@ public class BigliettiDAO {
     }
 
     /**
+     * Attiva un biglietto, impostandone lo stato a CONVALIDATO e calcolando le date di convalida e scadenza.
+     * La scadenza è impostata a 2 ore dalla convalida.
+     *
+     * @param idBiglietto L'ID del biglietto da attivare.
+     * @return true se l'attivazione ha avuto successo.
+     * @throws SQLException in caso di errore del database.
+     */
+    public static boolean activateTicket(Long idBiglietto) throws SQLException {
+        String sql = "UPDATE biglietto SET data_convalida = ?, data_scadenza = ?, stato = ? WHERE id = ?";
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            Timestamp dataConvalida = new Timestamp(System.currentTimeMillis());
+            // Calcola dataScadenza: dataConvalida + 2 ore
+            Timestamp dataScadenza = new Timestamp(dataConvalida.getTime() + (2 * 60 * 60 * 1000)); // 2 ore in millisecondi
+
+            ps.setTimestamp(1, dataConvalida);
+            ps.setTimestamp(2, dataScadenza);
+            ps.setString(3, Biglietto.StatoBiglietto.CONVALIDATO.name());
+            ps.setLong(4, idBiglietto);
+
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    /**
      * Trova un biglietto specifico tramite il suo ID.
      *
      * @param id L'ID del biglietto da cercare.
