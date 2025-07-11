@@ -34,23 +34,23 @@
 
 .main-nav a {
     display: inline-block;
-    padding: 10px 20px;
-    background-color: #ffffff;
-    color: #333333;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-lg);
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: var(--transition-base);
     text-decoration: none;
     font-weight: 500;
 }
 
 .main-nav a:hover {
-    background-color: #59a300;
-    color: #ffffff;
+    background-color: var(--primary-light);
+    color: var(--bg-primary);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(89, 163, 0, 0.2);
+    box-shadow: var(--shadow-md);
 }
 
 /* Azioni utente */
