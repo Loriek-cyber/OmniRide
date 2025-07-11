@@ -1,0 +1,177 @@
+/* Stili per il contenitore del form di ricerca */
+.search-container {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 480px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Contenitore principale per allineamento a destra */
+.main-content-right {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    padding: 2rem;
+}
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Stili per le tab (Biglietti, Abbonamenti) */
+.search-tabs {
+    display: flex;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 1.5rem;
+}
+
+.tab-link {
+    background: none;
+    border: none;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #6c757d;
+    border-bottom: 3px solid transparent;
+    transition: color 0.3s, border-color 0.3s;
+}
+
+.tab-link.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
+    font-weight: 600;
+}
+
+/* Layout del form */
+.search-form .form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.search-form .form-group {
+    flex: 1;
+}
+
+.search-form .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #495057;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.search-form .form-group input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.search-form .form-group input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+.search-form .form-group input::placeholder {
+    color: #adb5bd;
+}
+
+/* Contenitore per input con icona */
+.date-input-container {
+    position: relative;
+}
+
+.date-input-container input {
+    padding-right: 2.5rem; /* Spazio per l'icona */
+}
+
+.date-input-container .calendar-icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    pointer-events: none;
+}
+
+/* Pulsante di ricerca */
+.btn-search {
+    width: 100%;
+    padding: 0.875rem;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-search:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+/* Stile per il contenitore del tasto avvisi */
+.avviso-button-container {
+    text-align: center;
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+/* Stile per il tasto avviso */
+.btn-avviso {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    background-color: #fff;
+    color: #ffc107;
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-avviso:hover {
+    background-color: #ffc107;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.btn-avviso i {
+    margin-right: 0.5rem;
+}
+
+/* Stile per il testo di registrazione */
+.registration-prompt {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+    color: #6c757d;
+}
+
+.registration-prompt a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.registration-prompt a:hover {
+    text-decoration: underline;
+}

@@ -148,7 +148,13 @@ public class LoginServlet extends HttpServlet {
                 System.out.println("[SESSION WARNING] Fallback a sessione HTTP standard");
             }
             
-            resp.sendRedirect(req.getContextPath() + "/prvUser/dashboard.jsp");
+            // Gestione del reindirizzamento
+            String redirectURL = req.getParameter("redirectURL");
+            if (redirectURL != null && !redirectURL.trim().isEmpty()) {
+                resp.sendRedirect(req.getContextPath() + redirectURL);
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/prvUser/dashboard.jsp");
+            }
         } else {
             // Login fallito
             System.out.println("[LOGIN FAILED] Login fallito per: " + email);

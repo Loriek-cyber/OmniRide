@@ -3,13 +3,16 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+import model.dao.AvvisiDAO;
 import model.dao.udata.SessioneDAO;
+import model.sdata.Avvisi;
 import model.udata.Sessione;
 import model.udata.Utente;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.List;
 
 
 /**
@@ -64,6 +67,12 @@ public class DashboardServlet extends HttpServlet {
                 System.out.println("[DASHBOARD ERROR] Errore durante la verifica della sessione: " + e.getMessage());
                 // Procedi comunque per compatibilità
             }
+        }
+        try {
+            List<Avvisi> avvisiList = AvvisiDAO.getAllAvvisi();
+            request.setAttribute("avvisi",avvisiList);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/prvUser/dashboard.jsp");
