@@ -11,7 +11,8 @@ footer {
 
 .footer-content {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
+    align-items: flex-start;
     flex-wrap: wrap;
     gap: var(--space-md);
     margin-bottom: var(--space-md);
@@ -58,4 +59,471 @@ footer a {
 footer a:hover {
     color: var(--primary-dark);
     text-decoration: underline;
+}
+
+/* Stili per l'accordion di registrazione */
+.footer-left {
+    flex: 1;
+}
+
+.footer-right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.registration-accordion {
+    position: relative;
+}
+
+.accordion-btn {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border: 2px solid var(--primary-color);
+    border-radius: 35px;
+    padding: 18px 35px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: var(--font-size-md);
+    color: white;
+    transition: all 0.3s ease;
+    min-width: 350px;
+    justify-content: space-between;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    font-weight: 600;
+}
+
+.accordion-btn:hover {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+.accordion-icon {
+    font-weight: bold;
+    font-size: 18px;
+    color: white;
+}
+
+.accordion-panel {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 3px solid var(--primary-color);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    margin-top: 10px;
+    z-index: 1000;
+    min-width: 700px;
+    animation: slideDown 0.3s ease;
+}
+
+.registration-options {
+    display: flex;
+    gap: 20px;
+}
+
+.registration-option {
+    flex: 1;
+    padding: 15px;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    background: var(--bg-primary);
+}
+
+.registration-option h4 {
+    margin: 0 0 10px 0;
+    color: var(--primary-color);
+    font-size: var(--font-size-md);
+    font-weight: 600;
+    text-align: center;
+}
+
+.registration-option ul {
+    list-style: disc;
+    padding-left: 20px;
+    margin: 10px 0;
+    color: var(--text-secondary);
+    font-size: var(--font-size-xs);
+}
+
+.registration-option li {
+    margin-bottom: 5px;
+}
+
+.register-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: var(--primary-color);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    margin-top: 15px;
+    transition: background 0.3s ease;
+}
+
+.register-btn:hover {
+    background: var(--primary-dark);
+    color: white;
+    text-decoration: none;
+}
+
+/* Nuovi stili per pannello registrazione migliorato */
+.registration-intro {
+    text-align: center;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--gray-200);
+}
+
+.registration-intro h3 {
+    color: var(--primary-color);
+    font-size: 1.3em;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.registration-intro p {
+    color: var(--text-secondary);
+    font-size: 0.95em;
+    margin: 0;
+}
+
+.registration-option {
+    flex: 1;
+    padding: 20px;
+    border: 2px solid var(--gray-200);
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.registration-option:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.15);
+}
+
+.registration-option.business {
+    border-color: #ffd700;
+    background: linear-gradient(135deg, #fff9e6, #ffffff);
+}
+
+.registration-option.business:hover {
+    border-color: #ffa500;
+    box-shadow: 0 8px 20px rgba(255, 165, 0, 0.2);
+}
+
+.option-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.option-header h4 {
+    margin: 0;
+    font-size: 1.1em;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.option-badge {
+    background: var(--primary-color);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.75em;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.option-badge.premium {
+    background: linear-gradient(135deg, #ffd700, #ffa500);
+    color: #333;
+}
+
+.option-price {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 15px;
+    padding: 8px;
+    background: rgba(0, 123, 255, 0.1);
+    border-radius: 8px;
+}
+
+.business .option-price {
+    background: rgba(255, 215, 0, 0.2);
+    color: #b8860b;
+}
+
+.registration-option ul {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+}
+
+.registration-option li {
+    margin-bottom: 8px;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.premium-feature {
+    color: #b8860b !important;
+    font-weight: 600;
+}
+
+.register-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: var(--primary-color);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+    font-size: 0.95em;
+}
+
+.register-btn.premium {
+    background: linear-gradient(135deg, #ffd700, #ffa500);
+    color: #333;
+}
+
+.register-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    color: white;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.register-btn.premium:hover {
+    background: linear-gradient(135deg, #ffa500, #ff8c00);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 165, 0, 0.4);
+}
+
+.registration-footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--gray-200);
+}
+
+.registration-footer p {
+    color: var(--text-secondary);
+    font-size: 0.9em;
+    margin: 0;
+}
+
+.registration-footer a {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* Tooltip styles */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+    color: var(--primary-color);
+    font-weight: bold;
+    margin-left: 5px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    text-align: center;
+    font-size: 11px;
+    line-height: 16px;
+}
+
+.tooltip:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text-primary);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: normal;
+    white-space: nowrap;
+    z-index: 1001;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    max-width: 200px;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.3;
+}
+
+.tooltip:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--text-primary);
+    z-index: 1001;
+}
+
+/* Footer bottom styles */
+.footer-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border-top: 2px solid var(--primary-color);
+    padding-top: var(--space-lg);
+    gap: var(--space-md);
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    border-radius: 12px;
+    margin-top: var(--space-md);
+}
+
+.footer-company-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-md);
+}
+
+.company-logo h3 {
+    color: var(--primary-color);
+    font-size: 1.8em;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+}
+
+.company-logo .tagline {
+    color: var(--text-secondary);
+    font-style: italic;
+    font-size: 0.9em;
+    margin: 0;
+}
+
+.company-details {
+    text-align: right;
+}
+
+.company-details p {
+    color: var(--text-secondary);
+    font-size: 0.85em;
+    margin: 3px 0;
+    line-height: 1.4;
+}
+
+.footer-copyright {
+    width: 100%;
+    text-align: center;
+    border-top: 1px solid var(--gray-200);
+    padding-top: var(--space-md);
+}
+
+.copyright-main {
+    font-size: 1em;
+    color: var(--text-primary);
+    margin: 0 0 8px 0;
+    font-weight: 500;
+}
+
+.copyright-sub {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+    margin: 5px 0;
+}
+
+.owners {
+    font-size: 0.9em;
+    color: var(--primary-color);
+    margin: 8px 0;
+    font-weight: 500;
+}
+
+.compliance {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    margin: 8px 0 0 0;
+    font-style: italic;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+    }
+    
+    .footer-right {
+        justify-content: center;
+        margin-top: var(--space-md);
+    }
+    
+    .accordion-btn {
+        min-width: 280px;
+        font-size: var(--font-size-sm);
+    }
+    
+    .accordion-panel {
+        position: relative;
+        right: auto;
+        min-width: auto;
+        width: 100%;
+        padding: 20px;
+    }
+    
+    .registration-options {
+        flex-direction: column;
+    }
+    
+    .footer-company-info {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--space-md);
+    }
+    
+    .company-details {
+        text-align: center;
+    }
+    
+    .company-logo h3 {
+        font-size: 1.5em;
+    }
 }
