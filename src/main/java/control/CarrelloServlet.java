@@ -19,4 +19,5 @@ import java.util.Map;
 @WebServlet("/carrello")
 public class CarrelloServlet extends HttpServlet {
     //da implementare
+    //piccola cosa da ricordare un biglietto è associato a un Percorso
 }

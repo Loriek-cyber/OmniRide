@@ -19,8 +19,6 @@ public class OrarioTrattaDAO {
         orario.setId(rs.getLong("id"));
         orario.setTrattaId(rs.getLong("id_tratta"));
         orario.setOraPartenza(rs.getTime("ora_partenza"));
-        orario.setOraArrivo(rs.getTime("ora_arrivo"));
-        orario.setGiorniSettimana(rs.getString("giorni_settimana"));
         orario.setGiorniSettimana(rs.getString("giorni_settimana"));
         orario.setAttivo(rs.getBoolean("attivo"));
         orario.setNote(rs.getString("note"));
@@ -35,8 +33,8 @@ public class OrarioTrattaDAO {
      * @throws SQLException in caso di errore del database.
      */
     public static Long create(OrarioTratta nuovoOrarioTratta) throws SQLException {
-        String sql = "INSERT INTO Tratta_Orari (id_tratta, ora_partenza, ora_arrivo, giorni_settimana, " +
-                     "tipo_servizio, attivo, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Tratta_Orari (id_tratta, ora_partenza, giorni_settimana, " +
+                     "attivo, note) VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -45,9 +43,8 @@ public class OrarioTrattaDAO {
             ps.setTime(2, nuovoOrarioTratta.getOraPartenza());
             ps.setTime(3, nuovoOrarioTratta.getOraArrivo());
             ps.setString(4, nuovoOrarioTratta.getGiorniSettimana());
-            ps.setString(5, nuovoOrarioTratta.getTipoServizio().name());
-            ps.setBoolean(6, nuovoOrarioTratta.isAttivo());
-            ps.setString(7, nuovoOrarioTratta.getNote());
+            ps.setBoolean(5, nuovoOrarioTratta.isAttivo());
+            ps.setString(6, nuovoOrarioTratta.getNote());
             
             if (ps.executeUpdate() == 0) {
                 throw new SQLException("Creazione orario fallita, nessuna riga modificata.");
@@ -72,7 +69,7 @@ public class OrarioTrattaDAO {
      */
     public static boolean update(OrarioTratta OrarioTrattaInSessione) throws SQLException {
         String sql = "UPDATE Tratta_Orari SET ora_partenza = ?, ora_arrivo = ?, giorni_settimana = ?, " +
-                     "tipo_servizio = ?, frequenza_minuti = ?, attivo = ?, note = ? WHERE id = ?";
+                     "tipo_servizio = ?, attivo = ?, note = ? WHERE id = ?";
         
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -80,10 +77,9 @@ public class OrarioTrattaDAO {
             ps.setTime(1, OrarioTrattaInSessione.getOraPartenza());
             ps.setTime(2, OrarioTrattaInSessione.getOraArrivo());
             ps.setString(3, OrarioTrattaInSessione.getGiorniSettimana());
-            ps.setString(4, OrarioTrattaInSessione.getTipoServizio().name());
-            ps.setBoolean(6, OrarioTrattaInSessione.isAttivo());
-            ps.setString(7, OrarioTrattaInSessione.getNote());
-            ps.setLong(8, OrarioTrattaInSessione.getId());
+            ps.setBoolean(4, OrarioTrattaInSessione.isAttivo());
+            ps.setString(5, OrarioTrattaInSessione.getNote());
+            ps.setLong(6, OrarioTrattaInSessione.getId());
             return ps.executeUpdate() > 0;
         }
     }

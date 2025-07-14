@@ -68,11 +68,11 @@ public class UtenteDAO {
         }
     }
 
-    public static boolean create(Utente nuovoUtente) throws SQLException {
+    public static long create(Utente nuovoUtente) throws SQLException {
         String QRstr="INSERT INTO Utente (nome, cognome, email, password_hash, data_registrazione, ruolo, avatar) " +
                 "VALUES (?,?,?,?,?,?,?) ";
         try(Connection con=DBConnector.getConnection();
-            PreparedStatement ps=con.prepareStatement(QRstr)){
+            PreparedStatement ps=con.prepareStatement(QRstr, PreparedStatement.RETURN_GENERATED_KEYS)){
             ps.setString(1, nuovoUtente.getNome());
             ps.setString(2, nuovoUtente.getCognome());
             ps.setString(3, nuovoUtente.getEmail());
@@ -80,10 +80,19 @@ public class UtenteDAO {
             ps.setTimestamp(5, nuovoUtente.getDataRegistrazione());
             ps.setString(6, nuovoUtente.getRuolo());
             ps.setBytes(7, nuovoUtente.getAvatar());
-            if(ps.executeUpdate()>=1){
-                return true;
-            }else return false;
 
+            // Fixed: throw exception when NO rows are affected (insertion failed)
+            if(ps.executeUpdate() < 1){
+                throw new SQLException("Creazione Utente fallita");
+            }
+
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getLong(1);
+                } else {
+                    throw new SQLException("Creazione utente fallita, nessun ID ottenuto.");
+                }
+            }
         }
     }
 

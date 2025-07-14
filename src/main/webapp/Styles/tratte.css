@@ -1,292 +1,227 @@
-.tratte-container {
+/* Layout principale a due colonne */
+.tratte-layout {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
-    padding: var(--space-lg);
-    font-family: var(--font-family);
 }
 
-.tratte-container h2 {
-    color: #2c3e50;
-    text-align: center;
-    margin-bottom: 15px;
-    font-size: 2.2em;
-    font-weight: 300;
+/* Colonna sinistra - Lista tratte */
+.tratte-list-container {
+    flex: 1;
+    min-width: 300px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.5rem;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.subtitle {
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 1.1em;
-    margin-bottom: 30px;
-    font-weight: 400;
+.tratte-list-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid limegreen;
 }
 
-.tratte-stats {
+.tratte-list-header h2 {
+    color: #2d3436;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.tratte-list {
     display: flex;
-    justify-content: center;
-    gap: var(--space-lg);
-    margin-bottom: 30px;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-.stat-item {
-    text-align: center;
-    padding: 20px;
-    background: var(--bg-primary);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--gray-200);
-    min-width: 120px;
-}
-
-.stat-number {
-    display: block;
-    font-size: 2.5em;
-    font-weight: 700;
-    color: var(--primary-color);
-    line-height: 1;
-}
-
-.stat-label {
-    display: block;
-    font-size: 0.9em;
-    color: var(--text-secondary);
-    margin-top: 5px;
-    font-weight: 500;
-}
-
-.tratte-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 25px;
-    margin-top: 20px;
-}
-
-.tratta-card {
-    background: var(--bg-primary);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    overflow: hidden;
-    transition: var(--transition-base);
-    border: 1px solid var(--gray-200);
-}
-
-.tratta-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.tratta-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 20px;
-    position: relative;
-}
-
-.tratta-header h3 {
-    margin: 0 0 10px 0;
-    font-size: 1.4em;
-    font-weight: 600;
-}
-
-.status-badge {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.8em;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.status-badge.attiva {
-    background: rgba(46, 204, 113, 0.2);
-    color: #2ecc71;
-    border: 1px solid #2ecc71;
-}
-
-.status-badge.disattiva {
-    background: rgba(231, 76, 60, 0.2);
-    color: #e74c3c;
-    border: 1px solid #e74c3c;
-}
-
-.tratta-body {
-    padding: 20px;
-}
-
-.tratta-info {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.info-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.info-label {
-    font-weight: 600;
-    color: #34495e;
-    min-width: 80px;
-}
-
-.info-value {
-    color: #2c3e50;
-    font-weight: 500;
-}
-
-.costo {
-    font-size: 1.2em;
-    color: #27ae60;
-    font-weight: 700;
-}
-
-.percorso-section {
-    margin: 20px 0;
-    padding: 15px;
-    background: #f8f9fa;
+/* Singola tratta nella lista */
+.tratta-item {
+    background-color: white;
     border-radius: 8px;
-    border-left: 4px solid #3498db;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(50, 205, 50, 0.3);
+    color: black;
+    border: 2px solid transparent;
 }
 
-.percorso-title {
-    font-size: 1.1em;
+.tratta-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 16px rgba(50, 205, 50, 0.4);
+    border-color: #32cd32;
+}
+
+.tratta-item.selected {
+    border-color: #fff;
+    background-color: #32cd32;
+    box-shadow: 0 4px 16px rgba(50, 205, 50, 0.5);
+}
+
+.tratta-name {
+    font-size: 1.2rem;
     font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 10px;
+    margin-bottom: 0.5rem;
+}
+
+.tratta-preview {
+    font-size: 0.9rem;
+    opacity: 0.9;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
 }
 
-.percorso-title::before {
-    content: "🚌";
-    font-size: 1.2em;
-}
-
-.percorso-path {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    line-height: 1.6;
-}
-
-.fermata-chip {
-    background: #3498db;
-    color: white;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.85em;
-    font-weight: 500;
+.fermata-preview {
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
 }
 
-.freccia {
-    color: #7f8c8d;
-    font-size: 1.2em;
-    font-weight: bold;
+.more-stops {
+    font-style: italic;
+    opacity: 0.7;
+}
+
+/* Colonna destra - Dettagli tratta */
+.tratta-details-container {
+    flex: 1.5;
+    min-width: 400px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.tratta-details-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid limegreen;
+}
+
+.tratta-details-header h3 {
+    color: #2d3436;
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.tratta-details-content {
+    color: #2d3436;
+}
+
+.no-selection {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #636e72;
+}
+
+.no-selection p {
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Dettagli tratta selezionata */
+.tratta-details {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.tratta-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: limegreen;
+    margin-bottom: 1rem;
+}
+
+.fermate-section {
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2d3436;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5rem;
+}
+
+.fermate-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.fermata-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid limegreen;
+}
+
+.fermata-item .icon {
+    color: limegreen;
+    font-size: 1.2rem;
 }
 
 .orari-section {
-    margin-top: 20px;
-    padding: 15px;
-    background: #fff;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
+    margin-bottom: 2rem;
 }
 
-.orari-title {
-    font-size: 1.1em;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.orari-title::before {
-    content: "🕐";
-    font-size: 1.2em;
-}
-
-.orari-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.orari-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.5rem;
+    margin-top: 1rem;
 }
 
 .orario-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 15px;
-    margin-bottom: 8px;
-    background: #f8f9fa;
+    background-color: limegreen;
+    color: white;
+    text-align: center;
+    padding: 0.5rem;
     border-radius: 6px;
-    border-left: 3px solid #e67e22;
-}
-
-.orario-giorni {
-    font-weight: 600;
-    color: #2c3e50;
-    flex: 1;
-}
-
-.orario-tempi {
     font-weight: 500;
-    color: #34495e;
-    flex: 1;
-    text-align: center;
+    font-size: 0.9rem;
 }
 
-.orario-frequenza {
-    font-size: 0.85em;
-    color: #7f8c8d;
-    font-style: italic;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: #7f8c8d;
-}
-
-.empty-state::before {
-    content: "🚌";
-    font-size: 4em;
-    display: block;
-    margin-bottom: 20px;
-    opacity: 0.3;
-}
-
-.empty-state p {
-    font-size: 1.2em;
-    margin: 0;
-}
-
+/* Responsive design */
 @media (max-width: 768px) {
-    .tratte-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .tratta-info {
-        grid-template-columns: 1fr;
-    }
-
-    .orario-item {
+    .tratte-layout {
         flex-direction: column;
-        text-align: center;
-        gap: 5px;
+        padding: 1rem;
     }
-
-    .percorso-path {
-        justify-content: center;
+    
+    .tratte-list-container,
+    .tratta-details-container {
+        min-width: unset;
+        max-height: 50vh;
+    }
+    
+    .tratta-item {
+        padding: 0.8rem;
+    }
+    
+    .tratta-name {
+        font-size: 1.1rem;
+    }
+    
+    .orari-grid {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
     }
 }

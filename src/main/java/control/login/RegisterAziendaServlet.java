@@ -6,8 +6,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.dao.AziendaDAO;
+import model.dao.DipendentiDAO;
 import model.dao.UtenteDAO;
 import model.udata.Azienda;
+import model.udata.Dipendenti;
 import model.udata.Utente;
 import model.utils.ValidationUtils;
 import org.mindrot.jbcrypt.BCrypt;
@@ -106,6 +108,7 @@ public class RegisterAziendaServlet extends HttpServlet {
             azienda.setNome(nomeAzienda);
             azienda.setTipo(tipoAziendaStr);
             idAzienda = AziendaDAO.create(azienda);
+            azienda.setId(idAzienda);
 
             if (idAzienda == null || idAzienda <= 0) {
                 req.setAttribute("errorMessage", "Errore durante la creazione dell'azienda. Riprova.");
@@ -122,10 +125,12 @@ public class RegisterAziendaServlet extends HttpServlet {
             utente.setDataRegistrazione(Timestamp.from(Instant.now()));
             utente.setRuolo("azienda");
 
-            boolean utenteCreato = UtenteDAO.create(utente);
+            Long utenteCreato = UtenteDAO.create(utente);
 
-            if (utenteCreato) {
+
+            if (utenteCreato!=null) {
                 // TODO: Qui dovremmo associare l'utente all'azienda in una tabella di relazione
+                DipendentiDAO.adminconbine(utenteCreato,idAzienda);
                 // Per ora la registrazione è completata
                 req.setAttribute("successMessage", "Registrazione azienda completata con successo! Ora puoi accedere.");
                 req.getRequestDispatcher("/login/login.jsp").forward(req, resp);

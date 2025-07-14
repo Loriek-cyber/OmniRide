@@ -1,45 +1,27 @@
 package model.sdata;
-
-import java.io.Serializable;
 import java.sql.Time;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+
 
 public class OrarioTratta{
-    
     private Long id;
     private Long trattaId;
     private Time oraPartenza;
     private Time oraArrivo;
     private String giorniSettimana; // Formato: "LUN,MAR,MER,GIO,VEN"
-    private TipoServizio tipoServizio;
+    private List<LocalTime> listatime;
     private boolean attivo;
     private String note;
     
-    public enum TipoServizio {
-        NORMALE("Servizio Normale"),
-        FESTIVO("Servizio Festivo"),
-        NOTTURNO("Servizio Notturno"),
-        EXPRESS("Servizio Express"),
-        TURISTICO("Servizio Turistico");
 
-        private final String descrizione;
-        
-        TipoServizio(String descrizione) {
-            this.descrizione = descrizione;
-        }
-        
-        public String getDescrizione() {
-            return descrizione;
-        }
-    }
-    
+
     // Costruttori
     public OrarioTratta() {
         this.attivo = true;
-        this.tipoServizio = TipoServizio.NORMALE;
     }
     
     public OrarioTratta(Long trattaId, Time oraPartenza, String giorniSettimana) {
@@ -50,50 +32,53 @@ public class OrarioTratta{
     }
     
     public OrarioTratta(Long id, Long trattaId, Time oraPartenza, Time oraArrivo,
-                       String giorniSettimana, TipoServizio tipoServizio, boolean attivo, String note) {
+                       String giorniSettimana, boolean attivo, String note) {
         this.id = id;
         this.trattaId = trattaId;
         this.oraPartenza = oraPartenza;
         this.oraArrivo = oraArrivo;
         this.giorniSettimana = giorniSettimana;
-        this.tipoServizio = tipoServizio;
         this.attivo = attivo;
         this.note = note;
     }
     
-    // Metodi di utilità
-    
-    /**
-     * Ottiene la lista dei giorni della settimana come array
-     */
     public List<String> getGiorniAsArray() {
         if (giorniSettimana == null || giorniSettimana.isEmpty()) {
             return Arrays.asList();
         }
         return Arrays.asList(giorniSettimana.split(","));
     }
-    
+
+    public List<LocalTime> getListatime() {
+        return listatime;
+    }
+
+    public void setListatime(List<LocalTime> listatime) {
+        this.listatime = listatime;
+    }
+
     /**
      * Verifica se l'orario è valido per un determinato giorno
      */
     public boolean isValidoPerGiorno(String giorno) {
         return giorniSettimana != null && giorniSettimana.contains(giorno.toUpperCase());
     }
-    
-    /**
-     * Formatta l'orario per la visualizzazione
-     */
-    public String getOrarioFormattato() {
-        StringBuilder sb = new StringBuilder();
-        if (oraPartenza != null) {
-            sb.append(oraPartenza.toString());
+
+    /*Questa sezione e per non cambiare troppo il database*/
+
+    public void addnext(int minuti){
+        if(listatime == null){
+            listatime = new ArrayList<LocalTime>();
         }
-        if (oraArrivo != null) {
-            sb.append(" - ").append(oraArrivo.toString());
-        }
-        return sb.toString();
+        LocalTime ldt = LocalTime.parse(oraPartenza.toString());
+        listatime.add(ldt);
+        ldt = ldt.plusMinutes(minuti);
+        listatime.add(ldt);
     }
-    
+
+
+
+
     /**
      * Ottiene una descrizione leggibile dei giorni
      */
@@ -125,15 +110,12 @@ public class OrarioTratta{
     public Time getOraPartenza() { return oraPartenza; }
     public void setOraPartenza(Time oraPartenza) { this.oraPartenza = oraPartenza; }
     
-    public Time getOraArrivo() { return oraArrivo; }
+    public Time getOraArrivo() { return Time.valueOf(listatime.getLast());}
     public void setOraArrivo(Time oraArrivo) { this.oraArrivo = oraArrivo; }
     
     public String getGiorniSettimana() { return giorniSettimana; }
     public void setGiorniSettimana(String giorniSettimana) { this.giorniSettimana = giorniSettimana; }
-    
-    public TipoServizio getTipoServizio() { return tipoServizio; }
-    public void setTipoServizio(TipoServizio tipoServizio) { this.tipoServizio = tipoServizio; }
-    
+
     public boolean isAttivo() { return attivo; }
     public void setAttivo(boolean attivo) { this.attivo = attivo; }
     
@@ -148,7 +130,6 @@ public class OrarioTratta{
                 ", oraPartenza=" + (oraPartenza != null ? oraPartenza.toString() : "null") +
                 ", oraArrivo=" + (oraArrivo != null ? oraArrivo.toString() : "null") +
                 ", giorniSettimana='" + giorniSettimana + '\'' +
-                ", tipoServizio=" + tipoServizio +
                 ", attivo=" + attivo +
                 ", note='" + note + '\'' +
                 '}';

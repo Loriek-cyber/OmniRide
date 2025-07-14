@@ -28,7 +28,7 @@ public class AvvisiDAO {
         }
 
 
-    public static List<Avvisi> getAllAvvisi() throws SQLException {
+    public static List<Avvisi> getAll() throws SQLException {
         List<Avvisi> avvisi = new ArrayList<>();
         try(Connection conn = DBConnector.getConnection();
             PreparedStatement pr = conn.prepareStatement("SELECT * FROM Avvisi");
@@ -100,13 +100,6 @@ public class AvvisiDAO {
             conn.commit(); 
             return avvisoId;
 
-        } catch (SQLException e) {
-            try (Connection connRollback = DBConnector.getConnection()) {
-                if (connRollback != null) connRollback.rollback();
-            } catch (SQLException ex) {
-                e.addSuppressed(ex); 
-            }
-            throw e;
         }
     }
 
@@ -148,13 +141,6 @@ public class AvvisiDAO {
             conn.commit(); 
             return true;
 
-        } catch (SQLException e) {
-            try (Connection connRollback = DBConnector.getConnection()) {
-                if (connRollback != null) connRollback.rollback();
-            } catch (SQLException ex) {
-                e.addSuppressed(ex); 
-            }
-            throw e;
         }
     }
 
@@ -192,13 +178,6 @@ public class AvvisiDAO {
                 return rowsAffected > 0;
             }
             
-        } catch (SQLException e) {
-            try (Connection connRollback = DBConnector.getConnection()) {
-                if (connRollback != null) connRollback.rollback();
-            } catch (SQLException ex) {
-                e.addSuppressed(ex);
-            }
-            throw e;
         }
     }
 }

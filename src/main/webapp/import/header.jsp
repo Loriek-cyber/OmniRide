@@ -3,13 +3,13 @@
 
 <header class="main-header">
     <div class="logo">
-        <a href="${pageContext.request.contextPath}/index.jsp">
+        <a href="${pageContext.request.contextPath}/">
             <img src="${pageContext.request.contextPath}/Images/logo.png" alt="Omniride Logo">
         </a>
     </div>
 
     <nav class="main-nav">
-        <a href="${pageContext.request.contextPath}/biglietti.jsp">Biglietti</a>
+        <a href="${pageContext.request.contextPath}/visualizzaTratte">Tratte</a>
         <a href="#">Ricerca Avanzata</a>
         <a href="${pageContext.request.contextPath}/visualizzaAvvisi">Avvisi</a>
         <a href="#">Car-pooling</a>

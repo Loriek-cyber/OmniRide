@@ -59,13 +59,6 @@
         <div class="nav-divider"></div>
         
         <div class="nav-item">
-            <a href="${pageContext.request.contextPath}//visualizzaAvvisi" class="nav-link" data-page="notifications">
-                <span class="nav-icon">▶</span>
-                Avvisi
-            </a>
-        </div>
-        
-        <div class="nav-item">
             <a href="${pageContext.request.contextPath}/about.jsp" class="nav-link" data-page="help">
                 <span class="nav-icon">▶</span>
                 Aiuto

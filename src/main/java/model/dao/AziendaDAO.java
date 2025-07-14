@@ -27,6 +27,23 @@ public class AziendaDAO {
         azienda.setTipo(rs.getString("tipo"));
         return azienda;
     }
+    
+    /**
+     * Valida se i dati di un'azienda sono corretti
+     * @param azienda L'azienda da validare
+     * @throws IllegalArgumentException se i dati non sono validi
+     */
+    private static void validateAzienda(Azienda azienda) {
+        if (azienda == null) {
+            throw new IllegalArgumentException("Azienda non può essere null");
+        }
+        if (azienda.getNome() == null || azienda.getNome().trim().isEmpty()) {
+            throw new IllegalArgumentException("Il nome dell'azienda non può essere vuoto");
+        }
+        if (azienda.getTipo() == null || azienda.getTipo().trim().isEmpty()) {
+            throw new IllegalArgumentException("Il tipo dell'azienda non può essere vuoto");
+        }
+    }
 
 
 
@@ -39,6 +56,8 @@ public class AziendaDAO {
      * @throws SQLException in caso di errore del database.
      */
     public static long create(Azienda nuovoAzienda) throws SQLException {
+        validateAzienda(nuovoAzienda);
+        
         String sql = "INSERT INTO Azienda (nome, tipo) VALUES (?, ?)";
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -68,6 +87,12 @@ public class AziendaDAO {
      * @throws SQLException in caso di errore del database.
      */
     public static boolean update(Azienda AziendaInSessione) throws SQLException {
+        validateAzienda(AziendaInSessione);
+        
+        if (AziendaInSessione.getId() == null) {
+            throw new IllegalArgumentException("L'ID dell'azienda non può essere null per l'aggiornamento");
+        }
+        
         String sql = "UPDATE Azienda SET nome = ?, tipo = ? WHERE id = ?";
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {

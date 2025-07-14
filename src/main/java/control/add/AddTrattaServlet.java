@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @WebServlet(name = "addTratta", value = "/prvAzienda/addTratta")
 public class AddTrattaServlet extends HttpServlet {
@@ -43,12 +44,17 @@ public class AddTrattaServlet extends HttpServlet {
         String costoStr = req.getParameter("costo");
         String fermateStr = req.getParameter("fermateSelezionate");
         String tempiStr = req.getParameter("tempiTraFermate");
-        String tempoTotaleStr = req.getParameter("tempoTotale");
-        String orariInizioStr = req.getParameter("orariInizio");
-        if (nome == null || nome.trim().isEmpty()) {
-            req.setAttribute("errore", "Nome non inserito.");
-            doGet(req, resp);
-            return;
+        String orariInizioParam = req.getParameter("orariInizio");
+        String[] orariInizioStr = null;
+        
+        // Gestisce sia il parametro singolo che multiplo
+        if (orariInizioParam != null && !orariInizioParam.trim().isEmpty()) {
+            orariInizioStr = orariInizioParam.split(",");
+        } else {
+            String[] orariParams = req.getParameterValues("orariInizio");
+            if (orariParams != null) {
+                orariInizioStr = orariParams;
+            }
         }
 
         double costo;
@@ -125,32 +131,58 @@ public class AddTrattaServlet extends HttpServlet {
 
 
 
+        // Gestione degli orari
+        List<OrarioTratta> orariTratta = new ArrayList<>();
+        String[] giorni = req.getParameterValues("giorni");
+        
+        if (orariInizioStr != null && orariInizioStr.length > 0) {
+            String giorniStr = (giorni != null) ? parseGiorni(giorni) : "";
+            
+            // Usa un Set per rimuovere automaticamente i duplicati
+            Set<String> orariUnici = new LinkedHashSet<>(Arrays.asList(orariInizioStr));
+            
+            for (String orarioStr : orariUnici) {
+                if (orarioStr != null && !orarioStr.trim().isEmpty()) {
+                    try {
+                        // Rimuovi eventuali spazi bianchi
+                        orarioStr = orarioStr.trim();
+                        
+                        // Verifica il formato dell'orario
+                        LocalTime orarioLocal = LocalTime.parse(orarioStr);
+                        Time orarioTime = Time.valueOf(orarioLocal);
+                        
+                        OrarioTratta or = new OrarioTratta();
+                        or.setAttivo(true);
+                        or.setGiorniSettimana(giorniStr);
+                        or.setOraPartenza(orarioTime);
+                        orariTratta.add(or);
+                    } catch (DateTimeParseException e) {
+                        req.setAttribute("errore", "Formato orario non valido: " + orarioStr + ". Usa il formato HH:mm");
+                        doGet(req, resp);
+                        return;
+                    } catch (Exception e) {
+                        req.setAttribute("errore", "Errore nella gestione dell'orario: " + orarioStr);
+                        doGet(req, resp);
+                        return;
+                    }
+                }
+            }
+        }
+        
+        if (orariTratta.isEmpty()) {
+            req.setAttribute("errore", "Inserisci almeno un orario di partenza.");
+            doGet(req, resp);
+            return;
+        }
+
         // Costruzione Tratta
         Tratta tratta = new Tratta();
         tratta.setNome(nome);
         tratta.setAttiva(true);
         tratta.setCosto(costo);
         tratta.setFermataTrattaList(fermataTrattaList);
+        tratta.setOrari(orariTratta);
 
-        // Parse del tempo totale
-        int tempoTotaleMinuti = 0;
-        if (tempoTotaleStr != null && !tempoTotaleStr.trim().isEmpty()) {
-            try {
-                tempoTotaleMinuti = Integer.parseInt(tempoTotaleStr);
-            } catch (NumberFormatException e) {
-                req.setAttribute("errore", "Tempo totale non valido.");
-                doGet(req, resp);
-                return;
-            }
-        }
-
-        try {
-            tratta.setOrari(parseOrariTratta(req, tempoTotaleMinuti));
-        } catch (SQLException e) {
-            req.setAttribute("errore", "Errore nella gestione degli orari: " + e.getMessage());
-            doGet(req, resp);
-            return;
-        }
 
 
 
@@ -164,10 +196,37 @@ public class AddTrattaServlet extends HttpServlet {
             throw new ServletException("Errore nel recupero dell'azienda dell'utente.", e);
         }
 
+        try {
+            tratta.validator();
+        } catch (Exception e) {
+            req.setAttribute("errore", "Errore nella validazione della tratta: " + e.getMessage());
+            doGet(req, resp);
+            return;
+        }
 
+        // Debug degli orari (con controllo null)
+        System.out.println("=== DEBUG ORARI TRATTA ===");
+        if (tratta.getOrari() != null) {
+            tratta.getOrari().forEach(orario -> {
+                System.out.println("Orario partenza: " + orario.getOraPartenza());
+                System.out.println("Giorni: " + orario.getGiorniSettimana());
+                if (orario.getListatime() != null) {
+                    orario.getListatime().forEach(tempo -> {
+                        System.out.println("Tempo: " + tempo.toString());
+                    });
+                } else {
+                    System.out.println("Lista tempi: null");
+                }
+                System.out.println("-----------------------");
+            });
+        } else {
+            System.out.println("Nessun orario configurato");
+        }
+        System.out.println("=== FINE DEBUG ORARI ===");
+        Long trattaId;
         try {
             // Salva la tratta e ottieni l'ID
-            Long trattaId = TrattaDAO.create(tratta);
+            trattaId = TrattaDAO.create(tratta);
         } catch (SQLException e) {
             req.setAttribute("errore", "Errore durante il salvataggio della tratta: " + e.getMessage());
             doGet(req, resp);
@@ -175,89 +234,25 @@ public class AddTrattaServlet extends HttpServlet {
         }
 
         // Reindirizzamento a lista tratte
-        resp.sendRedirect(req.getContextPath() + "/prvAzienda/tratte.jsp?id_tratta="+tratta.getId());
+        resp.sendRedirect(req.getContextPath() + "/prvAzienda/tratte.jsp?id_tratta="+trattaId);
+
     }
 
 
 
-    /**
-     * Gestisce e salva gli orari della tratta
-     */
-    private List<OrarioTratta> parseOrariTratta(HttpServletRequest req, int tempoTotaleMinuti) throws SQLException {
-        // Recupera gli orari dal JavaScript (formato: "HH:mm,HH:mm,HH:mm")
-        String orariInizioStr = req.getParameter("orariInizio");
-
-        // Recupera i giorni selezionati
-        String[] giorniSelezionati = req.getParameterValues("giorni");
-
-        if (orariInizioStr == null || orariInizioStr.trim().isEmpty() ||
-            giorniSelezionati == null || giorniSelezionati.length == 0) {
-            throw new SQLException("Orari e giorni sono obbligatori per creare una tratta");
-        }
-
-        // Parse degli orari
-        String[] orariArray = orariInizioStr.split(",");
-        List<LocalTime> orariParsed = new ArrayList<>();
-
-        for (String orarioStr : orariArray) {
-            orarioStr = orarioStr.trim();
-            if (!orarioStr.isEmpty()) {
-                try {
-                    LocalTime orario = LocalTime.parse(orarioStr);
-                    orariParsed.add(orario);
-                } catch (DateTimeParseException e) {
-                    throw new SQLException("Formato orario non valido: " + orarioStr);
-                }
+    private String parseGiorni(String[] giorni) {
+        String re = "";
+        for (int i = 0; i < giorni.length; i++) {
+            if(i==0){
+                re+=giorni[i];
+            }
+            else{
+                re+=","+giorni[i];
             }
         }
-
-        if (orariParsed.isEmpty()) {
-            throw new SQLException("Almeno un orario è necessario per creare la tratta");
-        }
-
-        // Converti i giorni in formato stringa per OrarioTratta
-        String giorniString = convertGiorniToString(giorniSelezionati);
-
-        // Calcola il tempo totale della tratta per determinare l'orario di arrivo
-
-        // Crea un OrarioTratta per ogni orario di partenza
-        List<OrarioTratta> listorarioTratta = new ArrayList<>();
-        for (LocalTime oraPartenza : orariParsed) {
-            OrarioTratta orarioTratta = new OrarioTratta();
-            orarioTratta.setOraPartenza(Time.valueOf(oraPartenza));
-            // Calcola l'orario di arrivo
-            LocalTime oraArrivo = oraPartenza.plusMinutes(tempoTotaleMinuti);
-            orarioTratta.setOraArrivo(Time.valueOf(oraArrivo));
-
-            orarioTratta.setGiorniSettimana(giorniString);
-            orarioTratta.setTipoServizio(OrarioTratta.TipoServizio.NORMALE);
-            orarioTratta.setAttivo(true);
-            orarioTratta.setNote("Orario creato automaticamente");
-            listorarioTratta.add(orarioTratta);
-        }
-
-        return listorarioTratta;
-
+        return re;
     }
 
-    /**
-     * Converte i giorni selezionati nel formato stringa richiesto da OrarioTratta
-     */
-    private String convertGiorniToString(String[] giorniSelezionati) {
-        StringBuilder giorni = new StringBuilder();
-        for (int i = 0; i < giorniSelezionati.length; i++) {
-            giorni.append(giorniSelezionati[i]);
-            if (i < giorniSelezionati.length - 1) {
-                giorni.append(",");
-            }
-        }
-        return giorni.toString();
-    }
 
-    /**
-     * Calcola il tempo totale di percorrenza di una tratta
-     */
-    private int calcolaTempoTotaleTratta(Long trattaId) throws SQLException {
-        return TrattaDAO.calcolaTempoTotalePercorrenza(trattaId);
-    }
+
 }

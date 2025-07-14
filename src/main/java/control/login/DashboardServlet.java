@@ -68,12 +68,6 @@ public class DashboardServlet extends HttpServlet {
                 // Procedi comunque per compatibilità
             }
         }
-        try {
-            List<Avvisi> avvisiList = AvvisiDAO.getAllAvvisi();
-            request.setAttribute("avvisi",avvisiList);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/prvUser/dashboard.jsp");
         dispatcher.forward(request, response);

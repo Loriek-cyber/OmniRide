@@ -14,204 +14,68 @@ import java.util.Objects;
  * Rappresenta un segmento del percorso, ovvero una porzione di viaggio
  * su una singola tratta tra due fermate specifiche.
  */
-public class SegmentoPercorso implements Serializable {
-    
-    public enum TipoSegmento {
-        DIRETTO("Viaggio diretto"),
-        TRASFERIMENTO("Trasferimento"),
-        ATTESA("Tempo di attesa");
-        
-        private final String descrizione;
-        
-        TipoSegmento(String descrizione) {
-            this.descrizione = descrizione;
-        }
-        
-        public String getDescrizione() {
-            return descrizione;
-        }
+public class SegmentoPercorso {
+    //rapresentiamo un segmento di un percorso
+    private Long id_tratta;
+    private Fermata fermataIn;
+    private Fermata fermataOu;
+    private LocalTime tempo_arrivo;
+    private LocalTime tempo_partenza;
+    private Integer numero_fermate;
+
+    public SegmentoPercorso() {}
+
+    //Sezionamento
+
+
+
+
+    //getter and setter
+    public Long getId_tratta() {
+        return id_tratta;
     }
-    
-    private Long id;
-    private Tratta tratta;
-    private Fermata fermataPartenza;
-    private Fermata fermataArrivo;
-    private OrarioTratta orarioUtilizzato;
-    private LocalTime orarioPartenzaSegmento;
-    private LocalTime orarioArrivoSegmento;
-    private BigDecimal costoSegmento;
-    private Duration durataSegmento;
-    private int sequenza; // Ordine nel percorso
-    private TipoSegmento tipo;
-    
-    // Costruttori
-    public SegmentoPercorso() {
-        this.tipo = TipoSegmento.DIRETTO;
-        this.costoSegmento = BigDecimal.ZERO;
+
+    public void setId_tratta(Long id_tratta) {
+        this.id_tratta = id_tratta;
     }
-    
-    public SegmentoPercorso(Tratta tratta, Fermata fermataPartenza, Fermata fermataArrivo, 
-                           OrarioTratta orarioUtilizzato, int sequenza) {
-        this();
-        this.tratta = tratta;
-        this.fermataPartenza = fermataPartenza;
-        this.fermataArrivo = fermataArrivo;
-        this.orarioUtilizzato = orarioUtilizzato;
-        this.sequenza = sequenza;
-        
-        // Calcola automaticamente costo e durata
-        calcolaCostoSegmento();
-        calcolaDurataSegmento();
+
+    public Fermata getFermataIn() {
+        return fermataIn;
     }
-    
-    /**
-     * Calcola il costo di questo segmento del percorso
-     */
-    public void calcolaCostoSegmento() {
-        if (tratta != null) {
-            // Per ora usa il costo completo della tratta
-            // In futuro si potrebbe implementare un calcolo proporzionale
-            this.costoSegmento = BigDecimal.valueOf(tratta.getCosto());
-        } else {
-            this.costoSegmento = BigDecimal.ZERO;
-        }
+
+    public void setFermataIn(Fermata fermataIn) {
+        this.fermataIn = fermataIn;
     }
-    
-    /**
-     * Calcola la durata di questo segmento del percorso
-     */
-    public void calcolaDurataSegmento() {
-        if (tratta != null && fermataPartenza != null && fermataArrivo != null) {
-            try {
-                long minutiViaggio = tratta.getDistanceForTwoFermate(fermataPartenza, fermataArrivo);
-                this.durataSegmento = Duration.ofMinutes(minutiViaggio);
-                
-                // Calcola orari specifici se disponibili
-                if (orarioUtilizzato != null) {
-                    this.orarioPartenzaSegmento = orarioUtilizzato.getOraPartenza().toLocalTime();
-                    this.orarioArrivoSegmento = orarioPartenzaSegmento.plus(durataSegmento);
-                }
-            } catch (Exception e) {
-                this.durataSegmento = Duration.ZERO;
-            }
-        } else {
-            this.durataSegmento = Duration.ZERO;
-        }
+
+    public Fermata getFermataOu() {
+        return fermataOu;
     }
-    
-    /**
-     * Verifica se questo segmento è valido
-     */
-    public boolean isValido() {
-        return tratta != null && 
-               fermataPartenza != null && 
-               fermataArrivo != null && 
-               !fermataPartenza.equals(fermataArrivo) &&
-               orarioUtilizzato != null &&
-               durataSegmento != null && 
-               !durataSegmento.isNegative();
+
+    public void setFermataOu(Fermata fermataOu) {
+        this.fermataOu = fermataOu;
     }
-    
-    /**
-     * Ottiene una descrizione leggibile del segmento
-     */
-    public String getDescrizione() {
-        if (tratta == null || fermataPartenza == null || fermataArrivo == null) {
-            return "Segmento non valido";
-        }
-        
-        StringBuilder sb = new StringBuilder();
-        sb.append("Tratta: ").append(tratta.getNome())
-          .append(" - Da: ").append(fermataPartenza.getNome())
-          .append(" A: ").append(fermataArrivo.getNome());
-        
-        if (orarioPartenzaSegmento != null) {
-            sb.append(" (").append(orarioPartenzaSegmento).append(")");
-        }
-        
-        return sb.toString();
+
+    public LocalTime getTempo_arrivo() {
+        return tempo_arrivo;
     }
-    
-    // Getters e Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    
-    public Tratta getTratta() { return tratta; }
-    public void setTratta(Tratta tratta) { 
-        this.tratta = tratta; 
-        calcolaCostoSegmento();
-        calcolaDurataSegmento();
+
+    public void setTempo_arrivo(LocalTime tempo_arrivo) {
+        this.tempo_arrivo = tempo_arrivo;
     }
-    
-    public Fermata getFermataPartenza() { return fermataPartenza; }
-    public void setFermataPartenza(Fermata fermataPartenza) { 
-        this.fermataPartenza = fermataPartenza; 
-        calcolaDurataSegmento();
+
+    public LocalTime getTempo_partenza() {
+        return tempo_partenza;
     }
-    
-    public Fermata getFermataArrivo() { return fermataArrivo; }
-    public void setFermataArrivo(Fermata fermataArrivo) { 
-        this.fermataArrivo = fermataArrivo; 
-        calcolaDurataSegmento();
+
+    public void setTempo_partenza(LocalTime tempo_partenza) {
+        this.tempo_partenza = tempo_partenza;
     }
-    
-    public OrarioTratta getOrarioUtilizzato() { return orarioUtilizzato; }
-    public void setOrarioUtilizzato(OrarioTratta orarioUtilizzato) { 
-        this.orarioUtilizzato = orarioUtilizzato; 
-        calcolaDurataSegmento();
+
+    public Integer getNumero_fermate() {
+        return numero_fermate;
     }
-    
-    public LocalTime getOrarioPartenzaSegmento() { return orarioPartenzaSegmento; }
-    public void setOrarioPartenzaSegmento(LocalTime orarioPartenzaSegmento) { 
-        this.orarioPartenzaSegmento = orarioPartenzaSegmento; 
-    }
-    
-    public LocalTime getOrarioArrivoSegmento() { return orarioArrivoSegmento; }
-    public void setOrarioArrivoSegmento(LocalTime orarioArrivoSegmento) { 
-        this.orarioArrivoSegmento = orarioArrivoSegmento; 
-    }
-    
-    public BigDecimal getCostoSegmento() { return costoSegmento; }
-    public void setCostoSegmento(BigDecimal costoSegmento) { this.costoSegmento = costoSegmento; }
-    
-    public Duration getDurataSegmento() { return durataSegmento; }
-    public void setDurataSegmento(Duration durataSegmento) { this.durataSegmento = durataSegmento; }
-    
-    public int getSequenza() { return sequenza; }
-    public void setSequenza(int sequenza) { this.sequenza = sequenza; }
-    
-    public TipoSegmento getTipo() { return tipo; }
-    public void setTipo(TipoSegmento tipo) { this.tipo = tipo; }
-    
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SegmentoPercorso)) return false;
-        SegmentoPercorso that = (SegmentoPercorso) o;
-        return sequenza == that.sequenza &&
-               Objects.equals(tratta, that.tratta) &&
-               Objects.equals(fermataPartenza, that.fermataPartenza) &&
-               Objects.equals(fermataArrivo, that.fermataArrivo) &&
-               Objects.equals(orarioUtilizzato, that.orarioUtilizzato);
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(tratta, fermataPartenza, fermataArrivo, orarioUtilizzato, sequenza);
-    }
-    
-    @Override
-    public String toString() {
-        return "SegmentoPercorso{" +
-                "tratta=" + (tratta != null ? tratta.getNome() : "null") +
-                ", fermataPartenza=" + (fermataPartenza != null ? fermataPartenza.getNome() : "null") +
-                ", fermataArrivo=" + (fermataArrivo != null ? fermataArrivo.getNome() : "null") +
-                ", orarioPartenza=" + orarioPartenzaSegmento +
-                ", orarioArrivo=" + orarioArrivoSegmento +
-                ", costo=" + costoSegmento +
-                ", durata=" + durataSegmento +
-                ", sequenza=" + sequenza +
-                ", tipo=" + tipo +
-                '}';
+
+    public void setNumero_fermate(Integer numero_fermate) {
+        this.numero_fermate = numero_fermate;
     }
 }

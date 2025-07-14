@@ -74,7 +74,6 @@
             <!-- Orari e Giorni -->
             <div class="form-section">
                 <h2>Orari e Giorni</h2>
-							
             <div class="form-group">
                 <label>Orari di Inizio *:</label>
                 <div class="orari-container" id="orariContainer">

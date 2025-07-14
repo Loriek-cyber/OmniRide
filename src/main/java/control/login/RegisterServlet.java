@@ -87,8 +87,8 @@ public class RegisterServlet extends HttpServlet {
         nuovoUtente.setRuolo("utente"); // Ruolo di default
 
         try {
-            boolean success = UtenteDAO.create(nuovoUtente);
-            if (success) {
+            Long success = UtenteDAO.create(nuovoUtente);
+            if (success!=null) {
                 req.setAttribute("successMessage", "Registrazione completata con successo! Ora puoi accedere.");
                 req.getRequestDispatcher("/login/login.jsp").forward(req, resp);
             } else {

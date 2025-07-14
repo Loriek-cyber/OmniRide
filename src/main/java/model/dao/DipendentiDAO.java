@@ -6,7 +6,6 @@ import model.udata.Dipendenti;
 import model.udata.Utente;
 
 import java.sql.*;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,9 +21,7 @@ public class DipendentiDAO {
         // Carica l'utente e l'azienda usando i rispettivi DAO
         dipendente.setUtente(UtenteDAO.getById(rs.getLong("id_utente")));
         dipendente.setAzienda(AziendaDAO.getById(rs.getLong("id_azienda")));
-        
         dipendente.setLavoro(Dipendenti.Lavoro.valueOf(rs.getString("ruolo")));
-        dipendente.setDataAssunzione(rs.getTimestamp("data_assunzione"));
         dipendente.setAttivo(rs.getBoolean("attivo"));
         
         return dipendente;
@@ -38,39 +35,43 @@ public class DipendentiDAO {
      * @throws SQLException in caso di errore del database.
      */
     public static boolean create(Dipendenti nuovoDipendente) throws SQLException {
-        String sql = "INSERT INTO Dipendente (id_utente, id_azienda, ruolo, data_assunzione, attivo) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Dipendente (id_utente, id_azienda, ruolo, attivo) VALUES (?, ?, ?, ?)";
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, nuovoDipendente.getUtente().getId());
             ps.setLong(2, nuovoDipendente.getAzienda().getId());
             ps.setString(3, nuovoDipendente.getLavoro().name());
-            ps.setTimestamp(4, new Timestamp(System.currentTimeMillis())); // Data assunzione attuale
-            ps.setBoolean(5, nuovoDipendente.isAttivo());
-
+            ps.setBoolean(4, nuovoDipendente.isAttivo());
             return ps.executeUpdate() > 0;
         }
     }
 
     /**
-     *
      * @param azienda azienda di interesse con il quale associare l'utente
      * @param utente, utente che sarà assunto dall'azienda
-     * @return
      * @throws SQLException
      */
 
-    public static boolean combine(Azienda azienda, Utente utente,String lavoro) throws SQLException {
+    public static void combine(Azienda azienda, Utente utente, String lavoro) throws SQLException {
 
         Dipendenti  dipendente = new Dipendenti();
         dipendente.setUtente(utente);
         dipendente.setLavoro(Dipendenti.Lavoro.valueOf(lavoro.toUpperCase()));
         dipendente.setAzienda(azienda);
-        dipendente.setDataAssunzione(new Timestamp(System.currentTimeMillis()));
-
         try (Connection con = DBConnector.getConnection()) {
             create(dipendente);
-            return true;
+        }
+    }
+
+    public static void adminconbine(Long id_utente,Long id_azienda) throws SQLException {
+        String sql = "INSERT INTO Dipendente (id_utente, id_azienda, ruolo, attivo) VALUES (?, ?, ?, ?)";
+        try(Connection conn = DBConnector.getConnection()){
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setLong(1, id_utente);
+            ps.setLong(2, id_azienda);
+            ps.setString(3,"GESTORE");
+            ps.setBoolean(4, true);
         }
     }
 

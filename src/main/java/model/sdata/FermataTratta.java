@@ -6,7 +6,7 @@ public class FermataTratta implements Serializable {
     private Long id; // PK della tabella Fermata_Tratta
     private Long idTratta;
     private Fermata fermata;
-    private int sequenza; // Ordine della fermata nella tratta
+    private Integer sequenza; // Ordine della fermata nella tratta
     private int tempoProssimaFermata; // in minuti
 
     // Questo campo può essere popolato dopo il recupero per comodità

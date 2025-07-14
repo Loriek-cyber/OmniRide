@@ -4,8 +4,10 @@ import model.udata.Azienda;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+
 
 //Classe Di Default per la tratta
 public class Tratta implements Serializable {
@@ -19,6 +21,39 @@ public class Tratta implements Serializable {
 
     public Tratta() {
     }
+
+
+    //questa è una funzione di verifica visto che le DAO non possono fare un paio di cose
+    public void validator(){
+        //id non deve essere sempre inserito quindi è ok
+        if(nome == null || azienda == null){
+            throw  new IllegalStateException("[!ATTRIBUTI CHIAVE] nome o Azienda");
+        }
+
+        if(fermataTrattaList == null || fermataTrattaList.isEmpty()){
+            throw new IllegalStateException("[!FERMATE] le fermate della tratta sono null");
+        }
+        //dunno it didn't work before so ok?
+        AtomicInteger i = new AtomicInteger();
+
+        fermataTrattaList.forEach(e->{
+            e.setSequenza(i.getAndIncrement());
+        });
+
+        if(orari == null || orari.isEmpty()){
+            throw new IllegalStateException("[!Orari] Errore negli orrari ");
+        }
+
+        orari.forEach(e->{
+            for(FermataTratta ft : fermataTrattaList){
+                if(ft.getTempoProssimaFermata()>=1){
+                    e.addnext(ft.getTempoProssimaFermata());
+                }
+            }
+        });
+
+    }
+
 
     // Costruttore pulito senza parametri inutilizzati
     public Tratta(Long id, String nome, Azienda azienda, List<FermataTratta> fermataTrattaList,List<OrarioTratta> orari, Double costo) {
@@ -37,22 +72,6 @@ public class Tratta implements Serializable {
         return fermataTrattaList.stream().anyMatch(ft -> ft.getFermata().equals(fermata));
     }
 
-    // Questa fermata verifica se una fermata 1 è prima della fermata 2 nella tratta
-    public boolean IsAfter(Fermata f1, Fermata f2) throws Exception {
-        if (!FermataIN(f1) || !FermataIN(f2)) {
-            throw new Exception("Fermate non trovate nella tratta");
-        } else {
-            int indexF1 = -1;
-            int indexF2 = -1;
-            for (int i = 0; i < fermataTrattaList.size(); i++) {
-                if (fermataTrattaList.get(i).getFermata().equals(f1)) indexF1 = i;
-                if (fermataTrattaList.get(i).getFermata().equals(f2)) indexF2 = i;
-                // Piccola ottimizzazione: se li abbiamo trovati entrambi, usciamo dal ciclo
-                if (indexF1 != -1 && indexF2 != -1) break;
-            }
-            return indexF1 < indexF2;
-        }
-    }
 
     public long getDistanceForTwoFermate(Fermata f1, Fermata f2) {
         if (fermataTrattaList == null || fermataTrattaList.isEmpty()) {
@@ -128,25 +147,43 @@ public class Tratta implements Serializable {
     public boolean removeOrario(OrarioTratta orario) {
         return this.orari != null && this.orari.remove(orario);
     }
-    
+
     /**
-     * Ottiene gli orari attivi per un giorno specifico
+     * @return costo per n fermate
      */
-    public List<OrarioTratta> getOrariPerGiorno(String giorno) {
-        if (orari == null) {
-            return new ArrayList<>();
-        }
-        
-        return orari.stream()
-                .filter(OrarioTratta::isAttivo)
-                .filter(orario -> orario.isValidoPerGiorno(giorno))
-                .collect(java.util.stream.Collectors.toList());
+
+    public double ncosto(int n){
+        return (costo/fermataTrattaList.size()) * n;
     }
-    
+
+
+
+
     /**
      * Verifica se la tratta ha orari attivi
      */
     public boolean hasOrariAttivi() {
         return orari != null && orari.stream().anyMatch(OrarioTratta::isAttivo);
+    }
+
+    @Override
+    public String toString() {
+        return "Tratta{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", azienda=" + azienda.toString() +
+                ", fermataTrattaList=" + fermataTrattaList +
+                ", orari=" + orari.toString() +
+                ", costo=" + costo +
+                ", attiva=" + attiva +
+                '}';
+    }
+
+    public List<OrarioTratta> getOrariPerGiorno(String giorno) {
+        return null;
+    }
+
+    public boolean IsAfter(Fermata fermata, Fermata fermata1) {
+        return false;
     }
 }

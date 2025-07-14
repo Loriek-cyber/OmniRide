@@ -30,5 +30,14 @@
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
+    
+    <!-- ===================================================================== -->
+    <!-- Context Listener Configuration                                        -->
+    <!-- ===================================================================== -->
+    <!-- The listener initializes application-wide data at startup             -->
+    <listener>
+        <listener-class>model.listener.AppContextListener</listener-class>
+    </listener>
+    
     <!-- Add other configurations like Servlets, Filters, and Listeners here -->
 </web-app>

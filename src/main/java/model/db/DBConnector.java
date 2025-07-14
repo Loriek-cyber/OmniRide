@@ -22,10 +22,11 @@ public class DBConnector {
             return DriverManager.getConnection(DB_URL, USER, PASS);
         } catch (ClassNotFoundException e) {
             System.out.println("Driver JDBC non trovato");
-            throw new RuntimeException(e);
+            throw new SQLException("Driver JDBC non disponibile", e);
         }
         catch (SQLException e) {
-            throw new RuntimeException("Non sono riuscito a connettermi");
+            System.out.println("Errore di connessione al database: " + e.getMessage());
+            throw e; // Rilancia l'eccezione SQL originale
         }
     }
 

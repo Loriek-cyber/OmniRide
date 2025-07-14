@@ -57,15 +57,6 @@ public class FermataTrattaDAO {
             }
 
             conn.commit(); // Conferma transazione
-        } catch (SQLException e) {
-            // Il try-with-resources gestirà la chiusura della connessione,
-            // ma il rollback è ancora necessario in caso di errore.
-            try (Connection conn = DBConnector.getConnection()) {
-                if (conn != null) conn.rollback();
-            } catch (SQLException ex) {
-                e.addSuppressed(ex); // Aggiunge l'eccezione di rollback a quella originale
-            }
-            throw e;
         }
     }
     

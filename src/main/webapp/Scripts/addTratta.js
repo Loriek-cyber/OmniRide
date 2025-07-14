@@ -851,8 +851,12 @@ function prepareFormData() {
         tempiInput.value = tempiPercorrenza.join(',');
     }
     
-    // Prepara gli orari in un campo hidden
-    const orariValidi = orariInizio.filter(orario => orario && orario.trim() !== '');
+    // Prepara gli orari in un campo hidden (rimuovi duplicati)
+    const orariInputs = document.querySelectorAll('.orario-input');
+    const orariValidi = [...new Set(Array.from(orariInputs)
+        .map(input => input.value)
+        .filter(orario => orario && orario.trim() !== ''))];
+    
     let orariInput = document.getElementById('orariInizio');
     if (!orariInput) {
         orariInput = document.createElement('input');
@@ -866,7 +870,7 @@ function prepareFormData() {
     // I giorni sono già gestiti come checkbox con name="giorni"
     // Il servlet riceverà automaticamente tutti i valori selezionati
     
-const tempoTotale = calcolaTempotTotaleTratta();
+    const tempoTotale = calcolaTempotTotaleTratta();
 
     console.log('Dati preparati:', {
         fermate: fermateIds,
@@ -895,9 +899,8 @@ const tempoTotale = calcolaTempotTotaleTratta();
 function handleFormSubmit(event) {
     console.log('Submit del form...');
     
-    // Prepara i dati prima della validazione
+    // Prepara i dati prima della validazione (solo una volta)
     prepareFormData();
-    prepareOrariData();
     
     // Valida tutti i campi
     const nomeInput = document.getElementById('nome');
@@ -1062,6 +1065,18 @@ function removeOrario(index) {
  */
 function updateOrario(index, value) {
     if (index >= 0 && index < orariInizio.length) {
+        // Controlla se l'orario esiste già prima di aggiungerlo
+        const existingIndex = orariInizio.findIndex((orario, i) => i !== index && orario === value);
+        if (existingIndex !== -1 && value && value.trim() !== '') {
+            showAlert('Questo orario è già stato inserito!');
+            // Reset dell'input
+            const orarioInput = document.querySelector(`.orario-input[data-index="${index}"]`);
+            if (orarioInput) {
+                orarioInput.value = '';
+            }
+            return;
+        }
+        
         orariInizio[index] = value;
         updateOrariSummary();
     }
@@ -1151,24 +1166,11 @@ function initializeOrari() {
 }
 
 /**
- * Prepara i dati degli orari per il submit
+ * Prepara i dati degli orari per il submit (deprecata - ora gestita in prepareFormData)
  */
 function prepareOrariData() {
-    const orariValidi = orariInizio.filter(orario => orario && orario.trim() !== '');
-    
-    // Crea un campo hidden per gli orari
-    let orariInput = document.getElementById('orariInizioData');
-    if (!orariInput) {
-        orariInput = document.createElement('input');
-        orariInput.type = 'hidden';
-        orariInput.id = 'orariInizioData';
-        orariInput.name = 'orariInizio';
-        document.getElementById('addTrattaForm').appendChild(orariInput);
-    }
-    
-    orariInput.value = orariValidi.join(',');
-    
-    console.log('Dati orari preparati:', orariValidi);
+    // Questa funzione è ora gestita da prepareFormData() per evitare duplicati
+    console.log('prepareOrariData() deprecata - orari gestiti in prepareFormData()');
 }
 
 // Esponi alcune funzioni per debugging (solo in development)
