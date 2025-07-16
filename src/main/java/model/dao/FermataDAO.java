@@ -192,4 +192,58 @@ public class FermataDAO {
     public static List<Fermata> doRetrieveAll() throws SQLException {
         return getAll();
     }
+    
+    /**
+     * Cerca fermate per nome (ricerca case-insensitive)
+     * @param nome Il nome da cercare
+     * @return Lista delle fermate che contengono il nome specificato
+     * @throws SQLException Se c'è un errore nel database
+     */
+    public static List<Fermata> ricercaPerNome(String nome) throws SQLException {
+        List<Fermata> fermate = new ArrayList<>();
+        String sql = "SELECT * FROM Fermata WHERE LOWER(nome) LIKE LOWER(?) AND attiva = true";
+        
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setString(1, "%" + nome + "%");
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Fermata fermata = extractFermataFromResultSet(rs);
+                    if (fermata != null) {
+                        fermate.add(fermata);
+                    }
+                }
+            }
+            return fermate;
+        }
+    }
+    
+    /**
+     * Cerca fermate per nome esatto (ricerca case-insensitive)
+     * @param nome Il nome esatto da cercare
+     * @return Lista delle fermate con il nome esatto specificato
+     * @throws SQLException Se c'è un errore nel database
+     */
+    public static List<Fermata> ricercaPerNomeEsatto(String nome) throws SQLException {
+        List<Fermata> fermate = new ArrayList<>();
+        String sql = "SELECT * FROM Fermata WHERE LOWER(nome) = LOWER(?) AND attiva = true";
+        
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setString(1, nome);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Fermata fermata = extractFermataFromResultSet(rs);
+                    if (fermata != null) {
+                        fermate.add(fermata);
+                    }
+                }
+            }
+            return fermate;
+        }
+    }
 }

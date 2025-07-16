@@ -155,6 +155,15 @@ public class AddTrattaServlet extends HttpServlet {
                         or.setAttivo(true);
                         or.setGiorniSettimana(giorniStr);
                         or.setOraPartenza(orarioTime);
+                        
+                        // Calcola l'ora di arrivo sommando tutti i tempi di percorrenza
+                        int tempoTotaleMinuti = fermataTrattaList.stream()
+                            .mapToInt(FermataTratta::getTempoProssimaFermata)
+                            .sum();
+                        
+                        LocalTime oraArrivo = orarioLocal.plusMinutes(tempoTotaleMinuti);
+                        or.setOraArrivo(Time.valueOf(oraArrivo));
+                        
                         orariTratta.add(or);
                     } catch (DateTimeParseException e) {
                         req.setAttribute("errore", "Formato orario non valido: " + orarioStr + ". Usa il formato HH:mm");
@@ -226,9 +235,25 @@ public class AddTrattaServlet extends HttpServlet {
         Long trattaId;
         try {
             // Salva la tratta e ottieni l'ID
+            System.out.println("[ADD_TRATTA] Iniziando la creazione della tratta: " + nome);
             trattaId = TrattaDAO.create(tratta);
+            System.out.println("[ADD_TRATTA] Tratta creata con successo, ID: " + trattaId);
         } catch (SQLException e) {
-            req.setAttribute("errore", "Errore durante il salvataggio della tratta: " + e.getMessage());
+            System.err.println("[ADD_TRATTA ERROR] Errore durante il salvataggio della tratta: " + e.getMessage());
+            e.printStackTrace();
+            
+            String errorMessage = "Errore durante il salvataggio della tratta";
+            if (e.getMessage().contains("Creazione orario fallita")) {
+                errorMessage = "Errore nella creazione degli orari della tratta. Verifica gli orari inseriti.";
+            } else if (e.getMessage().contains("Inserimento fermata-tratta fallito")) {
+                errorMessage = "Errore nella creazione delle fermate della tratta. Verifica le fermate selezionate.";
+            } else if (e.getMessage().contains("Creazione tratta fallita")) {
+                errorMessage = "Errore nella creazione della tratta principale. Verifica i dati inseriti.";
+            } else {
+                errorMessage += ": " + e.getMessage();
+            }
+            
+            req.setAttribute("errore", errorMessage);
             doGet(req, resp);
             return;
         }

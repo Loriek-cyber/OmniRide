@@ -18,6 +18,7 @@ public class Biglietto {
     private Map<Long, Double> map;
     private LocalTime dataAcquisto;
     private LocalTime dataConvalida;
+    private LocalTime dataFine;
     private double prezzo;
     private StatoBiglietto stato;
 
@@ -59,15 +60,22 @@ public class Biglietto {
         if(map.containsKey(id_tratta)){
             return true;
         }else{
-            BigliettiDAO.delete(this);
+            if(verify())
+                BigliettiDAO.delete(this);
             return false;}
     }
 
-    public
+    public boolean verify() {
+        if(dataFine.isBefore(LocalTime.now()))
+            return false;
+        else return true;
+    }
 
 
-
-
+    public Map<Long, Double> getMap() {return map;}
+    public void setMap(Map<Long, Double> map) {this.map = map;}
+    public LocalTime getDataFine() {return dataFine;}
+    public void setDataFine(LocalTime dataFine) {this.dataFine = dataFine;}
     public Long getId() {return id;}
     public void setId(Long id) {this.id = id;}
     public Long getId_utente() {return id_utente;}

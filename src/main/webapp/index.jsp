@@ -1,10 +1,27 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="model.sdata.Fermata" %>
+<%@ page import="java.util.List" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <title>OmniRide - Home</title>
     <jsp:include page="import/metadata.jsp"/>
-    
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <style>
+        .ui-autocomplete {
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        .ui-menu-item {
+            padding: 5px 10px;
+        }
+        .ui-menu-item:hover {
+            background-color: #32cd32;
+            color: white;
+        }
+    </style>
 </head>
 <body>
 <jsp:include page="import/header.jsp"/>
@@ -46,7 +63,33 @@
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn-search">Cerca Tratte</button>
+                    
+                    <!-- Filtri avanzati -->
+                    <div class="form-row advanced-filters" style="display: none;">
+                        <div class="form-group">
+                            <label for="prezzoMax">Prezzo massimo (€)</label>
+                            <input type="number" id="prezzoMax" name="prezzoMax" min="0" step="0.01" placeholder="Es: 15.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="durataMax">Durata massima (ore)</label>
+                            <input type="number" id="durataMax" name="durataMax" min="0" step="0.5" placeholder="Es: 2.5">
+                        </div>
+                        <div class="form-group">
+                            <label for="ordinamento">Ordina per</label>
+                            <select id="ordinamento" name="ordinamento">
+                                <option value="prezzo">Prezzo più basso</option>
+                                <option value="durata">Durata più breve</option>
+                                <option value="partenza">Orario di partenza</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn-filters" onclick="toggleAdvancedFilters()">
+                            <i class="fas fa-filter"></i> Filtri avanzati
+                        </button>
+                        <button type="submit" class="btn-search">Cerca Tratte</button>
+                    </div>
                 </form>
             </div>
             
@@ -67,5 +110,70 @@
 </main>
 
 <jsp:include page="import/footer.jsp"/>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script src="Scripts/search.js"></script>
+<script>
+$(document).ready(function() {
+    // Prepara l'array delle fermate dal context
+    var fermate = [
+        <c:forEach var="fermata" items="${applicationScope.fermate}" varStatus="status">
+            "${fermata.nome}"<c:if test="${!status.last}">,</c:if>
+        </c:forEach>
+    ];
+    
+    // Configura autocomplete per i campi partenza e arrivo
+    $("#partenza, #arrivo").autocomplete({
+        source: fermate,
+        minLength: 2,
+        delay: 300,
+        select: function(event, ui) {
+            $(this).val(ui.item.value);
+            return false;
+        }
+    });
+    
+    // Gestisce il submit del form per la ricerca
+    $('#searchForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        // Raccoglie i dati del form
+        var formData = {
+            partenza: $('#partenza').val(),
+            arrivo: $('#arrivo').val(),
+            orario: $('#orario').val(),
+            data: $('#data').val(),
+            prezzoMax: $('#prezzoMax').val(),
+            durataMax: $('#durataMax').val(),
+            ordinamento: $('#ordinamento').val()
+        };
+        
+        // Mostra spinner di caricamento
+        $('#resultsContainer').show();
+        $('#loadingSpinner').show();
+        $('#resultsContent').empty();
+        
+        // Effettua la ricerca
+        $.ajax({
+            url: '${pageContext.request.contextPath}/searchTratte',
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+                $('#loadingSpinner').hide();
+                $('#resultsContent').html(response);
+            },
+            error: function() {
+                $('#loadingSpinner').hide();
+                $('#resultsContent').html('<div class="error-message">Errore durante la ricerca. Riprova più tardi.</div>');
+            }
+        });
+    });
+});
+
+// Funzione per mostrare/nascondere filtri avanzati
+function toggleAdvancedFilters() {
+    $('.advanced-filters').slideToggle();
+}
+</script>
 </body>
 </html>

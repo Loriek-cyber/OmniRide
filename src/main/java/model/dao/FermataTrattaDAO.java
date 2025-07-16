@@ -99,10 +99,23 @@ public class FermataTrattaDAO {
      * @throws SQLException Se c'è un errore nel database
      */
     public static Long create(FermataTratta fermataTratta) throws SQLException {
+        try (Connection con = DBConnector.getConnection()) {
+            return createWithConnection(fermataTratta, con);
+        }
+    }
+    
+    /**
+     * Inserisce una nuova relazione fermata-tratta utilizzando una connessione esistente.
+     * Questo metodo è utilizzato per le transazioni.
+     * @param fermataTratta La relazione da inserire
+     * @param con La connessione esistente
+     * @return L'ID della relazione inserita
+     * @throws SQLException Se c'è un errore nel database
+     */
+    public static Long createWithConnection(FermataTratta fermataTratta, Connection con) throws SQLException {
         String sql = "INSERT INTO Fermata_Tratta (id_tratta, id_fermata, tempo_prossima_fermata, sequenza) VALUES (?, ?, ?, ?)";
         
-        try (Connection con = DBConnector.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
             ps.setLong(1, fermataTratta.getIdTratta());
             ps.setLong(2, fermataTratta.getFermata().getId());

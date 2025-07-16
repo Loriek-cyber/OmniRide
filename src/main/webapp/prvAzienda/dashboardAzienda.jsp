@@ -13,12 +13,18 @@
     <div class="dashboard-layout">
         <!-- Sidebar -->
         <nav class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <h3>Dashboard Azienda</h3>
-                <div class="company-name">
-                    <c:out value="${sessionScope.utente.nome} ${sessionScope.utente.cognome}"/>
+                <div class="sidebar-header">
+                    <h3>Dashboard Azienda</h3>
+                    <div class="company-name">
+                        <c:if test="${not empty azienda}">
+                            <c:out value="${azienda.nome}"/>
+                            <small><c:out value="${sessionScope.utente.nome} ${sessionScope.utente.cognome}"/></small>
+                        </c:if>
+                        <c:if test="${empty azienda}">
+                            <c:out value="${sessionScope.utente.nome} ${sessionScope.utente.cognome}"/>
+                        </c:if>
+                    </div>
                 </div>
-            </div>
             
             <ul class="sidebar-nav">
                 <li class="nav-item">
@@ -92,16 +98,20 @@
                 <!-- Statistiche rapide -->
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-value">12</div>
+                        <div class="stat-value"><c:out value="${tratteAttive}" default="0"/></div>
                         <div class="stat-label">Tratte Attive</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value">1,234</div>
-                        <div class="stat-label">Passeggeri Oggi</div>
+                        <div class="stat-value"><c:out value="${totaleFermate}" default="0"/></div>
+                        <div class="stat-label">Fermate Totali</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value"></div>
-                        <div class="stat-label">Ricavi Mensili</div>
+                        <div class="stat-value">€<c:out value="${ricaviStimati}" default="0.00"/></div>
+                        <div class="stat-label">Ricavi Stimati</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value"><c:out value="${totaleOrari}" default="0"/></div>
+                        <div class="stat-label">Orari Configurati</div>
                     </div>
                 </div>
 

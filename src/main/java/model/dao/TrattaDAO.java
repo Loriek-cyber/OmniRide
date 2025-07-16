@@ -12,7 +12,9 @@ public class TrattaDAO {
     private static final String TRATTA_BY_AZIENDA = "SELECT * FROM Tratta WHERE id_azienda = ?";
     private static final String INSERT_TRATTA = "INSERT INTO Tratta (nome, id_azienda, costo, attiva) VALUES (?, ?, ?, 1)";
     private static final String UPDATE_TRATTA = "UPDATE Tratta SET nome = ?, costo = ?, attiva = ? WHERE id = ?";
-    private static final String DELETE_TRATTA = "UPDATE Tratta SET attiva = 0 WHERE id = ?";
+    private static final String NOACTIVE = "UPDATE Tratta SET attiva = 0 WHERE id = ?";
+    private static final String ACTIVE = "UPDATE Tratta SET attiva = 1 WHERE id = ?";
+    private static final String AZIENDA = "SELECT * FROM Tratta WHERE id_azienda = ?";
 
     private static Tratta getTrattaFromResultSet(ResultSet rs) throws SQLException {
         Long trattaId = rs.getLong("id");
@@ -23,6 +25,15 @@ public class TrattaDAO {
         Tratta tratta = new Tratta(trattaId,rs.getString("nome"),azienda,fermataTrattaList,orariTratta,costo);
         tratta.setAttiva(rs.getBoolean("attiva"));
         return tratta;
+    }
+
+    public static boolean activate(Long id_tratta) throws SQLException {
+        try (Connection con = DBConnector.getConnection();){
+            PreparedStatement ps = con.prepareStatement(ACTIVE);
+            ps.setLong(1, id_tratta);
+            ps.executeUpdate();
+            return true;
+        }
     }
 
     public static Tratta getById(Long id) throws SQLException {
@@ -39,32 +50,76 @@ public class TrattaDAO {
     }
 
     public static Long create(Tratta nuovaTratta) throws SQLException {
-        try (Connection con = DBConnector.getConnection();
-             PreparedStatement ps = con.prepareStatement(INSERT_TRATTA, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, nuovaTratta.getNome());
-            ps.setLong(2, nuovaTratta.getAzienda().getId());
-            ps.setDouble(3, nuovaTratta.getCosto());
+        Connection con = null;
+        Long id_tratta = null;
+        
+        try {
+            con = DBConnector.getConnection();
+            // Inizia la transazione
+            con.setAutoCommit(false);
             
-            int affectedRows = ps.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("Creazione tratta fallita, nessuna riga modificata.");
+            // Crea la tratta principale
+            try (PreparedStatement ps = con.prepareStatement(INSERT_TRATTA, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, nuovaTratta.getNome());
+                ps.setLong(2, nuovaTratta.getAzienda().getId());
+                ps.setDouble(3, nuovaTratta.getCosto());
+                
+                int affectedRows = ps.executeUpdate();
+                if (affectedRows == 0) {
+                    throw new SQLException("Creazione tratta fallita, nessuna riga modificata.");
+                }
+                
+                try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        id_tratta = generatedKeys.getLong(1);
+                    } else {
+                        throw new SQLException("Creazione tratta fallita, nessun ID generato.");
+                    }
+                }
             }
             
-            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    Long id_tratta = generatedKeys.getLong(1);
-                    for(FermataTratta fermataTratta:nuovaTratta.getFermataTrattaList()){
-                        fermataTratta.setIdTratta(id_tratta);
-                        FermataTrattaDAO.create(fermataTratta);
-                    }
-
-                    for(OrarioTratta orarioTratta:nuovaTratta.getOrari()){
-                        orarioTratta.setTrattaId(id_tratta);
-                        OrarioTrattaDAO.create(orarioTratta);
-                    }
-                    return id_tratta;
-                } else {
-                    throw new SQLException("Creazione tratta fallita, nessun ID generato.");
+            // Crea le fermate della tratta
+            for(FermataTratta fermataTratta : nuovaTratta.getFermataTrattaList()) {
+                fermataTratta.setIdTratta(id_tratta);
+                FermataTrattaDAO.createWithConnection(fermataTratta, con);
+            }
+            
+            // Crea gli orari della tratta
+            for(OrarioTratta orarioTratta : nuovaTratta.getOrari()) {
+                orarioTratta.setTrattaId(id_tratta);
+                OrarioTrattaDAO.createWithConnection(orarioTratta, con);
+            }
+            
+            // Se tutto è andato bene, conferma la transazione
+            con.commit();
+            System.out.println("[TRATTA_CREATE] Tratta creata con successo con ID: " + id_tratta);
+            
+            return id_tratta;
+            
+        } catch (SQLException e) {
+            // In caso di errore, annulla la transazione
+            System.err.println("[TRATTA_CREATE ERROR] Errore durante la creazione della tratta: " + e.getMessage());
+            e.printStackTrace();
+            
+            if (con != null) {
+                try {
+                    con.rollback();
+                    System.out.println("[TRATTA_CREATE] Rollback completato per tratta ID: " + id_tratta);
+                } catch (SQLException rollbackEx) {
+                    System.err.println("[TRATTA_CREATE ERROR] Errore durante il rollback: " + rollbackEx.getMessage());
+                    rollbackEx.printStackTrace();
+                }
+            }
+            
+            throw new SQLException("Errore durante la creazione della tratta: " + e.getMessage(), e);
+            
+        } finally {
+            if (con != null) {
+                try {
+                    con.setAutoCommit(true); // Ripristina l'autocommit
+                    con.close();
+                } catch (SQLException e) {
+                    System.err.println("[TRATTA_CREATE ERROR] Errore durante la chiusura della connessione: " + e.getMessage());
                 }
             }
         }
@@ -110,9 +165,9 @@ public class TrattaDAO {
         return tratte;
     }
     
-    public static boolean deleteTratta(Long id) throws SQLException {
+    public static boolean deativate(Long id) throws SQLException {
         try (Connection con = DBConnector.getConnection();
-             PreparedStatement ps = con.prepareStatement(DELETE_TRATTA)) {
+             PreparedStatement ps = con.prepareStatement(NOACTIVE)) {
             ps.setLong(1, id);
             return ps.executeUpdate() > 0;
         }
@@ -138,20 +193,32 @@ public class TrattaDAO {
                 .sum();
     }
 
-    /**
-     * Elimina una tratta dal database.
-     *
-     * @param id L'ID della tratta da eliminare.
-     * @return true se l'eliminazione ha avuto successo.
-     * @throws SQLException in caso di errore del database.
-     */
-    public static boolean delete(Long id) throws SQLException {
-        return deleteTratta(id);
+    public static List<Tratta> getAzienda(Long id) throws SQLException {
+        List<Tratta> tratte = new ArrayList<>();
+        try(Connection con = DBConnector.getConnection()){
+            PreparedStatement ps = con.prepareStatement(AZIENDA);
+            ps.setLong(1, id);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                tratte.add(getTrattaFromResultSet(rs));
+            }
+        }
+        return tratte;
     }
 
     // Metodi per compatibilità con codice esistente
     @Deprecated
     public static List<Tratta> getAllTratte() throws SQLException {
+        return getAll();
+    }
+    
+    @Deprecated
+    public static Tratta doRetrieveById(Long id) throws SQLException {
+        return getById(id);
+    }
+    
+    @Deprecated
+    public static List<Tratta> doRetrieveAll() throws SQLException {
         return getAll();
     }
 }

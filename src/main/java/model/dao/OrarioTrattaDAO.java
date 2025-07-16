@@ -19,6 +19,7 @@ public class OrarioTrattaDAO {
         orario.setId(rs.getLong("id"));
         orario.setTrattaId(rs.getLong("id_tratta"));
         orario.setOraPartenza(rs.getTime("ora_partenza"));
+        orario.setOraArrivo(rs.getTime("ora_arrivo"));
         orario.setGiorniSettimana(rs.getString("giorni_settimana"));
         orario.setAttivo(rs.getBoolean("attivo"));
         orario.setNote(rs.getString("note"));
@@ -33,11 +34,24 @@ public class OrarioTrattaDAO {
      * @throws SQLException in caso di errore del database.
      */
     public static Long create(OrarioTratta nuovoOrarioTratta) throws SQLException {
-        String sql = "INSERT INTO Tratta_Orari (id_tratta, ora_partenza, giorni_settimana, " +
-                     "attivo, note) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DBConnector.getConnection()) {
+            return createWithConnection(nuovoOrarioTratta, conn);
+        }
+    }
+    
+    /**
+     * Inserisce un nuovo orario utilizzando una connessione esistente.
+     * Questo metodo è utilizzato per le transazioni.
+     * @param nuovoOrarioTratta L'orario da inserire
+     * @param conn La connessione esistente
+     * @return L'ID dell'orario creato
+     * @throws SQLException Se c'è un errore nel database
+     */
+    public static Long createWithConnection(OrarioTratta nuovoOrarioTratta, Connection conn) throws SQLException {
+        String sql = "INSERT INTO Tratta_Orari (id_tratta, ora_partenza, ora_arrivo, giorni_settimana, " +
+                     "attivo, note) VALUES (?, ?, ?, ?, ?, ?)";
         
-        try (Connection conn = DBConnector.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
             ps.setLong(1, nuovoOrarioTratta.getTrattaId());
             ps.setTime(2, nuovoOrarioTratta.getOraPartenza());
@@ -69,7 +83,7 @@ public class OrarioTrattaDAO {
      */
     public static boolean update(OrarioTratta OrarioTrattaInSessione) throws SQLException {
         String sql = "UPDATE Tratta_Orari SET ora_partenza = ?, ora_arrivo = ?, giorni_settimana = ?, " +
-                     "tipo_servizio = ?, attivo = ?, note = ? WHERE id = ?";
+                     "attivo = ?, note = ? WHERE id = ?";
         
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

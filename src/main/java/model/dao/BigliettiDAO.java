@@ -24,8 +24,33 @@ public class BigliettiDAO {
 
     }
 
-    public static Long create(Biglietto biglietto) {
-        return null;
+    public static Long create(Biglietto biglietto) throws SQLException {
+        String sql = "INSERT INTO Biglietto (id_utente, prezzo, data_acquisto, data_convalida, data_fine, stato) VALUES (?, ?, ?, ?, ?, ?)";
+        
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            
+            ps.setObject(1, biglietto.getId_utente());
+            ps.setDouble(2, biglietto.getPrezzo());
+            ps.setObject(3, biglietto.getDataAcquisto());
+            ps.setObject(4, biglietto.getDataConvalida());
+            ps.setObject(5, biglietto.getDataFine());
+            ps.setString(6, biglietto.getStato().toString());
+            
+            int affectedRows = ps.executeUpdate();
+            
+            if (affectedRows == 0) {
+                throw new SQLException("Inserimento biglietto fallito, nessuna riga modificata.");
+            }
+            
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getLong(1);
+                } else {
+                    throw new SQLException("Inserimento biglietto fallito, nessun ID generato.");
+                }
+            }
+        }
     }
 }
 

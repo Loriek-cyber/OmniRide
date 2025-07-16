@@ -66,12 +66,13 @@ public class DipendentiDAO {
 
     public static void adminconbine(Long id_utente,Long id_azienda) throws SQLException {
         String sql = "INSERT INTO Dipendente (id_utente, id_azienda, ruolo, attivo) VALUES (?, ?, ?, ?)";
-        try(Connection conn = DBConnector.getConnection()){
-            PreparedStatement ps = conn.prepareStatement(sql);
+        try(Connection conn = DBConnector.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)){
             ps.setLong(1, id_utente);
             ps.setLong(2, id_azienda);
             ps.setString(3,"GESTORE");
             ps.setBoolean(4, true);
+            ps.executeUpdate();
         }
     }
 

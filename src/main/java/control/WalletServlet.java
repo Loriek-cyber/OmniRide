@@ -15,8 +15,16 @@ public class WalletServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
 
-        // Se l'utente non è loggato, lo reindirizzo al login con il parametro di redirect
+        // Se l'utente non è loggato, controlla se ha biglietti ospite
         if (session == null || session.getAttribute("utente") == null) {
+            // Controlla se ci sono biglietti ospite
+            if (session != null && session.getAttribute("guestTickets") != null) {
+                // Reindirizza al portafoglio ospite
+                resp.sendRedirect(req.getContextPath() + "/guest-wallet");
+                return;
+            }
+            
+            // Nessun biglietto ospite, reindirizza al login
             resp.sendRedirect(req.getContextPath() + "/login?redirectURL=/wallet");
             return;
         }

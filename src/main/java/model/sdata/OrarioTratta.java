@@ -110,7 +110,12 @@ public class OrarioTratta{
     public Time getOraPartenza() { return oraPartenza; }
     public void setOraPartenza(Time oraPartenza) { this.oraPartenza = oraPartenza; }
     
-    public Time getOraArrivo() { return Time.valueOf(listatime.getLast());}
+    public Time getOraArrivo() { 
+        if (listatime == null || listatime.isEmpty()) {
+            return oraArrivo;
+        }
+        return Time.valueOf(listatime.getLast());
+    }
     public void setOraArrivo(Time oraArrivo) { this.oraArrivo = oraArrivo; }
     
     public String getGiorniSettimana() { return giorniSettimana; }
