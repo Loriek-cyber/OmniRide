@@ -3,6 +3,8 @@ import model.db.DBConnector;
 import model.sdata.*;
 import model.udata.Azienda;
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,7 +128,44 @@ public class TrattaDAO {
     }
 
 
-    
+    public static List<Tratta> findByPartenzaArrivoDataOrario(String partenza, String arrivo, LocalDate data, LocalTime orario) throws SQLException {
+        List<Tratta> tratte = new ArrayList<>();
+        // Ottieni il giorno della settimana in formato abbreviato (es. LUN, MAR, ecc.)
+        String giorno = data.getDayOfWeek().toString().substring(0, 3).toUpperCase();
+        if (giorno.equals("MON")) giorno = "LUN";
+        else if (giorno.equals("TUE")) giorno = "MAR";
+        else if (giorno.equals("WED")) giorno = "MER";
+        else if (giorno.equals("THU")) giorno = "GIO";
+        else if (giorno.equals("FRI")) giorno = "VEN";
+        else if (giorno.equals("SAT")) giorno = "SAB";
+        else if (giorno.equals("SUN")) giorno = "DOM";
+        
+        String query = "SELECT DISTINCT t.* FROM Tratta t " +
+                       "JOIN Tratta_Orari ot ON t.id = ot.id_tratta " +
+                       "JOIN Fermata_Tratta ft1 ON t.id = ft1.id_tratta " +
+                       "JOIN Fermata f1 ON ft1.id_fermata = f1.id " +
+                       "JOIN Fermata_Tratta ft2 ON t.id = ft2.id_tratta " +
+                       "JOIN Fermata f2 ON ft2.id_fermata = f2.id " +
+                       "WHERE f1.nome = ? AND f2.nome = ? " +
+                       "AND ot.ora_partenza >= ? " +
+                       "AND ot.giorni_settimana LIKE ? " +
+                       "AND ft1.sequenza < ft2.sequenza AND t.attiva = 1 AND ot.attivo = 1";
+
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, partenza);
+            ps.setString(2, arrivo);
+            ps.setTime(3, Time.valueOf(orario));
+            ps.setString(4, "%" + giorno + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    tratte.add(getTrattaFromResultSet(rs));
+                }
+            }
+        }
+        return tratte;
+    }
+
     public static boolean update(Tratta trattaInSessione) throws SQLException {
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(UPDATE_TRATTA)) {

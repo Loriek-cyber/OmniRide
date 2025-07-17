@@ -851,21 +851,34 @@ function prepareFormData() {
         tempiInput.value = tempiPercorrenza.join(',');
     }
     
-    // Prepara gli orari in un campo hidden (rimuovi duplicati)
-    const orariInputs = document.querySelectorAll('.orario-input');
-    const orariValidi = [...new Set(Array.from(orariInputs)
-        .map(input => input.value)
-        .filter(orario => orario && orario.trim() !== ''))];
+    // IMPORTANTE: Rimuovi tutti i campi hidden orariInizio esistenti prima di crearne di nuovi
+    const existingOrariInputs = document.querySelectorAll('input[type="hidden"][name="orariInizio"]');
+    existingOrariInputs.forEach(input => input.remove());
     
-    let orariInput = document.getElementById('orariInizio');
-    if (!orariInput) {
-        orariInput = document.createElement('input');
-        orariInput.type = 'hidden';
-        orariInput.id = 'orariInizio';
-        orariInput.name = 'orariInizio';
-        document.getElementById('addTrattaForm').appendChild(orariInput);
-    }
-    orariInput.value = orariValidi.join(',');
+    // Prepara gli orari - crea un campo hidden per ogni orario
+    const orariInputs = document.querySelectorAll('.orario-input');
+    const orariValidi = [];
+    
+    orariInputs.forEach((input, index) => {
+        const orarioValue = input.value.trim();
+        if (orarioValue !== '') {
+            // Crea un campo hidden per ogni orario
+            const hiddenOrario = document.createElement('input');
+            hiddenOrario.type = 'hidden';
+            hiddenOrario.name = 'orariInizio';
+            hiddenOrario.value = orarioValue;
+            document.getElementById('addTrattaForm').appendChild(hiddenOrario);
+            orariValidi.push(orarioValue);
+        }
+    });
+    
+    // Log per debug
+    console.log('Orari hidden creati:', orariValidi.length);
+    const allHiddenOrari = document.querySelectorAll('input[type="hidden"][name="orariInizio"]');
+    console.log('Totale campi hidden orariInizio nel form:', allHiddenOrari.length);
+    allHiddenOrari.forEach((input, idx) => {
+        console.log(`Hidden orario ${idx}: ${input.value}`);
+    });
     
     // I giorni sono già gestiti come checkbox con name="giorni"
     // Il servlet riceverà automaticamente tutti i valori selezionati
@@ -877,6 +890,7 @@ function prepareFormData() {
         fermateSequenceIds: fermateSequenceIds,
         tempi: tempiPercorrenza,
         orari: orariValidi,
+        orariCount: orariValidi.length,
         giorni: Array.from(document.querySelectorAll('input[name="giorni"]:checked')).map(cb => cb.value),
         tempoTotale: tempoTotale
     });

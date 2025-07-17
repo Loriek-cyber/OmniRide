@@ -32,11 +32,19 @@
 <main>
     <div class="main-content-right">
         <div class="content-wrapper">
+            <c:if test="${not empty errorMessage}">
+                <div class="error-message" style="background-color: #fee; border: 1px solid #f44; padding: 10px; margin-bottom: 20px; border-radius: 5px;">
+                    <strong>Errore:</strong> ${errorMessage}
+                    <c:if test="${not empty errorDetails}">
+                        <br><small>${errorDetails}</small>
+                    </c:if>
+                </div>
+            </c:if>
             <div class="search-container">
                 <div class="search-tabs">
                     <button class="tab-link active">Biglietti</button>
                 </div>
-                <form class="search-form" action="#" method="post" id="searchForm">
+                <form class="search-form" action="${pageContext.request.contextPath}/cercaTratte" method="get" id="searchForm">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="partenza">Partenza</label>
@@ -93,15 +101,6 @@
                 </form>
             </div>
             
-            <!-- Sezione risultati fermate -->
-            <div class="results-container" id="resultsContainer" style="display: none;">
-                <h3>Risultati della ricerca</h3>
-                <div class="loading" id="loadingSpinner" style="display: none;">
-                    <i class="fas fa-spinner fa-spin"></i> Ricerca in corso...
-                </div>
-                <div id="resultsContent"></div>
-            </div>
-            
             <div class="registration-prompt">
                 <p>Non sei ancora registrato? <a href="${pageContext.request.contextPath}/register">Registrati ora!</a></p>
             </div>
@@ -113,6 +112,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 <script src="Scripts/search.js"></script>
+
 <script>
 $(document).ready(function() {
     // Prepara l'array delle fermate dal context
@@ -133,41 +133,7 @@ $(document).ready(function() {
         }
     });
     
-    // Gestisce il submit del form per la ricerca
-    $('#searchForm').on('submit', function(e) {
-        e.preventDefault();
-        
-        // Raccoglie i dati del form
-        var formData = {
-            partenza: $('#partenza').val(),
-            arrivo: $('#arrivo').val(),
-            orario: $('#orario').val(),
-            data: $('#data').val(),
-            prezzoMax: $('#prezzoMax').val(),
-            durataMax: $('#durataMax').val(),
-            ordinamento: $('#ordinamento').val()
-        };
-        
-        // Mostra spinner di caricamento
-        $('#resultsContainer').show();
-        $('#loadingSpinner').show();
-        $('#resultsContent').empty();
-        
-        // Effettua la ricerca
-        $.ajax({
-            url: '${pageContext.request.contextPath}/searchTratte',
-            type: 'POST',
-            data: formData,
-            success: function(response) {
-                $('#loadingSpinner').hide();
-                $('#resultsContent').html(response);
-            },
-            error: function() {
-                $('#loadingSpinner').hide();
-                $('#resultsContent').html('<div class="error-message">Errore durante la ricerca. Riprova più tardi.</div>');
-            }
-        });
-    });
+    // Il form ora viene inviato normalmente senza AJAX
 });
 
 // Funzione per mostrare/nascondere filtri avanzati

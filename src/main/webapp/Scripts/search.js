@@ -22,10 +22,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('orario').value = currentTime;
     
     // Gestione del form di ricerca
-    searchForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        performSearch();
-    });
+    // Rimuovo l'event listener che previene il submit normale del form
+    // Il form ora invierà la richiesta GET a /cercaTratte come configurato nell'action
 });
 
 /**
@@ -48,47 +46,6 @@ function toggleAdvancedFilters() {
     }
 }
 
-/**
- * Esegue la ricerca delle tratte
- */
-async function performSearch() {
-    const searchForm = document.getElementById('searchForm');
-    const resultsContainer = document.getElementById('resultsContainer');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const resultsContent = document.getElementById('resultsContent');
-    
-    // Raccoglie i dati del form
-    const formData = new FormData(searchForm);
-    
-    // Mostra il container dei risultati e il loading
-    resultsContainer.style.display = 'block';
-    loadingSpinner.style.display = 'block';
-    resultsContent.innerHTML = '';
-    
-    try {
-        // Invia la richiesta di ricerca
-        const response = await fetch('/search', {
-            method: 'POST',
-            body: formData
-        });
-        
-        const data = await response.json();
-        
-        // Nasconde il loading
-        loadingSpinner.style.display = 'none';
-        
-        if (data.success) {
-            displayResults(data);
-        } else {
-            displayError(data.error || 'Errore durante la ricerca');
-        }
-        
-    } catch (error) {
-        console.error('Errore nella ricerca:', error);
-        loadingSpinner.style.display = 'none';
-        displayError('Errore di connessione. Riprova più tardi.');
-    }
-}
 
 /**
  * Visualizza i risultati della ricerca

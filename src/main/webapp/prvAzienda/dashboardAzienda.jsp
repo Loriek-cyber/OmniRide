@@ -102,16 +102,8 @@
                         <div class="stat-label">Tratte Attive</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value"><c:out value="${totaleFermate}" default="0"/></div>
-                        <div class="stat-label">Fermate Totali</div>
-                    </div>
-                    <div class="stat-card">
                         <div class="stat-value">€<c:out value="${ricaviStimati}" default="0.00"/></div>
                         <div class="stat-label">Ricavi Stimati</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value"><c:out value="${totaleOrari}" default="0"/></div>
-                        <div class="stat-label">Orari Configurati</div>
                     </div>
                 </div>
 

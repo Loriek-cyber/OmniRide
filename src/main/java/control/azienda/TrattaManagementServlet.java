@@ -50,7 +50,7 @@ public class TrattaManagementServlet extends HttpServlet {
             req.setAttribute("tratte", tratteAzienda);
             req.setAttribute("totaleTratte", tratteAzienda.size());
             req.setAttribute("tratteAttive", tratteAzienda.stream()
-                    .mapToInt(t -> t.isAttiva() ? 1 : 0)
+                    .mapToInt(t -> t.getAttiva() ? 1 : 0)
                     .sum());
             
             req.getRequestDispatcher("/prvAzienda/tratte.jsp").forward(req, resp);

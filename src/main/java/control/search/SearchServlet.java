@@ -81,20 +81,14 @@ public class SearchServlet extends HttpServlet {
             
             // Trova i percorsi usando il pathfinder
             List<Percorso> percorsiTrovati = new ArrayList<>();
-            
-            try {
-                Percorso percorsoMigliore = Pathfinder.trovaPercorsoMigliore(
-                    fermataPartenza, fermataArrivo, tratteAttive, tutteLeFermate);
-                
-                if (percorsoMigliore != null && !percorsoMigliore.getSegmenti().isEmpty()) {
-                    percorsiTrovati.add(percorsoMigliore);
-                }
-            } catch (SQLException e) {
-                logger.log(Level.SEVERE, "Errore durante la ricerca del percorso", e);
-                sendErrorResponse(response, "Errore durante la ricerca del percorso");
-                return;
+
+            Percorso percorsoMigliore = Pathfinder.trovaPercorsoMigliore(
+                fermataPartenza, fermataArrivo, tratteAttive, tutteLeFermate);
+
+            if (percorsoMigliore != null && !percorsoMigliore.getSegmenti().isEmpty()) {
+                percorsiTrovati.add(percorsoMigliore);
             }
-            
+
             // Applica i filtri se specificati
             if (prezzoMaxStr != null) {
                 try {

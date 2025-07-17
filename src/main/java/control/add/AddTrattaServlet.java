@@ -44,18 +44,30 @@ public class AddTrattaServlet extends HttpServlet {
         String costoStr = req.getParameter("costo");
         String fermateStr = req.getParameter("fermateSelezionate");
         String tempiStr = req.getParameter("tempiTraFermate");
-        String orariInizioParam = req.getParameter("orariInizio");
-        String[] orariInizioStr = null;
+        // Gestisci gli orari multipli come array di parametri
+        String[] orariInizioStr = req.getParameterValues("orariInizio");
         
-        // Gestisce sia il parametro singolo che multiplo
-        if (orariInizioParam != null && !orariInizioParam.trim().isEmpty()) {
-            orariInizioStr = orariInizioParam.split(",");
-        } else {
-            String[] orariParams = req.getParameterValues("orariInizio");
-            if (orariParams != null) {
-                orariInizioStr = orariParams;
+        // Log per debug dettagliato
+        System.out.println("[ADD_TRATTA] === DEBUG PARAMETRI ORARI ===");
+        System.out.println("[ADD_TRATTA] Numero di orari ricevuti: " + 
+            (orariInizioStr != null ? orariInizioStr.length : 0));
+        
+        // Verifica tutti i parametri della request
+        System.out.println("[ADD_TRATTA] Tutti i parametri della request:");
+        req.getParameterMap().forEach((key, values) -> {
+            System.out.println("  " + key + ": " + String.join(", ", values));
+        });
+        
+        if (orariInizioStr != null) {
+            for (int i = 0; i < orariInizioStr.length; i++) {
+                System.out.println("[ADD_TRATTA] Orario[" + i + "]: '" + orariInizioStr[i] + "' (lunghezza: " + orariInizioStr[i].length() + ")");
+                // Verifica se contiene virgole
+                if (orariInizioStr[i].contains(",")) {
+                    System.out.println("[ADD_TRATTA] ATTENZIONE: L'orario contiene virgole! Potrebbe essere una stringa concatenata.");
+                }
             }
         }
+        System.out.println("[ADD_TRATTA] === FINE DEBUG ===");
 
         double costo;
         try {

@@ -91,7 +91,7 @@ public class DashboardAziendaServlet extends HttpServlet {
                 request.setAttribute("tratte", tratte);
                 
                 // Calcola statistiche
-                int tratteAttive = (int) tratte.stream().filter(Tratta::isAttiva).count();
+                int tratteAttive = (int) tratte.stream().filter(Tratta::getAttiva).count();
                 request.setAttribute("tratteAttive", tratteAttive);
                 
                 // Calcola altre statistiche
@@ -107,7 +107,7 @@ public class DashboardAziendaServlet extends HttpServlet {
                 
                 // Calcola ricavi stimati (per ora basato sul costo delle tratte)
                 double ricaviStimati = tratte.stream()
-                    .filter(Tratta::isAttiva)
+                    .filter(Tratta::getAttiva)
                     .mapToDouble(Tratta::getCosto)
                     .sum() * 100; // Simulazione ricavi
                 request.setAttribute("ricaviStimati", String.format("%.2f", ricaviStimati));
