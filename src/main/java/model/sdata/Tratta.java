@@ -129,7 +129,7 @@ public class Tratta implements Serializable {
     public boolean getAttiva() { return attiva; }
     public void setAttiva(boolean attiva) { this.attiva = attiva; }
 
-    @Deprecated
+
     public boolean isAttiva() {return attiva;}
 
     /**

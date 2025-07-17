@@ -223,11 +223,10 @@ public class FermataDAO {
     /**
      * Cerca fermate per nome esatto (ricerca case-insensitive)
      * @param nome Il nome esatto da cercare
-     * @return Lista delle fermate con il nome esatto specificato
+     * @return Fermata con il nome specifico
      * @throws SQLException Se c'è un errore nel database
      */
-    public static List<Fermata> ricercaPerNomeEsatto(String nome) throws SQLException {
-        List<Fermata> fermate = new ArrayList<>();
+    public static Fermata ricercaPerNomeEsatto(String nome) throws SQLException {
         String sql = "SELECT * FROM Fermata WHERE LOWER(nome) = LOWER(?) AND attiva = true";
         
         try (Connection con = DBConnector.getConnection();
@@ -236,14 +235,12 @@ public class FermataDAO {
             ps.setString(1, nome);
             
             try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    Fermata fermata = extractFermataFromResultSet(rs);
-                    if (fermata != null) {
-                        fermate.add(fermata);
-                    }
+                if (rs.next()) {
+                    return extractFermataFromResultSet(rs);
                 }
             }
-            return fermate;
+
         }
+        return null;
     }
 }

@@ -70,8 +70,8 @@ public class SearchServlet extends HttpServlet {
             Fermata fermataArrivo = fermateArrivo.get(0);
             
             // Recupera tutte le tratte attive
-            List<Tratta> tutteLeTratte = TrattaDAO.doRetrieveAll();
-            List<Fermata> tutteLeFermate = FermataDAO.doRetrieveAll();
+            List<Tratta> tutteLeTratte = TrattaDAO.getAll();
+            List<Fermata> tutteLeFermate = FermataDAO.getAll();
             
             // Filtra solo le tratte attive
             List<Tratta> tratteAttive = tutteLeTratte.stream()
