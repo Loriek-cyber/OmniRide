@@ -114,7 +114,8 @@ public class OrarioTratta{
         if (listatime == null || listatime.isEmpty()) {
             return oraArrivo;
         }
-        return Time.valueOf(listatime.getLast());
+        // Usa get(size-1) invece di getLast() per compatibilità
+        return Time.valueOf(listatime.get(listatime.size() - 1));
     }
     public void setOraArrivo(Time oraArrivo) { this.oraArrivo = oraArrivo; }
     

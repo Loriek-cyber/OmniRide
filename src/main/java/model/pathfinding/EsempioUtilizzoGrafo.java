@@ -19,8 +19,9 @@ public class EsempioUtilizzoGrafo {
         percorso.getSegmenti().forEach(segmenti -> {
             System.out.println(segmenti.getId_tratta());
             System.out.print(segmenti.getFermataIn().getNome()+"->"+segmenti.getFermataOu().getNome());
-            System.out.println(segmenti.getTempo_partenza());
-            System.out.println(segmenti.getTempo_arrivo());
+            System.out.println();
+            System.out.println("Partenza:"+segmenti.getTempo_partenza());
+            System.out.println("Arrivo:"+segmenti.getTempo_arrivo());
             System.out.println();
 
         });

@@ -22,6 +22,8 @@ public class GrafoTrasporti {
         private Tratta tratta;
         private int tempoPercorrenza; // in minuti
         private double costo;
+        private FermataTratta fermataOrigine;
+        private FermataTratta fermataDestinazione;
         
         public Collegamento(Fermata destinazione, Tratta tratta, int tempoPercorrenza, double costo) {
             this.destinazione = destinazione;
@@ -30,11 +32,23 @@ public class GrafoTrasporti {
             this.costo = costo;
         }
         
+        public Collegamento(Fermata destinazione, Tratta tratta, int tempoPercorrenza, double costo, 
+                           FermataTratta fermataOrigine, FermataTratta fermataDestinazione) {
+            this.destinazione = destinazione;
+            this.tratta = tratta;
+            this.tempoPercorrenza = tempoPercorrenza;
+            this.costo = costo;
+            this.fermataOrigine = fermataOrigine;
+            this.fermataDestinazione = fermataDestinazione;
+        }
+        
         // Getters
         public Fermata getDestinazione() { return destinazione; }
         public Tratta getTratta() { return tratta; }
         public int getTempoPercorrenza() { return tempoPercorrenza; }
         public double getCosto() { return costo; }
+        public FermataTratta getFermataOrigine() { return fermataOrigine; }
+        public FermataTratta getFermataDestinazione() { return fermataDestinazione; }
     }
     
     public GrafoTrasporti() {
@@ -66,12 +80,14 @@ public class GrafoTrasporti {
                 // Calcola il costo per questa tratta parziale
                 double costoSegmento = tratta.getCosto() / (percorso.size() - 1);
                 
-                // Crea il collegamento
+                // Crea il collegamento con informazioni dettagliate
                 Collegamento collegamento = new Collegamento(
                     destinazione,
                     tratta,
                     fermataCorrente.getTempoProssimaFermata(),
-                    costoSegmento
+                    costoSegmento,
+                    fermataCorrente,
+                    fermataProssima
                 );
                 
                 // Aggiungi il collegamento al grafo
