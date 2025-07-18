@@ -1,6 +1,7 @@
 package model.sdata;
 
 import model.udata.Azienda;
+import model.util.TimeCalculator;
 
 import java.io.Serializable;
 import java.sql.Time;
@@ -46,13 +47,8 @@ public class Tratta implements Serializable {
             throw new IllegalStateException("[!Orari] Errore negli orrari ");
         }
 
-        orari.forEach(e->{
-            for(FermataTratta ft : fermataTrattaList){
-                if(ft.getTempoProssimaFermata()>=1){
-                    e.addnext(ft.getTempoProssimaFermata());
-                }
-            }
-        });
+        // Usa TimeCalculator per popolare automaticamente tutti gli orari
+        TimeCalculator.popolaOrariTratta(this);
 
     }
 
@@ -195,11 +191,11 @@ public class Tratta implements Serializable {
     }
 
     public int getDurata(){
-        int i = 0;
+        int duratatotale = 0;
         for (FermataTratta ft : fermataTrattaList) {
-            i = ft.getTempoProssimaFermata();
+            duratatotale += ft.getTempoProssimaFermata();
         }
-        return i;
+        return duratatotale;
     }
 
 

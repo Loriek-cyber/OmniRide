@@ -44,7 +44,7 @@
                 <div class="search-tabs">
                     <button class="tab-link active">Biglietti</button>
                 </div>
-                <form class="search-form" action="${pageContext.request.contextPath}/cercaTratte" method="get" id="searchForm">
+                <form class="search-form" action="${pageContext.request.contextPath}/ricercaPercorsi" method="get" id="searchForm">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="partenza">Partenza</label>

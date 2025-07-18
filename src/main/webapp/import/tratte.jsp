@@ -29,19 +29,17 @@
                         <div class="tratta-item" data-tratta-id="${status.index}" data-tratta-real-id="${tratta.id}" onclick="selectTratta(${status.index})">
                             <div class="tratta-header">
                                 <div class="tratta-name">${tratta.nome}</div>
-                                <div class="tratta-badge">
-                                    <c:choose>
-                                        <c:when test="${tratta.attiva}">
-                                            <span class="badge badge-active">Attiva</span>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span class="badge badge-inactive">Non attiva</span>
-                                        </c:otherwise>
-                                    </c:choose>
+                                <div class="tratta-actions">
                                 </div>
-                            </div>
-                            
-                            <div class="tratta-info">
+                    </div>
+
+                    <div class="purchase-section">
+                        <a href="acquistaBiglietto?trattaId=${tratta.id}&prezzo=${tratta.costo}" class="btn btn-primary btn-lg">
+                            Acquista Biglietto
+                        </a>
+                    </div>
+
+                    <div class="info-section">
                                 <div class="tratta-stat">
                                     <span class="stat-icon">🚏</span>
                                     <span class="stat-value">${fn:length(tratta.fermataTrattaList)} fermate</span>
@@ -103,9 +101,17 @@
                     <c:forEach var="orario" items="${orariFormattati[status.index]}" varStatus="orarioStatus">
                         "${fn:escapeXml(orario)}"<c:if test="${!orarioStatus.last}">,</c:if>
                     </c:forEach>
+                ],
+                tempiPercorrenza: [
+                    <c:forEach var="fermata" items="${tratta.fermataTrattaList}" varStatus="fermataStatus">
+                        ${fermata.tempoProssimaFermata != null ? fermata.tempoProssimaFermata : 0}<c:if test="${!fermataStatus.last}">,</c:if>
+                    </c:forEach>
                 ]
             }<c:if test="${!status.last}">,</c:if>
         </c:forEach>
     ];
 </script>
+
+<!-- Inclusione del file JavaScript per la gestione delle tratte -->
+<script src="Scripts/tratte.js"></script>
 

@@ -17,6 +17,8 @@ import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 @WebServlet("/acquistaBiglietto")
 public class AcquistaBigliettoServlet extends HttpServlet {
@@ -99,10 +101,15 @@ public class AcquistaBigliettoServlet extends HttpServlet {
             biglietto.setDataAcquisto(LocalTime.now());
             biglietto.setStato(Biglietto.StatoBiglietto.ACQUISTATO);
             
-            // Imposta la mappa delle tratte
-            Map<Long, Double> mapTratte = new HashMap<>();
-            mapTratte.put(trattaId, prezzo);
-            biglietto.setMap(mapTratte);
+            // Imposta la lista delle tratte
+            List<Long> idTratte = new ArrayList<>();
+            idTratte.add(trattaId);
+            biglietto.setId_tratte(idTratte);
+            
+            // Imposta il numero di fermate (stima per una tratta singola)
+            List<Integer> numeroFermate = new ArrayList<>();
+            numeroFermate.add(1); // Numero di fermate per questa tratta
+            biglietto.setNumero_fermate(numeroFermate);
             
             // Salva il biglietto nel database
             Long bigliettoId = BigliettiDAO.create(biglietto);

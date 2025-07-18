@@ -46,8 +46,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 oraArrivo.setMinutes(oraArrivo.getMinutes() + tempoAccumulato);
                 tempiArrivo.push(formatTime(oraArrivo));
                 
-                // Simula 5 minuti tra le fermate (puoi modificare questo)
-                tempoAccumulato += 5;
+                // Usa i tempi reali di percorrenza dalla base dati
+                // L'ultimo elemento non ha tempo alla prossima fermata
+                if (index < tratta.tempiPercorrenza.length) {
+                    const tempoReale = tratta.tempiPercorrenza[index] || 0;
+                    tempoAccumulato += tempoReale;
+                }
             });
             
             return {

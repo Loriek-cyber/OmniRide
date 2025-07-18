@@ -127,15 +127,20 @@ public class AddTrattaServlet extends HttpServlet {
             ft.setFermata(fermata);
             ft.setSequenza(i + 1);
 
-            if (i > 0) {
-                    try {
-                        int tempoInMinuti = Integer.parseInt(tempiArr[i - 1]);
-                        ft.setTempoProssimaFermata(tempoInMinuti);
-                    } catch (NumberFormatException e) {
-                        req.setAttribute("errore", "Tempo non valido.");
-                        doGet(req, resp);
-                        return;
-                    }
+            // tempoProssimaFermata rappresenta il tempo per arrivare alla fermata SUCCESSIVA
+            // Quindi per la fermata corrente (indice i), dobbiamo usare tempiArr[i]
+            if (i < tempiArr.length) {
+                try {
+                    int tempoInMinuti = Integer.parseInt(tempiArr[i]);
+                    ft.setTempoProssimaFermata(tempoInMinuti);
+                } catch (NumberFormatException e) {
+                    req.setAttribute("errore", "Tempo non valido.");
+                    doGet(req, resp);
+                    return;
+                }
+            } else {
+                // L'ultima fermata non ha una fermata successiva
+                ft.setTempoProssimaFermata(0);
             }
 
             fermataTrattaList.add(ft);

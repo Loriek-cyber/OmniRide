@@ -15,7 +15,11 @@ public class EsempioUtilizzoGrafo {
         Fermata f1 =  FermataDAO.getById(6L);
         Fermata f2 =  FermataDAO.getById(1L);
         List<Fermata> fermataList = FermataDAO.getAll();
-        Percorso percorso = Pathfinder.find(f1,f2,tratte,LocalTime.now().minusHours(9));
+        Percorso percorso = Pathfinder.find(f1,f2,tratte,LocalTime.now().minusHours(2));
+        if(percorso==null) {
+            System.out.println("Percorso non trovato");
+            return;
+        }
         percorso.getSegmenti().forEach(segmenti -> {
             System.out.println(segmenti.getId_tratta());
             System.out.print(segmenti.getFermataIn().getNome()+"->"+segmenti.getFermataOu().getNome());
@@ -23,6 +27,7 @@ public class EsempioUtilizzoGrafo {
             System.out.println("Partenza:"+segmenti.getTempo_partenza());
             System.out.println("Arrivo:"+segmenti.getTempo_arrivo());
             System.out.println();
+
 
         });
         System.out.println(percorso.getCosto());

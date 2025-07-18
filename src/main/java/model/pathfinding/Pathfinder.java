@@ -5,326 +5,302 @@ import model.sdata.Tratta;
 import model.sdata.FermataTratta;
 import model.sdata.OrarioTratta;
 import model.pathfinding.GrafoTrasporti.Collegamento;
+import model.util.TimeCalculator;
 
-import java.sql.SQLException;
 import java.time.LocalTime;
 import java.time.Duration;
 import java.util.*;
 
+/**
+ * Classe principale per l'algoritmo di pathfinding migliorato.
+ * Utilizza l'algoritmo A* per trovare il percorso ottimale tra due fermate in termini di tempo di percorrenza totale,
+ * che include sia il tempo di viaggio sui mezzi sia i tempi di attesa.
+ */
 public class Pathfinder {
-    public static Percorso find(Fermata f1,Fermata f2, List<Tratta> tratte, LocalTime start) {
+
+    /**
+     * Metodo di utility per avviare la ricerca del percorso.
+     */
+    public static Percorso find(Fermata f1, Fermata f2, List<Tratta> tratte, LocalTime start) {
         GrafoTrasporti grafo = new GrafoTrasporti();
         grafo.costruisciGrafo(tratte);
-        // Usa un algoritmo di pathfinding, ad esempio A*, edita secondo le necessità
-        // Questo è un placeholder per l'implementazione del pathfinding
-        // Da sostituire con algoritmo completo
-
         return calcolaPercorso(grafo, f1, f2, start);
     }
 
-    public static Percorso trovaPercorsoMigliore(Fermata fermataPartenza, Fermata fermataArrivo, List<Tratta> tratteAttive, List<Fermata> tutteLeFermate) {
-        LocalTime currentTime = LocalTime.now(); // Usa l'ora corrente
+    /**
+     * Trova il percorso migliore partendo dall'ora corrente.
+     */
+    public static Percorso trovaPercorsoMigliore(Fermata fermataPartenza, Fermata fermataArrivo, List<Tratta> tratteAttive) {
+        LocalTime currentTime = LocalTime.now();
         return find(fermataPartenza, fermataArrivo, tratteAttive, currentTime);
     }
 
+    /**
+     * Implementazione migliorata dell'algoritmo A*.
+     */
     private static Percorso calcolaPercorso(GrafoTrasporti grafo, Fermata start, Fermata end, LocalTime currentStartTime) {
         PriorityQueue<TimeNode> openSet = new PriorityQueue<>(Comparator.comparingDouble(node -> node.priority));
+
         Map<Fermata, Double> gScore = new HashMap<>();
         Map<Fermata, Fermata> cameFrom = new HashMap<>();
         Map<Fermata, LocalTime> arrivalTimes = new HashMap<>();
+        Map<Fermata, LocalTime> departureTimes = new HashMap<>();  // AGGIUNTO: tempi di partenza
+        Map<Fermata, Collegamento> connectionTo = new HashMap<>();
 
+        // Inizializzazione per il nodo di partenza
         gScore.put(start, 0.0);
         arrivalTimes.put(start, currentStartTime);
+        departureTimes.put(start, currentStartTime);  // AGGIUNTO
         openSet.add(new TimeNode(start, 0.0, currentStartTime));
 
         while (!openSet.isEmpty()) {
             TimeNode currentNode = openSet.poll();
             Fermata current = currentNode.fermata;
             LocalTime currentTime = currentNode.arrivalTime;
-            
+
             if (current.equals(end)) {
-                return ricostruisciPercorso(cameFrom, current, grafo, arrivalTimes);
+                return ricostruisciPercorso(cameFrom, current, connectionTo, arrivalTimes, departureTimes);
             }
 
-            for (GrafoTrasporti.Collegamento neighbor : grafo.getCollegamenti(current)) {
-                Fermata neighborNode = neighbor.getDestinazione();
-                
-                // Calcola il prossimo orario utile per questa tratta
-                LocalTime nextDepartureTime = calcolaProssimoOrario(neighbor.getTratta(), currentTime);
-                if (nextDepartureTime == null) continue; // Non ci sono orari validi
-                
-                // Calcola il tempo di attesa + tempo di percorrenza
-                double waitingTime = Duration.between(currentTime, nextDepartureTime).toMinutes();
-                if (waitingTime < 0) waitingTime += 24 * 60; // Gestisce il cambio di giorno
-                
-                double tentativeGScore = gScore.get(current) + waitingTime + neighbor.getTempoPercorrenza();
-                LocalTime neighborArrivalTime = nextDepartureTime.plusMinutes(neighbor.getTempoPercorrenza());
+            // Ottimizzazione: evita di riprocessare nodi con gScore peggiore
+            if (gScore.get(current) < currentNode.priority - grafo.calcolaDistanzaEuristica(current, end)) {
+                continue;
+            }
 
+            // Esplora i vicini
+            for (GrafoTrasporti.Collegamento collegamento : grafo.getCollegamenti(current)) {
+                Fermata neighborNode = collegamento.getDestinazione();
+
+                // Calcola gli orari di partenza e arrivo per questo specifico segmento
+                LocalTime[] orariSegmento = calcolaOrariSegmento(collegamento, currentTime);
+                if (orariSegmento == null) {
+                    continue; // Se non ci sono corse disponibili, salta questo collegamento
+                }
+
+                LocalTime departureTime = orariSegmento[0];
+                LocalTime arrivalAtNeighbor = orariSegmento[1];
+
+                // Calcola il tempo di attesa alla fermata
+                double waitingTime = calcolaTempoAttesa(currentTime, departureTime);
+
+                // Calcola il tempo di viaggio
+                double travelTime = Duration.between(departureTime, arrivalAtNeighbor).toMinutes();
+                if (travelTime < 0) {
+                    travelTime += 24 * 60; // Gestisce il caso overnight
+                }
+
+                // Calcola il gScore "tentativo" per il vicino
+                double tentativeGScore = gScore.get(current) + waitingTime + travelTime;
+
+                // Se questo percorso per il vicino è migliore di uno precedente, lo registriamo
                 if (tentativeGScore < gScore.getOrDefault(neighborNode, Double.POSITIVE_INFINITY)) {
                     cameFrom.put(neighborNode, current);
                     gScore.put(neighborNode, tentativeGScore);
-                    arrivalTimes.put(neighborNode, neighborArrivalTime);
+                    arrivalTimes.put(neighborNode, arrivalAtNeighbor);
+                    // Memorizza il tempo di partenza dal nodo corrente per raggiungere il vicino
+                    // Salviamo il tempo di partenza dal nodo corrente nella mappa del nodo vicino
+                    departureTimes.put(neighborNode, departureTime);  // Tempo di partenza da current per arrivare a neighborNode
+                    connectionTo.put(neighborNode, collegamento);
+
+                    // Calcola l'fScore e aggiunge il vicino all'open set
                     double fScore = tentativeGScore + grafo.calcolaDistanzaEuristica(neighborNode, end);
-                    openSet.add(new TimeNode(neighborNode, fScore, neighborArrivalTime));
+                    openSet.add(new TimeNode(neighborNode, fScore, arrivalAtNeighbor));
                 }
             }
         }
-        return null; // Nessun percorso trovato
+        return null;
     }
 
-    private static Percorso ricostruisciPercorso(Map<Fermata, Fermata> cameFrom, Fermata current, GrafoTrasporti grafo, Map<Fermata, LocalTime> arrivalTimes) {
-        List<SegmentoPercorso> segmenti = new LinkedList<>();
+    /**
+     * Calcola il tempo di attesa tra due orari, gestendo correttamente i casi overnight.
+     */
+    private static double calcolaTempoAttesa(LocalTime arrivoFermata, LocalTime partenzaMezzo) {
+        long waitingMinutes = Duration.between(arrivoFermata, partenzaMezzo).toMinutes();
+
+        // Se il risultato è negativo, significa che la partenza è il giorno dopo
+        if (waitingMinutes < 0) {
+            waitingMinutes += 24 * 60;
+        }
+
+        return waitingMinutes;
+    }
+
+    /**
+     * Versione migliorata del calcolo degli orari del segmento.
+     */
+    private static LocalTime[] calcolaOrariSegmento(GrafoTrasporti.Collegamento collegamento, LocalTime arrivoAllaPartenza) {
+        Tratta tratta = collegamento.getTratta();
+        Fermata fermataPartenzaSegmento = collegamento.getFermataOrigine().getFermata();
+        Fermata fermataArrivoSegmento = collegamento.getDestinazione();
+
+        List<FermataTratta> fermateTratta = tratta.getFermataTrattaList();
+
+        // Trova gli indici delle fermate di partenza e arrivo
+        int indiceFermataPartenza = -1;
+        int indiceFermataArrivo = -1;
+        long tempoPerRaggiungereLaPartenza = 0;
+        long tempoTotaleSegmento = 0;
+
+        for (int i = 0; i < fermateTratta.size(); i++) {
+            FermataTratta ft = fermateTratta.get(i);
+
+            if (ft.getFermata().equals(fermataPartenzaSegmento)) {
+                indiceFermataPartenza = i;
+            }
+            if (ft.getFermata().equals(fermataArrivoSegmento)) {
+                indiceFermataArrivo = i;
+                break;
+            }
+
+            // Accumula il tempo per raggiungere la fermata corrente
+            if (indiceFermataPartenza == -1) {
+                tempoPerRaggiungereLaPartenza += ft.getTempoProssimaFermata();
+            } else if (indiceFermataArrivo == -1) {
+                tempoTotaleSegmento += ft.getTempoProssimaFermata();
+            }
+        }
+
+        if (indiceFermataPartenza == -1 || indiceFermataArrivo == -1) {
+            System.err.println("Errore: fermata non trovata nella tratta " + tratta.getId());
+            return null;
+        }
+
+        // Trova il miglior orario di partenza
+        LocalTime migliorOrarioPartenza = null;
+        LocalTime migliorOrarioArrivo = null;
+        long minAttesa = Long.MAX_VALUE;
+
+        for (OrarioTratta orario : tratta.getOrari()) {
+            if (!orario.isAttivo() || orario.getOraPartenza() == null) continue;
+
+            LocalTime partenzaDaCapolinea = orario.getOraPartenza().toLocalTime();
+            LocalTime arrivoAllaFermataPartenza = partenzaDaCapolinea.plusMinutes(tempoPerRaggiungereLaPartenza);
+
+            // Verifica se questa corsa è utile (parte dopo il nostro arrivo alla fermata)
+            if (!arrivoAllaFermataPartenza.isBefore(arrivoAllaPartenza)) {
+                long attesa = Duration.between(arrivoAllaPartenza, arrivoAllaFermataPartenza).toMinutes();
+                if (attesa < minAttesa) {
+                    minAttesa = attesa;
+                    migliorOrarioPartenza = arrivoAllaFermataPartenza;
+                    migliorOrarioArrivo = arrivoAllaFermataPartenza.plusMinutes(tempoTotaleSegmento);
+                }
+            }
+        }
+
+        // Se non troviamo una corsa per oggi, prendiamo la prima del giorno dopo
+        if (migliorOrarioPartenza == null) {
+            LocalTime primoOrarioAssoluto = null;
+            for (OrarioTratta orario : tratta.getOrari()) {
+                if (!orario.isAttivo() || orario.getOraPartenza() == null) continue;
+                LocalTime partenzaCorrente = orario.getOraPartenza().toLocalTime();
+                if (primoOrarioAssoluto == null || partenzaCorrente.isBefore(primoOrarioAssoluto)) {
+                    primoOrarioAssoluto = partenzaCorrente;
+                }
+            }
+            if (primoOrarioAssoluto != null) {
+                migliorOrarioPartenza = primoOrarioAssoluto.plusMinutes(tempoPerRaggiungereLaPartenza);
+                migliorOrarioArrivo = migliorOrarioPartenza.plusMinutes(tempoTotaleSegmento);
+            }
+        }
+
+        if (migliorOrarioPartenza == null) {
+            return null; // Nessun orario disponibile
+        }
+
+        return new LocalTime[]{migliorOrarioPartenza, migliorOrarioArrivo};
+    }
+
+    /**
+     * Ricostruisce il percorso finale migliorato.
+     */
+    private static Percorso ricostruisciPercorso(Map<Fermata, Fermata> cameFrom, Fermata current,
+                                                 Map<Fermata, Collegamento> connectionTo,
+                                                 Map<Fermata, LocalTime> arrivalTimes,
+                                                 Map<Fermata, LocalTime> departureTimes) {
+        LinkedList<SegmentoPercorso> segmenti = new LinkedList<>();
         double costoTotale = 0.0;
 
-        Fermata prec = current;
-        while (cameFrom.containsKey(current)) {
-            prec = cameFrom.get(current);
+        Fermata step = current;
+        while (cameFrom.containsKey(step)) {
+            Fermata previous = cameFrom.get(step);
+            Collegamento collegamento = connectionTo.get(step);
+
+            if (collegamento == null) {
+                System.err.println("Errore: collegamento nullo durante la ricostruzione del percorso.");
+                break;
+            }
+
             SegmentoPercorso segmento = new SegmentoPercorso();
-            segmento.setFermataIn(prec);
-            segmento.setFermataOu(current);
-            
-            final Fermata finalCurrent = current;
-            Optional<GrafoTrasporti.Collegamento> collegamentoOpt = grafo.getCollegamenti(prec).stream()
-                .filter(c -> c.getDestinazione().equals(finalCurrent))
-                .findFirst();
-            
-            if (collegamentoOpt.isPresent()) {
-                GrafoTrasporti.Collegamento collegamento = collegamentoOpt.get();
-                segmento.setId_tratta(collegamento.getTratta().getId());
-                
-                // IMPORTANTE: NON ricalcolare gli orari, usa quelli già calcolati dal pathfinding!
-                LocalTime tempoArrivoSegmento = arrivalTimes.get(current);
-                LocalTime tempoArrivoAllaFermataPrec = arrivalTimes.get(prec);
-                
-                // Il tempo di partenza è l'arrivo alla fermata precedente più eventuale attesa
-                // Ma questo dovrebbe essere già stato calcolato nel pathfinding
-                LocalTime tempoPartenzaSegmento = tempoArrivoSegmento.minusMinutes(collegamento.getTempoPercorrenza());
-                
-                // Se c'è discrepanza, usa il tempo di arrivo alla fermata precedente
-                if (tempoArrivoAllaFermataPrec != null && tempoPartenzaSegmento.isBefore(tempoArrivoAllaFermataPrec)) {
-                    tempoPartenzaSegmento = tempoArrivoAllaFermataPrec;
-                }
-                
-                // Fallback se non abbiamo i tempi dal pathfinding
-                if (tempoPartenzaSegmento == null || tempoArrivoSegmento == null) {
-                    LocalTime[] tempiCalcolati = calcolaTempiSegmento(collegamento.getTratta(), prec, current, 
-                        tempoPartenzaSegmento != null ? tempoPartenzaSegmento : LocalTime.now());
-                    if (tempiCalcolati != null) {
-                        tempoPartenzaSegmento = tempiCalcolati[0];
-                        tempoArrivoSegmento = tempiCalcolati[1];
-                    } else {
-                        // Fallback finale
-                        List<OrarioTratta> orari = collegamento.getTratta().getOrari();
-                        if (!orari.isEmpty()) {
-                            OrarioTratta orario = orari.get(0);
-                            LocalTime baseTime = orario.getOraPartenza().toLocalTime();
-                            tempoPartenzaSegmento = baseTime;
-                            tempoArrivoSegmento = baseTime.plusMinutes(collegamento.getTempoPercorrenza());
-                        }
+            segmento.setFermataIn(previous);
+            segmento.setFermataOu(step);
+            segmento.setId_tratta(collegamento.getTratta().getId());
+
+            // Usa gli orari memorizzati durante l'esplorazione
+            // Il tempo di partenza è quando si parte dal nodo precedente (stored in departureTimes for step)
+            // Il tempo di arrivo è quando si arriva al nodo corrente
+            LocalTime tempoPartenza = departureTimes.get(step);  // Questo è quando si parte da previous per andare a step
+            LocalTime tempoArrivo = arrivalTimes.get(step);      // Questo è quando si arriva a step
+
+            // Verifica di coerenza degli orari
+            if (tempoPartenza != null && tempoArrivo != null) {
+                segmento.setTempo_partenza(tempoPartenza);
+                segmento.setTempo_arrivo(tempoArrivo);
+            } else {
+                System.err.println("Errore: orari mancanti per il segmento " + previous.getId() + " -> " + step.getId());
+                // Fallback: ricalcola gli orari
+                LocalTime tempoArrivoAlPrecedente = arrivalTimes.get(previous);
+                if (tempoArrivoAlPrecedente != null) {
+                    LocalTime[] orariSegmento = calcolaOrariSegmento(collegamento, tempoArrivoAlPrecedente);
+                    if (orariSegmento != null) {
+                        segmento.setTempo_partenza(orariSegmento[0]);
+                        segmento.setTempo_arrivo(orariSegmento[1]);
                     }
                 }
-                
-                segmento.setTempo_partenza(tempoPartenzaSegmento);
-                segmento.setTempo_arrivo(tempoArrivoSegmento);
-                
-                costoTotale += collegamento.getCosto();
-                
-                // Calcola il numero di fermate tra le due fermate
-                int numeroFermate = calcolaNumeroFermate(collegamento.getTratta(), prec, current);
-                segmento.setNumero_fermate(numeroFermate);
             }
-            segmenti.add(0, segmento);
-            current = prec;
+
+            costoTotale += collegamento.getCosto();
+
+            int numeroFermate = calcolaNumeroFermate(collegamento.getTratta(), previous, step);
+            segmento.setNumero_fermate(numeroFermate);
+
+            segmenti.addFirst(segmento);
+            step = previous;
         }
 
         return new Percorso(segmenti, costoTotale);
     }
 
     /**
-     * Calcola il numero di fermate tra due fermate in una tratta
+     * Calcola il numero di fermate tra due punti su una stessa tratta.
      */
     private static int calcolaNumeroFermate(Tratta tratta, Fermata fermataPartenza, Fermata fermataArrivo) {
         List<FermataTratta> fermate = tratta.getFermataTrattaList();
         int indexPartenza = -1;
         int indexArrivo = -1;
-        
+
         for (int i = 0; i < fermate.size(); i++) {
             FermataTratta ft = fermate.get(i);
-            if (ft.getFermata().getId().equals(fermataPartenza.getId())) {
+            if (ft.getFermata().equals(fermataPartenza)) {
                 indexPartenza = i;
             }
-            if (ft.getFermata().getId().equals(fermataArrivo.getId())) {
+            if (ft.getFermata().equals(fermataArrivo)) {
                 indexArrivo = i;
             }
         }
-        
+
         if (indexPartenza != -1 && indexArrivo != -1 && indexPartenza < indexArrivo) {
             return indexArrivo - indexPartenza;
         }
-        
-        return 1; // Default fallback
-    }
-    
-    /**
-     * Calcola il prossimo orario utile per una tratta dato l'orario corrente
-     */
-    private static LocalTime calcolaProssimoOrario(Tratta tratta, LocalTime currentTime) {
-        List<OrarioTratta> orari = tratta.getOrari();
-        if (orari == null || orari.isEmpty()) {
-            return null;
-        }
-        
-        // Trova il primo orario successivo all'orario corrente
-        LocalTime nextTime = null;
-        for (OrarioTratta orario : orari) {
-            if (orario.isAttivo() && orario.getOraPartenza() != null) {
-                LocalTime oraPartenza = orario.getOraPartenza().toLocalTime();
-                if (!oraPartenza.isBefore(currentTime)) {
-                    if (nextTime == null || oraPartenza.isBefore(nextTime)) {
-                        nextTime = oraPartenza;
-                    }
-                }
-            }
-        }
-        
-        // Se non c'è un orario successivo oggi, prendi il primo orario del giorno successivo
-        if (nextTime == null) {
-            for (OrarioTratta orario : orari) {
-                if (orario.isAttivo() && orario.getOraPartenza() != null) {
-                    LocalTime oraPartenza = orario.getOraPartenza().toLocalTime();
-                    if (nextTime == null || oraPartenza.isBefore(nextTime)) {
-                        nextTime = oraPartenza;
-                    }
-                }
-            }
-        }
-        
-        return nextTime;
-    }
-    
-    /**
-     * Calcola i tempi di partenza e arrivo per un segmento specifico
-     * basandosi sulla sequenza delle fermate nella tratta
-     */
-    private static LocalTime[] calcolaTempiSegmento(Tratta tratta, Fermata fermataPartenza, 
-                                                   Fermata fermataArrivo, LocalTime tempoAttualePartenza) {
-        List<FermataTratta> fermate = tratta.getFermataTrattaList();
-        List<OrarioTratta> orari = tratta.getOrari();
-        
-        if (fermate == null || orari == null || orari.isEmpty()) {
-            return null;
-        }
-        
-        // Trova l'orario migliore per partire
-        OrarioTratta orarioMigliore = null;
-        for (OrarioTratta orario : orari) {
-            if (orario.isAttivo() && orario.getOraPartenza() != null) {
-                LocalTime oraPartenza = orario.getOraPartenza().toLocalTime();
-                if (oraPartenza.isAfter(tempoAttualePartenza) || oraPartenza.equals(tempoAttualePartenza)) {
-                    orarioMigliore = orario;
-                    break;
-                }
-            }
-        }
-        
-        // Se non trovato, prendi il primo orario del giorno successivo
-        if (orarioMigliore == null && !orari.isEmpty()) {
-            orarioMigliore = orari.get(0);
-        }
-        
-        if (orarioMigliore == null) {
-            return null;
-        }
-        
-        // Calcola i tempi basandosi sulla sequenza delle fermate
-        LocalTime tempoPartenza = orarioMigliore.getOraPartenza().toLocalTime();
-        LocalTime tempoArrivo = tempoPartenza; // Mantieni il riferimento al tempo di partenza per sommare i tempi di percorrenza
-        int indexPartenza = -1;
-        int indexArrivo = -1;
-        
-        // Trova gli indici delle fermate
-        for (int i = 0; i < fermate.size(); i++) {
-            FermataTratta ft = fermate.get(i);
-            if (ft.getFermata().getId().equals(fermataPartenza.getId())) {
-                indexPartenza = i;
-            }
-            if (ft.getFermata().getId().equals(fermataArrivo.getId())) {
-                indexArrivo = i;
-            }
-        }
-        
-        if (indexPartenza == -1 || indexArrivo == -1 || indexPartenza >= indexArrivo) {
-            return new LocalTime[]{tempoPartenza, tempoPartenza.plusMinutes(30)}; // Fallback
-        }
-        
-        // Calcola il tempo di arrivo considerando tutti i tempi di percorrenza fino al punto di arrivo
-        for (int i = indexPartenza; i < indexArrivo; i++) {
-            FermataTratta ft = fermate.get(i);
-            tempoArrivo = tempoArrivo.plusMinutes(ft.getTempoProssimaFermata());
-        }
 
-        return new LocalTime[]{tempoPartenza, tempoArrivo};
-    }
-    
-    /**
-     * Calcola il tempo di partenza per un segmento specifico da una fermata
-     */
-    private static LocalTime calcolaTempoDiPartenzaPerSegmento(Tratta tratta, Fermata fermataPartenza, LocalTime tempoBase) {
-        if (tempoBase == null) {
-            return calcolaProssimoOrario(tratta, LocalTime.now());
-        }
-        
-        List<FermataTratta> fermate = tratta.getFermataTrattaList();
-        if (fermate == null || fermate.isEmpty()) {
-            return tempoBase;
-        }
-        
-        // Trova l'indice della fermata di partenza
-        int indexPartenza = -1;
-        for (int i = 0; i < fermate.size(); i++) {
-            FermataTratta ft = fermate.get(i);
-            if (ft.getFermata().getId().equals(fermataPartenza.getId())) {
-                indexPartenza = i;
-                break;
-            }
-        }
-        
-        if (indexPartenza == -1) {
-            return tempoBase;
-        }
-        
-        // Calcola il prossimo orario utile
-        LocalTime prossimoOrario = calcolaProssimoOrario(tratta, tempoBase);
-        if (prossimoOrario == null) {
-            return tempoBase;
-        }
-        
-        // Calcola quanto tempo ci vuole per arrivare alla fermata di partenza dall'inizio della tratta
-        LocalTime tempoArrivoAllaFermata = prossimoOrario;
-        for (int i = 0; i < indexPartenza; i++) {
-            FermataTratta ft = fermate.get(i);
-            tempoArrivoAllaFermata = tempoArrivoAllaFermata.plusMinutes(ft.getTempoProssimaFermata());
-        }
-        
-        return tempoArrivoAllaFermata;
+        return 1; // Fallback
     }
 
-    private static class Node {
-        Fermata fermata;
-        double priority;
-
-        Node(Fermata fermata, double priority) {
-            this.fermata = fermata;
-            this.priority = priority;
-        }
-    }
-    
     /**
-     * Nodo per il pathfinding che tiene conto del tempo di arrivo
+     * Classe interna per rappresentare un nodo nella coda di priorità dell'algoritmo A*.
      */
     private static class TimeNode {
         Fermata fermata;
-        double priority;
+        double priority; // Corrisponde a fScore
         LocalTime arrivalTime;
 
         TimeNode(Fermata fermata, double priority, LocalTime arrivalTime) {

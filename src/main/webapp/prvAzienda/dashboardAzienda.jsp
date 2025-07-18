@@ -28,52 +28,52 @@
             
             <ul class="sidebar-nav">
                 <li class="nav-item">
-                    <a href="#sezione1" class="nav-link active" onclick="showSection(1)">
+                    <a href="${pageContext.request.contextPath}/prvAzienda/dashboardAzienda.jsp" class="nav-link active">
                         Panoramica
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#sezione2" class="nav-link" onclick="showSection(2)">
+                    <a href="${pageContext.request.contextPath}/prvAzienda/gestisciTratte.jsp" class="nav-link">
                         Gestione Tratte
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#sezione3" class="nav-link" onclick="showSection(3)">
+                    <a href="${pageContext.request.contextPath}/prvAzienda/gestisciFermate.jsp" class="nav-link">
                         Gestione Fermate
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#sezione4" class="nav-link" onclick="showSection(4)">
+                    <a href="${pageContext.request.contextPath}/prvAzienda/statistiche.jsp" class="nav-link">
                         Statistiche
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#sezione5" class="nav-link" onclick="showSection(5)">
+                    <a href="${pageContext.request.contextPath}/prvAzienda/orari.jsp" class="nav-link">
                         Orari e Programmazione
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#sezione6" class="nav-link" onclick="showSection(6)">
+                    <a href="${pageContext.request.contextPath}/prvAzienda/flotta.jsp" class="nav-link">
                         Gestione Flotta
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#sezione7" class="nav-link" onclick="showSection(7)">
+                    <a href="${pageContext.request.contextPath}/prvAzienda/report.jsp" class="nav-link">
                         Report Finanziari
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#sezione8" class="nav-link" onclick="showSection(8)">
+                    <a href="${pageContext.request.contextPath}/prvAzienda/dipendenti.jsp" class="nav-link">
                         Gestione Dipendenti
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#sezione9" class="nav-link" onclick="showSection(9)">
+                    <a href="${pageContext.request.contextPath}/prvAzienda/comunicazioni.jsp" class="nav-link">
                         Comunicazioni
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#sezione10" class="nav-link" onclick="showSection(10)">
+                    <a href="${pageContext.request.contextPath}/prvAzienda/impostazioni.jsp" class="nav-link">
                         Impostazioni
                     </a>
                 </li>
@@ -116,8 +116,8 @@
                             Visualizza e modifica le tratte della tua azienda, aggiungi nuove rotte e gestisci gli orari.
                         </div>
                         <div class="section-actions">
-                            <a href="addTratta" class="btn btn-primary">Aggiungi Tratta</a>
-                            <a href="#sezione2" class="btn btn-secondary" onclick="showSection(2)">Visualizza Tutte</a>
+                            <a href="${pageContext.request.contextPath}/prvAzienda/addTratta" class="btn btn-primary">Aggiungi Tratta</a>
+                            <a href="${pageContext.request.contextPath}/prvAzienda/gestisciTratte.jsp" class="btn btn-secondary">Visualizza Tutte</a>
                         </div>
                     </div>
                     <div class="section-card">
@@ -127,8 +127,8 @@
                             Aggiungi nuove fermate, modifica quelle esistenti e gestisci la rete di trasporti.
                         </div>
                         <div class="section-actions">
-                            <a href="addFermata" class="btn btn-primary">Aggiungi Fermata</a>
-                            <a href="#sezione3" class="btn btn-secondary" onclick="showSection(3)">Visualizza Tutte</a>
+                            <a href="${pageContext.request.contextPath}/prvAzienda/addFermata" class="btn btn-primary">Aggiungi Fermata</a>
+                            <a href="${pageContext.request.contextPath}/prvAzienda/gestisciFermate.jsp" class="btn btn-secondary">Visualizza Tutte</a>
                         </div>
                     </div>
                     <div class="section-card">
@@ -138,7 +138,7 @@
                             Monitora le performance delle tue tratte, il numero di passeggeri e i ricavi giornalieri.
                         </div>
                         <div class="section-actions">
-                            <a href="#sezione4" class="btn btn-primary" onclick="showSection(4)">Visualizza Report</a>
+                            <a href="${pageContext.request.contextPath}/prvAzienda/statistiche.jsp" class="btn btn-primary">Visualizza Report</a>
                         </div>
                     </div>
                 </div>

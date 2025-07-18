@@ -115,9 +115,17 @@ function createRouteCard(percorso, fermataPartenza, fermataArrivo, data, orario)
             </div>
             ${segmentsHtml}
             <div class="route-actions">
-                <button class="buy-ticket-btn" onclick="buyTicket(${JSON.stringify(percorso).replace(/"/g, '&quot;')}, '${data}', '${orario}')">
+                <div class="ticket-quantity">
+                    <label for="quantity-${index}">Quantità:</label>
+                    <input type="number" id="quantity-${index}" min="1" max="10" value="1" class="quantity-input">
+                </div>
+                <button class="buy-ticket-btn" onclick="buyTicket(${JSON.stringify(percorso).replace(/"/g, '&quot;')}, '${data}', '${orario}', ${index})">
                     <i class="fas fa-ticket-alt"></i>
                     Acquista biglietto
+                </button>
+                <button class="add-to-cart-btn" onclick="addToCart(${JSON.stringify(percorso).replace(/"/g, '&quot;')}, '${data}', '${orario}', ${index})">
+                    <i class="fas fa-shopping-cart"></i>
+                    Aggiungi al carrello
                 </button>
             </div>
         </div>
@@ -138,9 +146,101 @@ function displayError(message) {
 }
 
 /**
+ * Aggiunge un biglietto al carrello
+ */
+function addToCart(percorso, data, orario, index) {
+    const quantityInput = document.getElementById(`quantity-${index}`);
+    const quantity = parseInt(quantityInput.value) || 1;
+    
+    const formData = new FormData();
+    formData.append('action', 'aggiungi');
+    formData.append('percorso', JSON.stringify(percorso));
+    formData.append('data', data);
+    formData.append('orario', orario);
+    formData.append('prezzo', percorso.costo);
+    formData.append('quantita', quantity);
+    
+    fetch('/carrello', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            // Mostra messaggio di successo
+            showCartMessage('Biglietto aggiunto al carrello!', 'success');
+            // Aggiorna il contatore del carrello se presente
+            updateCartCounter();
+        } else {
+            showCartMessage('Errore nell\'aggiunta al carrello', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Errore:', error);
+        showCartMessage('Errore nell\'aggiunta al carrello', 'error');
+    });
+}
+
+/**
+ * Mostra un messaggio relativo al carrello
+ */
+function showCartMessage(message, type) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `cart-message ${type}`;
+    messageDiv.textContent = message;
+    messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: white;
+        font-weight: bold;
+        z-index: 1000;
+        background-color: ${type === 'success' ? '#059669' : '#dc2626'};
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    `;
+    
+    document.body.appendChild(messageDiv);
+    
+    setTimeout(() => {
+        messageDiv.remove();
+    }, 3000);
+}
+
+/**
+ * Aggiorna il contatore del carrello
+ */
+function updateCartCounter() {
+    fetch('/carrello')
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const carrello = doc.querySelector('#carrello-data');
+            if (carrello) {
+                const count = JSON.parse(carrello.textContent).length;
+                const counter = document.querySelector('.cart-counter');
+                if (counter) {
+                    counter.textContent = count;
+                    counter.style.display = count > 0 ? 'inline' : 'none';
+                }
+            }
+        })
+        .catch(error => console.error('Errore aggiornamento contatore:', error));
+}
+
+/**
  * Gestisce l'acquisto di un biglietto
  */
-async function buyTicket(percorso, data, orario) {
+async function buyTicket(percorso, data, orario, index) {
+    const quantityInput = document.getElementById(`quantity-${index}`);
+    const quantity = parseInt(quantityInput.value) || 1;
+    
+    // Se la quantità è maggiore di 1, aggiungi al carrello invece di acquistare direttamente
+    if (quantity > 1) {
+        addToCart(percorso, data, orario, index);
+        return;
+    }
     console.log('Acquisto biglietto per percorso:', percorso);
     
     try {

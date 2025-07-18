@@ -69,11 +69,15 @@ public class OrarioTratta{
     public void addnext(int minuti){
         if(listatime == null){
             listatime = new ArrayList<LocalTime>();
+            // Aggiungi l'orario di partenza iniziale se la lista è vuota
+            LocalTime ldt = LocalTime.parse(oraPartenza.toString());
+            listatime.add(ldt);
         }
-        LocalTime ldt = LocalTime.parse(oraPartenza.toString());
-        listatime.add(ldt);
-        ldt = ldt.plusMinutes(minuti);
-        listatime.add(ldt);
+        
+        // Prende l'ultimo orario nella lista e aggiunge i minuti
+        LocalTime ultimoOrario = listatime.get(listatime.size() - 1);
+        LocalTime nuovoOrario = ultimoOrario.plusMinutes(minuti);
+        listatime.add(nuovoOrario);
     }
 
 

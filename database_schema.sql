@@ -6,6 +6,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 -- Elimina tutte le tabelle nell'ordine corretto
 DROP TABLE IF EXISTS sessioni;
+DROP TABLE IF EXISTS Biglietto_Tratta;
 DROP TABLE IF EXISTS biglietto;
 DROP TABLE IF EXISTS Carte_Credito;
 DROP TABLE IF EXISTS Dipendente;
@@ -200,6 +201,20 @@ create index idx_bt
 
 create index idx_bu
     on biglietto (id_utente);
+
+create table Biglietto_Tratta
+(
+    id_biglietto       bigint not null,
+    id_tratta          bigint not null,
+    fermate_percorse   int    not null comment 'Numero di fermate percorse',
+    primary key (id_biglietto, id_tratta),
+    constraint fk_bt_biglietto
+        foreign key (id_biglietto) references biglietto (id)
+            on update cascade on delete cascade,
+    constraint fk_bt_tratta
+        foreign key (id_tratta) references Tratta (id)
+            on update cascade on delete cascade
+);
 
 create table sessioni
 (
