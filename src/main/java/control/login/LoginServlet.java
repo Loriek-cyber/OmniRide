@@ -24,7 +24,7 @@ public class LoginServlet extends HttpServlet {
         // Se l'utente è già loggato, lo mando alla dashboard
         HttpSession session = req.getSession(false); // Non creare una nuova sessione se non esiste
         if (session != null && session.getAttribute("utente") != null) {
-            resp.sendRedirect(req.getContextPath() + "/prvUser/dashboard.jsp");
+            resp.sendRedirect(req.getContextPath() + "/prvUser/dashboard");
             return;
         }
         // Altrimenti, mostro la pagina di login

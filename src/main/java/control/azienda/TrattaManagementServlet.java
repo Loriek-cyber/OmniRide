@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebServlet("/prvAzienda/tratte")
+@WebServlet("/prvAzienda/gestisciTratte")
 public class TrattaManagementServlet extends HttpServlet {
     private static final Logger logger = Logger.getLogger(TrattaManagementServlet.class.getName());
     
@@ -38,7 +38,7 @@ public class TrattaManagementServlet extends HttpServlet {
             Azienda azienda = AziendaDAO.fromIDutente(utente.getId());
             if (azienda == null) {
                 req.setAttribute("errore", "Azienda non trovata per l'utente corrente");
-                req.getRequestDispatcher("/prvAzienda/tratte.jsp").forward(req, resp);
+                req.getRequestDispatcher("/").forward(req, resp);
                 return;
             }
             
@@ -53,12 +53,12 @@ public class TrattaManagementServlet extends HttpServlet {
                     .mapToInt(t -> t.getAttiva() ? 1 : 0)
                     .sum());
             
-            req.getRequestDispatcher("/prvAzienda/tratte.jsp").forward(req, resp);
+            req.getRequestDispatcher("/prvAzienda/gestisciTratte.jsp").forward(req, resp);
             
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Errore nel recupero delle tratte", e);
             req.setAttribute("errore", "Errore nel recupero delle tratte: " + e.getMessage());
-            req.getRequestDispatcher("/prvAzienda/tratte.jsp").forward(req, resp);
+            req.getRequestDispatcher("/").forward(req, resp);
         }
     }
     

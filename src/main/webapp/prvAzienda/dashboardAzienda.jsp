@@ -33,37 +33,22 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/prvAzienda/gestisciTratte.jsp" class="nav-link">
+                    <a href="${pageContext.request.contextPath}/prvAzienda/gestisciTratte" class="nav-link">
                         Gestione Tratte
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/prvAzienda/gestisciFermate.jsp" class="nav-link">
-                        Gestione Fermate
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/prvAzienda/statistiche.jsp" class="nav-link">
-                        Statistiche
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/prvAzienda/orari.jsp" class="nav-link">
-                        Orari e Programmazione
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/prvAzienda/flotta.jsp" class="nav-link">
+                    <a href="${pageContext.request.contextPath}/prvAzienda/flotta" class="nav-link">
                         Gestione Flotta
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/prvAzienda/report.jsp" class="nav-link">
+                    <a href="${pageContext.request.contextPath}/prvAzienda/report" class="nav-link">
                         Report Finanziari
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/prvAzienda/dipendenti.jsp" class="nav-link">
+                    <a href="${pageContext.request.contextPath}/prvAzienda/dipendenti" class="nav-link">
                         Gestione Dipendenti
                     </a>
                 </li>
@@ -117,7 +102,7 @@
                         </div>
                         <div class="section-actions">
                             <a href="${pageContext.request.contextPath}/prvAzienda/addTratta" class="btn btn-primary">Aggiungi Tratta</a>
-                            <a href="${pageContext.request.contextPath}/prvAzienda/gestisciTratte.jsp" class="btn btn-secondary">Visualizza Tutte</a>
+                            <a href="${pageContext.request.contextPath}/prvAzienda/gestisciTratte" class="btn btn-secondary">Visualizza Tutte</a>
                         </div>
                     </div>
                     <div class="section-card">
@@ -131,16 +116,7 @@
                             <a href="${pageContext.request.contextPath}/prvAzienda/gestisciFermate.jsp" class="btn btn-secondary">Visualizza Tutte</a>
                         </div>
                     </div>
-                    <div class="section-card">
-                        <div class="section-number">Accesso Rapido 3</div>
-                        <div class="section-title">Statistiche in Tempo Reale</div>
-                        <div class="section-description">
-                            Monitora le performance delle tue tratte, il numero di passeggeri e i ricavi giornalieri.
-                        </div>
-                        <div class="section-actions">
-                            <a href="${pageContext.request.contextPath}/prvAzienda/statistiche.jsp" class="btn btn-primary">Visualizza Report</a>
-                        </div>
-                    </div>
+
                 </div>
             </div>
 

@@ -1,4 +1,4 @@
-package control.add;
+package control.azienda;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

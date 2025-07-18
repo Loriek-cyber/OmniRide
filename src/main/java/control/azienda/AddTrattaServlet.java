@@ -1,4 +1,4 @@
-package control.add;
+package control.azienda;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,7 +15,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @WebServlet(name = "addTratta", value = "/prvAzienda/addTratta")
 public class AddTrattaServlet extends HttpServlet {
