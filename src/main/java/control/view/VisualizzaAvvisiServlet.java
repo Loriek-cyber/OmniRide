@@ -23,10 +23,11 @@ public class VisualizzaAvvisiServlet extends HttpServlet {
         Map<Long, Tratta> tratteMap = (Map<Long, Tratta>) getServletContext().getAttribute("tratteMap");
 
         // Controllo che i dati non siano null (opzionale ma consigliato)
+        /* Seazione di Debug
         if (avvisi == null || tratteMap == null) {
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Dati non disponibili nel context.");
             return;
-        }
+        }*/
 
         // Imposto gli attributi da passare alla JSP
         req.setAttribute("avvisi", avvisi);

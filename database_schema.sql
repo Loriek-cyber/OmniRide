@@ -1,28 +1,3 @@
--- Script per resettare completamente il database
--- ATTENZIONE: Questo script eliminerà tutti i dati!
-
--- Disabilita i controlli delle foreign key per evitare errori durante il DROP
-SET FOREIGN_KEY_CHECKS = 0;
-
--- Elimina tutte le tabelle nell'ordine corretto
-DROP TABLE IF EXISTS sessioni;
-DROP TABLE IF EXISTS Biglietto_Tratta;
-DROP TABLE IF EXISTS biglietto;
-DROP TABLE IF EXISTS Carte_Credito;
-DROP TABLE IF EXISTS Dipendente;
-DROP TABLE IF EXISTS Utente;
-DROP TABLE IF EXISTS Tratta_Orari;
-DROP TABLE IF EXISTS Fermata_Tratta;
-DROP TABLE IF EXISTS Avvisi_tratte;
-DROP TABLE IF EXISTS Tratta;
-DROP TABLE IF EXISTS Fermata;
-DROP TABLE IF EXISTS Azienda;
-DROP TABLE IF EXISTS Avvisi;
-
--- Riabilita i controlli delle foreign key
-SET FOREIGN_KEY_CHECKS = 1;
-
--- Ricrea tutte le tabelle
 create table Avvisi
 (
     id          bigint auto_increment
@@ -138,6 +113,52 @@ create table Utente
         unique (email)
 );
 
+create table Biglietto
+(
+    id             bigint auto_increment
+        primary key,
+    id_utente      bigint                                                     not null,
+    id_tratta      bigint                                                     not null,
+    id_orario      bigint                                                     null,
+    data_acquisto  datetime                                                   not null,
+    data_convalida datetime                                                   null,
+    data_scadenza  datetime                                                   null,
+    stato          enum ('ACQUISTATO', 'CONVALIDATO', 'SCADUTO', 'ANNULLATO') not null,
+    prezzo_pagato  double                                                     not null,
+    constraint fk_b_orario
+        foreign key (id_orario) references Tratta_Orari (id)
+            on update cascade on delete set null,
+    constraint fk_b_tratta
+        foreign key (id_tratta) references Tratta (id)
+            on update cascade on delete cascade,
+    constraint fk_b_utente
+        foreign key (id_utente) references Utente (id)
+            on update cascade on delete cascade
+);
+
+create index idx_bo
+    on Biglietto (id_orario);
+
+create index idx_bt
+    on Biglietto (id_tratta);
+
+create index idx_bu
+    on Biglietto (id_utente);
+
+create table Biglietto_Tratta
+(
+    id_biglietto     bigint not null,
+    id_tratta        bigint not null,
+    fermate_percorse int    not null comment 'Numero di fermate percorse',
+    primary key (id_biglietto, id_tratta),
+    constraint fk_bt_biglietto
+        foreign key (id_biglietto) references Biglietto (id)
+            on update cascade on delete cascade,
+    constraint fk_bt_tratta
+        foreign key (id_tratta) references Tratta (id)
+            on update cascade on delete cascade
+);
+
 create table Carte_Credito
 (
     id_utente         bigint       not null
@@ -170,52 +191,6 @@ create table Dipendente
 create index idx_dipendente_azienda
     on Dipendente (id_azienda);
 
-create table biglietto
-(
-    id             bigint auto_increment
-        primary key,
-    id_utente      bigint                                                     not null,
-    id_tratta      bigint                                                     not null,
-    id_orario      bigint                                                     null,
-    data_acquisto  datetime                                                   not null,
-    data_convalida datetime                                                   null,
-    data_scadenza  datetime                                                   null,
-    stato          enum ('ACQUISTATO', 'CONVALIDATO', 'SCADUTO', 'ANNULLATO') not null,
-    prezzo_pagato  double                                                     not null,
-    constraint fk_b_orario
-        foreign key (id_orario) references Tratta_Orari (id)
-            on update cascade on delete set null,
-    constraint fk_b_tratta
-        foreign key (id_tratta) references Tratta (id)
-            on update cascade on delete cascade,
-    constraint fk_b_utente
-        foreign key (id_utente) references Utente (id)
-            on update cascade on delete cascade
-);
-
-create index idx_bo
-    on biglietto (id_orario);
-
-create index idx_bt
-    on biglietto (id_tratta);
-
-create index idx_bu
-    on biglietto (id_utente);
-
-create table Biglietto_Tratta
-(
-    id_biglietto       bigint not null,
-    id_tratta          bigint not null,
-    fermate_percorse   int    not null comment 'Numero di fermate percorse',
-    primary key (id_biglietto, id_tratta),
-    constraint fk_bt_biglietto
-        foreign key (id_biglietto) references biglietto (id)
-            on update cascade on delete cascade,
-    constraint fk_bt_tratta
-        foreign key (id_tratta) references Tratta (id)
-            on update cascade on delete cascade
-);
-
 create table sessioni
 (
     id               bigint auto_increment
@@ -237,4 +212,3 @@ create table sessioni
 create index idx_s_utente
     on sessioni (utente_id);
 
--- Reset completato

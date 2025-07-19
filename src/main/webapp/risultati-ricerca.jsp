@@ -130,8 +130,8 @@
                                         <i class="fas fa-euro-sign"></i>
                                         <span class="price-value"><fmt:formatNumber value="${tratta.costo}" type="currency" currencySymbol="€"/></span>
                                     </div>
-                                    <a href="${pageContext.request.contextPath}/dettaglioTratta?id=${tratta.id}" class="btn-details">
-                                        Dettagli e Acquisto <i class="fas fa-chevron-right"></i>
+                                    <a href="${pageContext.request.contextPath}/selectTicketType?percorso=${param.partenza}-${param.arrivo}&data=${param.data}&orario=${param.orario}&prezzo=${tratta.costo}" class="btn-cart-route">
+                                        <i class="fas fa-shopping-cart"></i> Aggiungi al Carrello
                                     </a>
                                 </div>
                             </div>

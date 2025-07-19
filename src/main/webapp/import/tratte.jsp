@@ -33,11 +33,6 @@
                                 </div>
                     </div>
 
-                    <div class="purchase-section">
-                        <a href="acquistaBiglietto?trattaId=${tratta.id}&prezzo=${tratta.costo}" class="btn btn-primary btn-lg">
-                            Acquista Biglietto
-                        </a>
-                    </div>
 
                     <div class="info-section">
                                 <div class="tratta-stat">

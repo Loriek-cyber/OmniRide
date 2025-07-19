@@ -17,29 +17,39 @@
         <h2>Il Tuo Carrello</h2>
 
         <c:choose>
-            <c:when test="${not empty sessionScope.carrello && not empty sessionScope.carrello.values()}">
+            <c:when test="${not empty carrello}">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Tratta</th>
-                            <th>Azienda</th>
-                            <th>Prezzo (stimato)</th>
+                            <th>Percorso</th>
+                            <th>Data</th>
+                            <th>Orario</th>
+                            <th>Quantità</th>
+                            <th>Prezzo</th>
                             <th>Azione</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <c:set var="prezzoTotale" value="0"/>
-                        <c:forEach var="item" items="${sessionScope.carrello.values()}">
-                            <c:set var="prezzoTratta" value="2.50"/> <%-- Prezzo placeholder --%>
-                            <c:set var="prezzoTotale" value="${prezzoTotale + prezzoTratta}"/>
+                        <c:forEach var="item" items="${carrello}" varStatus="status">
                             <tr>
-                                <td>${item.nome}</td>
-                                <td>${item.azienda.nome}</td>
-                                <td><fmt:formatNumber value="${prezzoTratta}" type="currency" currencySymbol="€"/></td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${item.percorsoJson != null}">
+                                            Percorso personalizzato
+                                        </c:when>
+                                        <c:otherwise>
+                                            Tratta diretta
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>${item.data}</td>
+                                <td>${item.orario}</td>
+                                <td>${item.quantita}</td>
+                                <td><fmt:formatNumber value="${item.prezzo}" type="currency" currencySymbol="€"/></td>
                                 <td>
                                     <form action="${pageContext.request.contextPath}/carrello" method="post" style="display:inline;">
-                                        <input type="hidden" name="action" value="remove">
-                                        <input type="hidden" name="idTratta" value="${item.id}">
+                                        <input type="hidden" name="action" value="rimuovi">
+                                        <input type="hidden" name="indice" value="${status.index}">
                                         <button type="submit" class="btn btn-danger btn-sm">Rimuovi</button>
                                     </form>
                                 </td>
@@ -48,15 +58,19 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="2" style="text-align: right;"><strong>Totale:</strong></td>
-                            <td><strong><fmt:formatNumber value="${prezzoTotale}" type="currency" currencySymbol="€"/></strong></td>
+                            <td colspan="4" style="text-align: right;"><strong>Totale:</strong></td>
+                            <td><strong><fmt:formatNumber value="${totale}" type="currency" currencySymbol="€"/></strong></td>
                             <td></td>
                         </tr>
                     </tfoot>
                 </table>
 
                 <div style="text-align: right; margin-top: 20px;">
-                    <form action="${pageContext.request.contextPath}/checkout" method="post">
+                    <form action="${pageContext.request.contextPath}/carrello" method="post" style="display: inline; margin-right: 10px;">
+                        <input type="hidden" name="action" value="svuota">
+                        <button type="submit" class="btn btn-secondary">Svuota Carrello</button>
+                    </form>
+                    <form action="${pageContext.request.contextPath}/checkout" method="post" style="display: inline;">
                         <button type="submit" class="btn btn-primary">Procedi all'Acquisto</button>
                     </form>
                 </div>

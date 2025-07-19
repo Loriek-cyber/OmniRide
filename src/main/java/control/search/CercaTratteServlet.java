@@ -43,7 +43,7 @@ public class CercaTratteServlet extends HttpServlet {
             dataStr == null || dataStr.trim().isEmpty()) {
             
             request.setAttribute("errorMessage", "Tutti i campi di ricerca sono obbligatori.");
-            request.getRequestDispatcher("/index.jsp").forward(request, response);
+            request.getRequestDispatcher("/").forward(request, response);
             return;
         }
         
@@ -181,12 +181,12 @@ double durata = calcolaDurataInOre(t);
             e.printStackTrace();
             // Errore nel formato di data o ora
             request.setAttribute("errorMessage", "Formato data o ora non valido. Usa il formato corretto.");
-            request.getRequestDispatcher("/index.jsp").forward(request, response);
+            request.getRequestDispatcher("/").forward(request, response);
         } catch (NumberFormatException e) {
             e.printStackTrace();
             // Errore nel formato numerico
             request.setAttribute("errorMessage", "Formato numerico non valido per prezzo o durata.");
-            request.getRequestDispatcher("/index.jsp").forward(request, response);
+            request.getRequestDispatcher("/").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             // Log dettagliato dell'errore
@@ -200,7 +200,7 @@ double durata = calcolaDurataInOre(t);
             // In caso di errore generico, mostra un messaggio più dettagliato
             request.setAttribute("errorMessage", "Si è verificato un errore durante la ricerca. Riprova più tardi.");
             request.setAttribute("errorDetails", e.getMessage());
-            request.getRequestDispatcher("/index.jsp").forward(request, response);
+            request.getRequestDispatcher("/").forward(request, response);
         }
     }
     

@@ -11,67 +11,11 @@
 <body>
     <jsp:include page="/import/header.jsp"/>
     <div class="dashboard-layout">
-        <!-- Sidebar -->
-        <nav class="sidebar" id="sidebar">
-                <div class="sidebar-header">
-                    <h3>Dashboard Azienda</h3>
-                    <div class="company-name">
-                        <c:if test="${not empty azienda}">
-                            <c:out value="${azienda.nome}"/>
-                            <small><c:out value="${sessionScope.utente.nome} ${sessionScope.utente.cognome}"/></small>
-                        </c:if>
-                        <c:if test="${empty azienda}">
-                            <c:out value="${sessionScope.utente.nome} ${sessionScope.utente.cognome}"/>
-                        </c:if>
-                    </div>
-                </div>
-            
-            <ul class="sidebar-nav">
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/prvAzienda/dashboardAzienda.jsp" class="nav-link active">
-                        Panoramica
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/prvAzienda/gestisciTratte" class="nav-link">
-                        Gestione Tratte
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/prvAzienda/flotta" class="nav-link">
-                        Gestione Flotta
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/prvAzienda/report" class="nav-link">
-                        Report Finanziari
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/prvAzienda/dipendenti" class="nav-link">
-                        Gestione Dipendenti
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/prvAzienda/comunicazioni.jsp" class="nav-link">
-                        Comunicazioni
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="${pageContext.request.contextPath}/prvAzienda/impostazioni.jsp" class="nav-link">
-                        Impostazioni
-                    </a>
-                </li>
-            </ul>
-        </nav>
-
-        <!-- Overlay per mobile -->
-        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
-
+        <jsp:include page="sidebarAzienda.jsp"/>
         <!-- Contenuto principale -->
         <main class="main-content">
             <!-- Toggle button per mobile -->
-            <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+            <button id="sidebarToggle" class="sidebar-toggle">☰</button>
 
             <!-- Sezione 1: Panoramica -->
             <div id="content-sezione1" class="content-section active">
@@ -113,7 +57,6 @@
                         </div>
                         <div class="section-actions">
                             <a href="${pageContext.request.contextPath}/prvAzienda/addFermata" class="btn btn-primary">Aggiungi Fermata</a>
-                            <a href="${pageContext.request.contextPath}/prvAzienda/gestisciFermate.jsp" class="btn btn-secondary">Visualizza Tutte</a>
                         </div>
                     </div>
 
@@ -143,73 +86,7 @@
             </c:forEach>
         </main>
     </div>
-
-    <script>
-        // Gestione navigazione sidebar
-        function showSection(sectionNumber) {
-            // Nascondi tutte le sezioni
-            const allSections = document.querySelectorAll('.content-section');
-            allSections.forEach(section => {
-                section.style.display = 'none';
-            });
-
-            // Rimuovi classe active da tutti i link
-            const allLinks = document.querySelectorAll('.nav-link');
-            allLinks.forEach(link => {
-                link.classList.remove('active');
-            });
-
-            // Mostra la sezione selezionata
-            const targetSection = document.getElementById(`content-sezione${sectionNumber}`);
-            if (targetSection) {
-                targetSection.style.display = 'block';
-            }
-
-            // Aggiungi classe active al link corrente
-            const targetLink = document.querySelector(`a[onclick="showSection(${sectionNumber})"]`);
-            if (targetLink) {
-                targetLink.classList.add('active');
-            }
-
-            // Chiudi sidebar su mobile dopo la selezione
-            if (window.innerWidth <= 768) {
-                toggleSidebar();
-            }
-        }
-
-        // Gestione toggle sidebar per mobile
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
-
-        // Chiudi sidebar quando si clicca fuori (solo mobile)
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const toggle = document.querySelector('.sidebar-toggle');
-            
-            if (window.innerWidth <= 768 && 
-                !sidebar.contains(event.target) && 
-                !toggle.contains(event.target) && 
-                sidebar.classList.contains('active')) {
-                toggleSidebar();
-            }
-        });
-
-        // Gestione resize window
-        window.addEventListener('resize', function() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            
-            if (window.innerWidth > 768) {
-                sidebar.classList.remove('active');
-                overlay.classList.remove('active');
-            }
-        });
-    </script>
     <jsp:include page="/import/footer.jsp"/>
+    <script src="${pageContext.request.contextPath}/Scripts/commonSidebar.js"></script>
 </body>
 </html>

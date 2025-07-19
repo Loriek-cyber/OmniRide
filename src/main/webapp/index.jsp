@@ -8,20 +8,6 @@
     <title>OmniRide - Home</title>
     <jsp:include page="import/metadata.jsp"/>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-    <style>
-        .ui-autocomplete {
-            max-height: 200px;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-        .ui-menu-item {
-            padding: 5px 10px;
-        }
-        .ui-menu-item:hover {
-            background-color: #32cd32;
-            color: white;
-        }
-    </style>
 </head>
 <body>
 <jsp:include page="import/header.jsp"/>

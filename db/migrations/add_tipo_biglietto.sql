@@ -1,29 +1,46 @@
--- Script per aggiungere il campo tipo alla tabella biglietto
--- Questo script aggiunge il supporto per i diversi tipi di biglietto (NORMALE, GIORNALIERO, ANNUALE)
+-- Migration: Add tipo column to Biglietto table
+-- Date: 2025-07-19
+-- Description: Adds the 'tipo' column to support different ticket types (NORMALE, GIORNALIERO, ANNUALE)
 
--- Aggiunge la colonna tipo come ENUM alla tabella biglietto
-ALTER TABLE biglietto 
-ADD COLUMN tipo ENUM('NORMALE', 'GIORNALIERO', 'ANNUALE') NOT NULL DEFAULT 'NORMALE';
+USE omniride;
 
--- Aggiorna i biglietti esistenti con il tipo NORMALE per default
-UPDATE biglietto 
+-- Add the tipo column to the Biglietto table
+ALTER TABLE Biglietto 
+ADD COLUMN tipo ENUM('NORMALE', 'GIORNALIERO', 'ANNUALE') 
+NOT NULL DEFAULT 'NORMALE' 
+COMMENT 'Tipo di biglietto: NORMALE (4 ore), GIORNALIERO (24 ore), ANNUALE (365 giorni)'
+AFTER prezzo_pagato;
+
+-- Update existing records to have NORMALE as default tipo
+UPDATE Biglietto 
 SET tipo = 'NORMALE' 
 WHERE tipo IS NULL;
 
--- Aggiunge un indice per migliorare le performance delle query per tipo
-CREATE INDEX idx_biglietto_tipo ON biglietto(tipo);
+-- Add index for better query performance on tipo column
+CREATE INDEX idx_biglietto_tipo ON Biglietto(tipo);
 
--- Aggiunge un indice per i biglietti ospite (id_utente = -1)
-CREATE INDEX idx_biglietto_guest ON biglietto(id_utente) WHERE id_utente = -1;
+-- Add index for combined queries (user + tipo)
+CREATE INDEX idx_biglietto_utente_tipo ON Biglietto(id_utente, tipo);
 
--- Aggiunge un indice combinato per stato e tipo
-CREATE INDEX idx_biglietto_stato_tipo ON biglietto(stato, tipo);
+-- Add index for combined queries (stato + tipo)
+CREATE INDEX idx_biglietto_stato_tipo ON Biglietto(stato, tipo);
 
--- Inserisce un utente speciale per gli ospiti se non esiste
+-- Insert a special guest user if it doesn't exist
+-- Note: This allows guest users to purchase tickets with id_utente = -1
 INSERT IGNORE INTO Utente (id, nome, cognome, email, password_hash, data_registrazione, ruolo) 
-VALUES (-1, 'Guest', 'User', 'guest@omniride.local', 'GUEST_USER_NO_PASSWORD', NOW(), 'GUEST');
+VALUES (-1, 'Guest', 'User', 'guest@omniride.local', 'GUEST_USER_NO_PASSWORD', NOW(), 'utente');
 
--- Commenti per documentare le modifiche
--- 1. Campo tipo: permette di distinguere tra biglietti normali, giornalieri e annuali
--- 2. Utente ospite: ID -1 per identificare biglietti acquistati senza registrazione
--- 3. Indici: migliorano le performance per le query comuni
+-- Verify the changes
+DESCRIBE Biglietto;
+
+-- Show sample data to verify the migration
+SELECT id, id_utente, stato, prezzo_pagato, tipo 
+FROM Biglietto 
+LIMIT 5;
+
+COMMIT;
+
+-- Migration completed successfully!
+-- 1. Campo tipo: allows distinction between normal, daily and annual tickets
+-- 2. Guest user: ID -1 for tickets purchased without registration
+-- 3. Indexes: improve performance for common queries

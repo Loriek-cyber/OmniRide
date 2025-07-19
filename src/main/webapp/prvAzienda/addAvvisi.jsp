@@ -12,9 +12,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/form.css">
 </head>
 <body>
-    <jsp:include page="/import/header.jsp"/>
     <div class="dashboard-layout">
-        <jsp:include page="/import/userSidebar.jsp"/>
         <main class="main-content">
             <div class="content-header">
                 <h1>Aggiungi Avviso</h1>
@@ -39,6 +37,5 @@
             </div>
         </main>
     </div>
-    <jsp:include page="/import/footer.jsp"/>
 </body>
 </html>

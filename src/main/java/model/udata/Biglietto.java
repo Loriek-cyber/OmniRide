@@ -16,6 +16,7 @@ import java.util.Map;
 public class Biglietto {
     private Long id;
     private Long id_utente;
+    private String nome; // Nome del percorso: {Prima Fermata} - {Ultima Fermata}
     private List<Long> id_tratte;
     private List<Integer> numero_fermate;
     private LocalTime dataAcquisto;
@@ -53,14 +54,57 @@ public class Biglietto {
         this.stato = stato;
         this.prezzo = percorso.getCosto();
         this.tipo = TipoBiglietto.NORMALE; // Default tipo
+        
+        // Costruisci il nome del percorso automaticamente
+        this.nome = buildNomeFromPercorso(percorso);
 
         // Se il biglietto è già convalidato, imposta dataConvalida e dataFine
         if (stato == StatoBiglietto.CONVALIDATO) {
             this.dataConvalida = LocalTime.now();
-            this.dataFine = LocalTime.now().plusHours(4); // Biglietto normale valido per 4 ore
+            // Imposta la data di fine in base al tipo di biglietto
+            switch (this.tipo) {
+                case GIORNALIERO:
+                    this.dataFine = LocalTime.now().plusHours(24); // Valido per 24 ore
+                    break;
+                case ANNUALE:
+                    this.dataFine = LocalTime.now().plusHours(24 * 365); // Valido per 365 giorni
+                    break;
+                case NORMALE:
+                default:
+                    this.dataFine = LocalTime.now().plusHours(4); // Valido per 4 ore
+                    break;
+            }
         }
     }
 
+    /**
+     * Costruisce il nome del percorso dal primo all'ultimo fermata
+     * @param percorso Il percorso da cui estrarre i nomi delle fermate
+     * @return Il nome formattato come "Prima Fermata - Ultima Fermata"
+     */
+    private String buildNomeFromPercorso(Percorso percorso) {
+        if (percorso == null || percorso.getSegmenti() == null || percorso.getSegmenti().isEmpty()) {
+            return "Percorso Non Definito";
+        }
+        
+        try {
+            // Prendi il primo segmento per la fermata di partenza
+            SegmentoPercorso primoSegmento = percorso.getSegmenti().get(0);
+            String primaFermata = primoSegmento.getFermataIn() != null ? 
+                primoSegmento.getFermataIn().getNome() : "Partenza";
+            
+            // Prendi l'ultimo segmento per la fermata di arrivo
+            SegmentoPercorso ultimoSegmento = percorso.getSegmenti().get(percorso.getSegmenti().size() - 1);
+            String ultimaFermata = ultimoSegmento.getFermataOu() != null ? 
+                ultimoSegmento.getFermataOu().getNome() : "Arrivo";
+            
+            return primaFermata + " - " + ultimaFermata;
+        } catch (Exception e) {
+            // In caso di errore, restituisci un nome di default
+            return "Percorso Non Definito";
+        }
+    }
+    
     // Costruttore per biglietto con tipo specifico (automaticamente convalidato)
     public Biglietto(Percorso percorso, TipoBiglietto tipo) {
         this.dataAcquisto = LocalTime.now();
@@ -75,6 +119,9 @@ public class Biglietto {
 
         this.prezzo = percorso.getCosto();
         this.tipo = tipo;
+        
+        // Costruisci il nome del percorso automaticamente
+        this.nome = buildNomeFromPercorso(percorso);
 
         // Calcola prezzo e durata in base al tipo
         switch (tipo) {
@@ -177,6 +224,14 @@ public class Biglietto {
         this.id_utente = id_utente;
     }
 
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
     public List<Long> getId_tratte() {
         return id_tratte;
     }
@@ -239,6 +294,45 @@ public class Biglietto {
 
     public void setTipo(TipoBiglietto tipo) {
         this.tipo = tipo;
+    }
+
+    // Static method to calculate price based on ticket type
+    public static double calcolaPrezzo(double prezzoBase, TipoBiglietto tipo) {
+        switch (tipo) {
+            case GIORNALIERO:
+                return prezzoBase * 3; // Day ticket costs 3x normal price
+            case ANNUALE:
+                return ((prezzoBase * 3) / 2) * 100; // Annual ticket calculation
+            case NORMALE:
+            default:
+                return prezzoBase; // Normal price
+        }
+    }
+    
+    // Static method to get ticket duration in hours based on type
+    public static long getDurataOre(TipoBiglietto tipo) {
+        switch (tipo) {
+            case GIORNALIERO:
+                return 24; // Valid for 24 hours
+            case ANNUALE:
+                return 24 * 365; // Valid for 365 days
+            case NORMALE:
+            default:
+                return 4; // Valid for 4 hours
+        }
+    }
+    
+    // Static method to get ticket type description
+    public static String getDescrizione(TipoBiglietto tipo) {
+        switch (tipo) {
+            case GIORNALIERO:
+                return "Biglietto Giornaliero (24 ore)";
+            case ANNUALE:
+                return "Abbonamento Annuale (365 giorni)";
+            case NORMALE:
+            default:
+                return "Biglietto Normale (4 ore)";
+        }
     }
 
     @Override

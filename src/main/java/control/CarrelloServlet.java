@@ -107,6 +107,11 @@ public class CarrelloServlet extends HttpServlet {
                 nuovoBiglietto.setOrario(orario);
                 nuovoBiglietto.setPrezzo(prezzo);
                 nuovoBiglietto.setQuantita(quantita);
+                
+                // Costruisci il nome dal percorsoJson
+                String nome = percorsoJson;
+                nuovoBiglietto.setNome(nome);
+                
                 carrello.add(nuovoBiglietto);
             }
             
@@ -142,17 +147,24 @@ public class CarrelloServlet extends HttpServlet {
     // Classe interna per rappresentare un biglietto nel carrello
     public static class BigliettoCarrello {
         private String percorsoJson;
+        private String nome;
         private String data;
         private String orario;
         private double prezzo;
         private int quantita;
+        private model.udata.Biglietto.TipoBiglietto tipo;
         
         // Costruttori
-        public BigliettoCarrello() {}
+        public BigliettoCarrello() {
+            this.tipo = model.udata.Biglietto.TipoBiglietto.NORMALE; // Default type
+        }
         
         // Getters e Setters
         public String getPercorsoJson() { return percorsoJson; }
         public void setPercorsoJson(String percorsoJson) { this.percorsoJson = percorsoJson; }
+        
+        public String getNome() { return nome; }
+        public void setNome(String nome) { this.nome = nome; }
         
         public String getData() { return data; }
         public void setData(String data) { this.data = data; }
@@ -165,5 +177,8 @@ public class CarrelloServlet extends HttpServlet {
         
         public int getQuantita() { return quantita; }
         public void setQuantita(int quantita) { this.quantita = quantita; }
+        
+        public model.udata.Biglietto.TipoBiglietto getTipo() { return tipo; }
+        public void setTipo(model.udata.Biglietto.TipoBiglietto tipo) { this.tipo = tipo; }
     }
 }

@@ -70,4 +70,4 @@
     <span class="toggle-icon">☰</span>
 </button>
 
-<script src="${pageContext.request.contextPath}/Scripts/sidebar.js"></script>
+<script src="${pageContext.request.contextPath}/Scripts/commonSidebar.js"></script>

@@ -30,8 +30,8 @@
                         <h3>Nessun Biglietto trovato</h3>
                         <p>Non hai ancora acquistato nessun biglietto. Inizia a pianificare il tuo prossimo viaggio!</p>
                         <div class="dashboard-actions">
-                            <a href="${pageContext.request.contextPath}/tratte.jsp" class="btn">Cerca Tratte</a>
-                            <a href="${pageContext.request.contextPath}/index.jsp" class="btn">Torna alla Home</a>
+                            <a href="${pageContext.request.contextPath}/visualizzaTratte" class="btn">Cerca Tratte</a>
+                            <a href="${pageContext.request.contextPath}/" class="btn">Torna alla Home</a>
                         </div>
                     </div>
                 </div>

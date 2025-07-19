@@ -9,48 +9,44 @@ import java.util.List;
 
 public class BigliettiDAO {
     
-    // Query SQL
+    // Query SQL - Updated to match actual database schema
     private static final String INSERT_BIGLIETTO = 
-        "INSERT INTO biglietto (id_utente, id_tratta, id_orario, data_acquisto, data_convalida, data_scadenza, stato, prezzo_pagato, tipo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        "INSERT INTO Biglietto (id_utente, nome, data_acquisto, data_convalida, data_scadenza, stato, prezzo_pagato, tipo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     
     private static final String INSERT_BIGLIETTO_TRATTA = 
         "INSERT INTO Biglietto_Tratta (id_biglietto, id_tratta, fermate_percorse) VALUES (?, ?, ?)";
     
     private static final String SELECT_BY_ID = 
-        "SELECT * FROM biglietto WHERE id = ?";
+        "SELECT * FROM Biglietto WHERE id = ?";
     
     private static final String SELECT_TRATTE_BY_BIGLIETTO = 
         "SELECT * FROM Biglietto_Tratta WHERE id_biglietto = ?";
     
     private static final String SELECT_ALL = 
-        "SELECT * FROM biglietto";
+        "SELECT * FROM Biglietto";
     
     private static final String SELECT_BY_USER = 
-        "SELECT * FROM biglietto WHERE id_utente = ?";
+        "SELECT * FROM Biglietto WHERE id_utente = ?";
     
     private static final String SELECT_BY_USER_ACTIVE = 
-        "SELECT * FROM biglietto WHERE id_utente = ? AND stato IN ('ACQUISTATO', 'CONVALIDATO')";
+        "SELECT * FROM Biglietto WHERE id_utente = ? AND stato IN ('ACQUISTATO', 'CONVALIDATO')";
     
     private static final String SELECT_BY_USER_INACTIVE = 
-        "SELECT * FROM biglietto WHERE id_utente = ? AND stato IN ('SCADUTO', 'ANNULLATO')";
-    
-    private static final String SELECT_BY_TYPE = 
-        "SELECT * FROM biglietto WHERE tipo = ?";
+        "SELECT * FROM Biglietto WHERE id_utente = ? AND stato IN ('SCADUTO', 'ANNULLATO')";
     
     private static final String SELECT_GUEST_TICKETS = 
-        "SELECT * FROM biglietto WHERE id_utente = -1";
-    
-    private static final String SELECT_BY_USER_AND_TYPE = 
-        "SELECT * FROM biglietto WHERE id_utente = ? AND tipo = ?";
+        "SELECT * FROM Biglietto WHERE id_utente = -1";
     
     private static final String UPDATE_BIGLIETTO = 
-        "UPDATE biglietto SET id_utente = ?, id_tratta = ?, id_orario = ?, data_acquisto = ?, data_convalida = ?, data_scadenza = ?, stato = ?, prezzo_pagato = ?, tipo = ? WHERE id = ?";
+        "UPDATE Biglietto SET id_utente = ?, nome = ?, data_acquisto = ?, data_convalida = ?, data_scadenza = ?, stato = ?, prezzo_pagato = ?, tipo = ? WHERE id = ?";
     
     private static final String DELETE_BIGLIETTO = 
-        "DELETE FROM biglietto WHERE id = ?";
+        "DELETE FROM Biglietto WHERE id = ?";
     
     private static final String DELETE_BIGLIETTO_TRATTA = 
         "DELETE FROM Biglietto_Tratta WHERE id_biglietto = ?";
+    private static final String SELECT_BY_TYPE = "Select * from Biglietto where tipo = ?";
+    private static final String SELECT_BY_USER_AND_TYPE = "SELECT * from Biglietto where id_utente = ? AND tipo = ?";
 
     //funzioni basilari
     public static void delete(Biglietto biglietto) {
@@ -83,15 +79,14 @@ public class BigliettiDAO {
             // Aggiorna il biglietto principale
             try (PreparedStatement stmt = conn.prepareStatement(UPDATE_BIGLIETTO)) {
                 stmt.setLong(1, biglietto.getId_utente());
-                stmt.setLong(2, biglietto.getId_tratte().isEmpty() ? null : biglietto.getId_tratte().get(0));
-                stmt.setObject(3, null); // id_orario
-                stmt.setTimestamp(4, biglietto.getDataAcquisto() != null ? Timestamp.valueOf(biglietto.getDataAcquisto().atDate(java.time.LocalDate.now())) : null);
-                stmt.setTimestamp(5, biglietto.getDataConvalida() != null ? Timestamp.valueOf(biglietto.getDataConvalida().atDate(java.time.LocalDate.now())) : null);
-                stmt.setTimestamp(6, biglietto.getDataFine() != null ? Timestamp.valueOf(biglietto.getDataFine().atDate(java.time.LocalDate.now())) : null);
-                stmt.setString(7, biglietto.getStato().name());
-                stmt.setDouble(8, biglietto.getPrezzo());
-                stmt.setString(9, biglietto.getTipo() != null ? biglietto.getTipo().name() : "NORMALE");
-                stmt.setLong(10, biglietto.getId());
+                stmt.setString(2, biglietto.getNome());
+                stmt.setTimestamp(3, biglietto.getDataAcquisto() != null ? Timestamp.valueOf(biglietto.getDataAcquisto().atDate(java.time.LocalDate.now())) : null);
+                stmt.setTimestamp(4, biglietto.getDataConvalida() != null ? Timestamp.valueOf(biglietto.getDataConvalida().atDate(java.time.LocalDate.now())) : null);
+                stmt.setTimestamp(5, biglietto.getDataFine() != null ? Timestamp.valueOf(biglietto.getDataFine().atDate(java.time.LocalDate.now())) : null);
+                stmt.setString(6, biglietto.getStato().name());
+                stmt.setDouble(7, biglietto.getPrezzo());
+                stmt.setString(8, biglietto.getTipo() != null ? biglietto.getTipo().name() : "NORMALE");
+                stmt.setLong(9, biglietto.getId());
                 stmt.executeUpdate();
             }
             
@@ -119,23 +114,50 @@ public class BigliettiDAO {
         }
     }
 
+    /**
+     * Ensures that the guest user (-1) exists in the database
+     * @throws SQLException if database operation fails
+     */
+    private static void ensureGuestUserExists() throws SQLException {
+        try (Connection conn = DBConnector.getConnection()) {
+            // Check if guest user exists
+            String checkQuery = "SELECT COUNT(*) FROM Utente WHERE id = -1";
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) == 0) {
+                        // Guest user doesn't exist, create it
+                        String insertQuery = "INSERT INTO Utente (id, nome, cognome, email, password_hash, data_registrazione, ruolo) " +
+                                           "VALUES (-1, 'Guest', 'User', 'guest@omniride.local', 'GUEST_USER_NO_PASSWORD', NOW(), 'utente')";
+                        try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
+                            insertStmt.executeUpdate();
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     public static Long create(Biglietto biglietto) {
         try (Connection conn = DBConnector.getConnection()) {
             conn.setAutoCommit(false);
+            
+            // Ensure guest user exists if creating a guest ticket
+            if (biglietto.getId_utente() == -1L) {
+                ensureGuestUserExists();
+            }
             
             Long bigliettoId = null;
             
             // Inserisce il biglietto principale
             try (PreparedStatement stmt = conn.prepareStatement(INSERT_BIGLIETTO, Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setLong(1, biglietto.getId_utente());
-                stmt.setLong(2, biglietto.getId_tratte().isEmpty() ? null : biglietto.getId_tratte().get(0));
-                stmt.setObject(3, null); // id_orario
-                stmt.setTimestamp(4, biglietto.getDataAcquisto() != null ? Timestamp.valueOf(biglietto.getDataAcquisto().atDate(java.time.LocalDate.now())) : null);
-                stmt.setTimestamp(5, biglietto.getDataConvalida() != null ? Timestamp.valueOf(biglietto.getDataConvalida().atDate(java.time.LocalDate.now())) : null);
-                stmt.setTimestamp(6, biglietto.getDataFine() != null ? Timestamp.valueOf(biglietto.getDataFine().atDate(java.time.LocalDate.now())) : null);
-                stmt.setString(7, biglietto.getStato().name());
-                stmt.setDouble(8, biglietto.getPrezzo());
-                stmt.setString(9, biglietto.getTipo() != null ? biglietto.getTipo().name() : "NORMALE");
+                stmt.setString(2, biglietto.getNome());
+                stmt.setTimestamp(3, biglietto.getDataAcquisto() != null ? Timestamp.valueOf(biglietto.getDataAcquisto().atDate(java.time.LocalDate.now())) : null);
+                stmt.setTimestamp(4, biglietto.getDataConvalida() != null ? Timestamp.valueOf(biglietto.getDataConvalida().atDate(java.time.LocalDate.now())) : null);
+                stmt.setTimestamp(5, biglietto.getDataFine() != null ? Timestamp.valueOf(biglietto.getDataFine().atDate(java.time.LocalDate.now())) : null);
+                stmt.setString(6, biglietto.getStato().name());
+                stmt.setDouble(7, biglietto.getPrezzo());
+                stmt.setString(8, biglietto.getTipo() != null ? biglietto.getTipo().name() : "NORMALE");
                 
                 int rowsAffected = stmt.executeUpdate();
                 
@@ -350,6 +372,7 @@ public class BigliettiDAO {
         
         biglietto.setId(rs.getLong("id"));
         biglietto.setId_utente(rs.getLong("id_utente"));
+        biglietto.setNome(rs.getString("nome"));
         biglietto.setPrezzo(rs.getDouble("prezzo_pagato"));
         biglietto.setStato(Biglietto.StatoBiglietto.valueOf(rs.getString("stato")));
         

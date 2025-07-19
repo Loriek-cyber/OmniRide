@@ -119,10 +119,6 @@ function createRouteCard(percorso, fermataPartenza, fermataArrivo, data, orario)
                     <label for="quantity-${index}">Quantità:</label>
                     <input type="number" id="quantity-${index}" min="1" max="10" value="1" class="quantity-input">
                 </div>
-                <button class="buy-ticket-btn" onclick="buyTicket(${JSON.stringify(percorso).replace(/"/g, '&quot;')}, '${data}', '${orario}', ${index})">
-                    <i class="fas fa-ticket-alt"></i>
-                    Acquista biglietto
-                </button>
                 <button class="add-to-cart-btn" onclick="addToCart(${JSON.stringify(percorso).replace(/"/g, '&quot;')}, '${data}', '${orario}', ${index})">
                     <i class="fas fa-shopping-cart"></i>
                     Aggiungi al carrello

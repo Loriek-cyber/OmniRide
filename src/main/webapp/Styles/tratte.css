@@ -435,3 +435,50 @@
         grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
     }
 }
+
+/* Stili per il pulsante Aggiungi al Carrello personalizzato */
+.add-to-cart-button {
+    margin-top: 2rem;
+    text-align: center;
+    padding: 1rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.btn-cart-custom {
+    background: white;
+    color: #333;
+    border: 2px solid transparent;
+    background-image: linear-gradient(white, white), linear-gradient(45deg, #32cd32, #28a745, #20c997);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 200px;
+}
+
+.btn-cart-custom:hover {
+    background: linear-gradient(45deg, #32cd32, #28a745);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(50, 205, 50, 0.3);
+}
+
+.btn-cart-custom:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+    .btn-cart-custom {
+        min-width: auto;
+        width: 100%;
+        padding: 14px 20px;
+    }
+}

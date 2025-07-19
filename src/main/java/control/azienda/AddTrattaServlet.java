@@ -275,7 +275,7 @@ public class AddTrattaServlet extends HttpServlet {
         }
 
         // Reindirizzamento a lista tratte
-        resp.sendRedirect(req.getContextPath() + "/prvAzienda/tratte.jsp?id_tratta="+trattaId);
+        resp.sendRedirect(req.getContextPath() + "/prvAzienda/visualizzaTratte?id_tratta="+trattaId);
 
     }
 

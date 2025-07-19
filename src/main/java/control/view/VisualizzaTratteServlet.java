@@ -20,10 +20,18 @@ import java.util.List;
 public class VisualizzaTratteServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Long id = Long.parseLong(req.getParameter("id_tratta"));
         try {
             // Carica le tratte direttamente dal database
+
             List<Tratta> tratte = TrattaDAO.getAll();
-            
+            if(id != null) {
+                tratte.forEach(tratta ->{
+                    if(tratta.getId() != id) {
+                        tratte.remove(tratta);
+                    }
+                });
+            }
             if (tratte != null && !tratte.isEmpty()) {
                 // Prepara i dati degli orari per la JSP
                 List<List<String>> orariFormattati = new ArrayList<>();

@@ -33,7 +33,7 @@ public class RicercaPercorsiServlet extends HttpServlet {
         
         // Validazione base
         if (partenza == null || arrivo == null || partenza.trim().isEmpty() || arrivo.trim().isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/index.jsp?error=campi_mancanti");
+            response.sendRedirect(request.getContextPath() + "/?error=campi_mancanti");
             return;
         }
         
@@ -103,7 +103,7 @@ public class RicercaPercorsiServlet extends HttpServlet {
             
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/index.jsp?error=errore_ricerca");
+            response.sendRedirect(request.getContextPath() + "/?error=errore_ricerca");
         }
     }
     

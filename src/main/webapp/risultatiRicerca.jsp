@@ -4,32 +4,44 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <title>Risultati Ricerca - OmniRide</title>
     <jsp:include page="import/metadata.jsp"/>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/base.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/search-results.css">
 </head>
 <body>
     <jsp:include page="import/header.jsp"/>
     
-    <main>
-        <div class="page-title">
-            <h1>Risultati della Ricerca</h1>
-        </div>
-        
-        <div class="container">
-        <div class="results-section">
-            <div class="search-info">
-                <strong>Percorso:</strong> <%= request.getAttribute("partenza") %> → <%= request.getAttribute("arrivo") %><br>
-                <strong>Data:</strong> <%= request.getAttribute("data") %> | 
-                <strong>Orario:</strong> <%= request.getAttribute("orario") %>
+    <!-- Layout a due colonne come in tratte.jsp -->
+    <div class="tratte-layout">
+        <!-- Colonna sinistra - Lista risultati -->
+        <div class="tratte-list-container">
+            <%
+                List<Percorso> percorsi = (List<Percorso>) request.getAttribute("percorsi");
+                int numResultati = (percorsi != null) ? percorsi.size() : 0;
+            %>
+            
+            <div class="tratte-list-header">
+                <h2>🔍 Risultati Ricerca</h2>
+                <span class="tratte-count">
+                    <%= numResultati %> <%= (numResultati == 1 ? "risultato" : "risultati") %>
+                </span>
+            </div>
+            
+            <!-- Info ricerca -->
+            <div class="search-info-box">
+                <div class="search-route">
+                    <span class="route-icon">🚏</span>
+                    <strong><%= request.getAttribute("partenza") %></strong> → <strong><%= request.getAttribute("arrivo") %></strong>
+                </div>
+                <div class="search-details">
+                    📅 <%= request.getAttribute("data") %> | 🕐 <%= request.getAttribute("orario") %>
+                </div>
             </div>
             
             <%
-                List<Percorso> percorsi = (List<Percorso>) request.getAttribute("percorsi");
                 if (percorsi != null && !percorsi.isEmpty()) {
                     int index = 0;
                     for (Percorso percorso : percorsi) {
@@ -82,7 +94,7 @@
                 <div class="no-results">
                     <h2>Nessun percorso trovato</h2>
                     <p>Non sono stati trovati percorsi per la tratta selezionata.</p>
-                    <a href="<%= request.getContextPath() %>/index.jsp" class="btn">Nuova ricerca</a>
+                    <a href="<%= request.getContextPath() %>/" class="btn">Nuova ricerca</a>
                 </div>
             <% } %>
         </div>
@@ -99,16 +111,12 @@
                 </div>
                 
                 <form action="<%= request.getContextPath() %>/acquistaBiglietto" method="get" id="buyForm">
-                    <input type="hidden" name="percorsoId" id="percorsoId">
+                    <input type="hidden" name="trattaId" id="trattaIdHidden">
                     <input type="hidden" name="partenza" value="<%= request.getAttribute("partenza") %>">
                     <input type="hidden" name="arrivo" value="<%= request.getAttribute("arrivo") %>">
                     <input type="hidden" name="data" value="<%= request.getAttribute("data") %>">
                     <input type="hidden" name="orario" value="<%= request.getAttribute("orario") %>">
                     <input type="hidden" name="prezzo" id="prezzoHidden">
-                    
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">
-                        Acquista Biglietto
-                    </button>
                 </form>
                 
                 <button type="button" class="btn" style="width: 100%;" onclick="addToCart()">
@@ -155,9 +163,12 @@
             
             document.getElementById('detailsBody').innerHTML = detailsHtml;
             
-            // Aggiorna form acquisto
-            document.getElementById('percorsoId').value = index;
-            document.getElementById('prezzoHidden').value = selectedPercorso.costo;
+            // Aggiorna form acquisto (per tratte singole usa il primo segmento)
+            if (selectedPercorso.segmenti.length > 0) {
+                document.getElementById('trattaIdHidden').value = selectedPercorso.segmenti[0].idTratta;
+                document.getElementById('prezzoHidden').value = selectedPercorso.costo;
+                document.getElementById('buyButton').disabled = false;
+            }
         }
         
         function addToCart() {
@@ -166,11 +177,34 @@
                 return;
             }
             
-            // Qui implementerai la logica per aggiungere al carrello
-            alert('Funzionalità carrello in sviluppo');
+            // Crea form per inviare i dati al carrello
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '<%= request.getContextPath() %>/carrello';
+            
+            // Aggiungi campi hidden
+            const fields = {
+                'action': 'aggiungi',
+                'percorso': JSON.stringify(selectedPercorso),
+                'data': '<%= request.getAttribute("data") %>',
+                'orario': '<%= request.getAttribute("orario") %>',
+                'prezzo': selectedPercorso.costo.toString(),
+                'quantita': '1'
+            };
+            
+            for (const [key, value] of Object.entries(fields)) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = value;
+                form.appendChild(input);
+            }
+            
+            // Invia form
+            document.body.appendChild(form);
+            form.submit();
         }
     </script>
-    </main>
     
     <jsp:include page="import/footer.jsp"/>
 </body>
