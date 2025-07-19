@@ -50,9 +50,9 @@
         </div>
         
         <div class="nav-item">
-            <a href="${pageContext.request.contextPath}/prvUser/history" class="nav-link" data-page="history">
+            <a href="${pageContext.request.contextPath}/prvUser/storicoBiglietti" class="nav-link" data-page="storico">
                 <span class="nav-icon">▶</span>
-                Storico Viaggi
+                Storico Biglietti
             </a>
         </div>
         

@@ -33,6 +33,7 @@
                         <div class="dashboard-actions">
                             <a href="${pageContext.request.contextPath}/prvUser/editProfile.jsp" class="btn">Modifica Profilo</a>
                             <a href="${pageContext.request.contextPath}/biglietti.jsp" class="btn">I Miei Biglietti</a>
+                            <a href="${pageContext.request.contextPath}/prvUser/storicoBiglietti" class="btn">Storico Viaggi</a>
                             <a href="${pageContext.request.contextPath}/prvUser/wallet" class="btn">Ricarica Credito</a>
                             <a href="${pageContext.request.contextPath}/tratte.jsp" class="btn">Cerca Tratte</a>
                         </div>

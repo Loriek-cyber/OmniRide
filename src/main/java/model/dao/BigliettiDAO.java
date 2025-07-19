@@ -19,13 +19,14 @@ public class BigliettiDAO {
         biglietto.setDataAquisto(rs.getTimestamp("data_acquisto"));
         biglietto.setDataConvalida(rs.getTimestamp("data_convalida"));
         biglietto.setStato(Biglietto.StatoBiglietto.valueOf(rs.getString("stato")));
+        biglietto.setPrezzo(rs.getDouble("prezzo_pagato"));
         return  biglietto;
 
     }
 
     public static Biglietto getById(Long id) throws SQLException {
         try(Connection conn = DBConnector.getConnection()){
-            String sql = "SELECT * FROM Biglietto WHERE id = ?";
+            String sql = "SELECT * FROM biglietto WHERE id = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setLong(1, id);
             ResultSet rs = ps.executeQuery();
@@ -37,7 +38,7 @@ public class BigliettiDAO {
     }
 
     public static List<Biglietto> GetBigliettoFromUserID(Long id) throws SQLException{
-        String sql = "SELECT * FROM Biglietto WHERE id_utente = ?";
+        String sql = "SELECT * FROM biglietto WHERE id_utente = ? ORDER BY data_acquisto DESC";
         try (Connection conn = DBConnector.getConnection()){
             List<Biglietto> biglietti = new ArrayList<Biglietto>();
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -51,7 +52,7 @@ public class BigliettiDAO {
         }
 
     public static List<Biglietto> GetBigliettoFromTrattaID(Long id) throws SQLException{
-        String sql = "SELECT * FROM Biglietto WHERE id_tratta = ?";
+        String sql = "SELECT * FROM biglietto WHERE id_tratta = ?";
         try (Connection conn = DBConnector.getConnection()){
             List<Biglietto> biglietti = new ArrayList<Biglietto>();
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -71,7 +72,7 @@ public class BigliettiDAO {
      * @throws SQLException Se c'è un errore nel database
      */
     public static Long create(Biglietto biglietto) throws SQLException {
-        String sql = "INSERT INTO Biglietto (id_utente, id_tratta, data_acquisto, prezzo, stato) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO biglietto (id_utente, id_tratta, data_acquisto, prezzo_pagato, stato) VALUES (?, ?, ?, ?, ?)";
         
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -106,7 +107,7 @@ public class BigliettiDAO {
      * @throws SQLException Se c'è un errore nel database
      */
     public static boolean updateStatoBiglietto(Long id, Biglietto.StatoBiglietto stato) throws SQLException {
-        String sql = "UPDATE Biglietto SET stato = ? WHERE id = ?";
+        String sql = "UPDATE biglietto SET stato = ? WHERE id = ?";
         
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -125,7 +126,7 @@ public class BigliettiDAO {
      * @throws SQLException Se c'è un errore nel database
      */
     public static boolean convalidaBiglietto(Long id) throws SQLException {
-        String sql = "UPDATE Biglietto SET stato = ?, data_convalida = CURRENT_TIMESTAMP WHERE id = ? AND stato = ?";
+        String sql = "UPDATE biglietto SET stato = ?, data_convalida = CURRENT_TIMESTAMP WHERE id = ? AND stato = ?";
         
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -145,7 +146,7 @@ public class BigliettiDAO {
      * @throws SQLException Se c'è un errore nel database
      */
     public static boolean update(Biglietto biglietto) throws SQLException {
-        String sql = "UPDATE Biglietto SET id_utente = ?, id_tratta = ?, data_acquisto = ?, data_convalida = ?, prezzo = ?, stato = ? WHERE id = ?";
+        String sql = "UPDATE biglietto SET id_utente = ?, id_tratta = ?, data_acquisto = ?, data_convalida = ?, prezzo_pagato = ?, stato = ? WHERE id = ?";
         
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -169,7 +170,7 @@ public class BigliettiDAO {
      * @throws SQLException Se c'è un errore nel database
      */
     public static boolean delete(Long id) throws SQLException {
-        String sql = "DELETE FROM Biglietto WHERE id = ?";
+        String sql = "DELETE FROM biglietto WHERE id = ?";
         
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -185,7 +186,7 @@ public class BigliettiDAO {
      * @throws SQLException Se c'è un errore nel database
      */
     public static List<Biglietto> getAll() throws SQLException {
-        String sql = "SELECT * FROM Biglietto";
+        String sql = "SELECT * FROM biglietto ORDER BY data_acquisto DESC";
         List<Biglietto> biglietti = new ArrayList<>();
         
         try (Connection conn = DBConnector.getConnection();
