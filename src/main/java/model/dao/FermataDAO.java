@@ -39,10 +39,37 @@ public class FermataDAO {
 
     private static Fermata extractFermataFromResultSet(ResultSet rs) throws SQLException {
         Fermata fermata = new Fermata();
-        fermata.setId(rs.getLong("id"));
-        fermata.setNome(rs.getString("nome"));
-        fermata.setIndirizzo(rs.getString("indirizzo"));
-        fermata.setCoordinate(new Coordinate(rs.getDouble("latitudine"), rs.getDouble("longitudine")));
+        
+        // Controllo ID - se è nullo, salta questa fermata
+        Long id = rs.getLong("id");
+        if (rs.wasNull() || id == null) {
+            System.err.println("[FermataDAO] ERRORE: Fermata con ID nullo trovata nel database!");
+            return null;
+        }
+        fermata.setId(id);
+        
+        // Controllo nome - se è nullo, usa un nome di default
+        String nome = rs.getString("nome");
+        if (nome == null || nome.trim().isEmpty()) {
+            System.err.println("[FermataDAO] WARNING: Fermata con ID " + id + " ha nome nullo/vuoto. Usando nome di default.");
+            nome = "Fermata_" + id;
+        }
+        fermata.setNome(nome);
+        
+        // Indirizzo può essere nullo
+        String indirizzo = rs.getString("indirizzo");
+        fermata.setIndirizzo(indirizzo != null ? indirizzo : "");
+        
+        // Coordinate - gestisci valori nulli
+        Double latitudine = rs.getDouble("latitudine");
+        Double longitudine = rs.getDouble("longitudine");
+        if (!rs.wasNull() && latitudine != null && longitudine != null) {
+            fermata.setCoordinate(new Coordinate(latitudine, longitudine));
+        } else {
+            fermata.setCoordinate(null);
+        }
+        
+        // Tipo fermata
         String tipoStr = rs.getString("tipo");
         if (tipoStr != null && !tipoStr.isEmpty()) {
             try {
@@ -54,6 +81,7 @@ public class FermataDAO {
         } else {
             fermata.setTipo(Fermata.TipoFermata.FERMATA_NORMALE);
         }
+        
         fermata.setAttiva(rs.getBoolean("attiva"));
         return fermata;
     }

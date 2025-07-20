@@ -1,6 +1,7 @@
 package model.dao;
 
 import model.sdata.FermataTratta;
+import model.sdata.Fermata;
 import model.db.DBConnector;
 
 import java.sql.*;
@@ -15,7 +16,21 @@ public class FermataTrattaDAO {
         ft.setIdTratta(rs.getLong("id_tratta"));
         ft.setSequenza(rs.getInt("sequenza"));
         ft.setTempoProssimaFermata(rs.getInt("tempo_prossima_fermata"));
-        ft.setFermata(FermataDAO.getById(rs.getLong("id_fermata")));
+        
+        // Controllo ID fermata e recupero fermata
+        Long idFermata = rs.getLong("id_fermata");
+        if (rs.wasNull() || idFermata == null) {
+            System.err.println("[FermataTrattaDAO] ERRORE: Relazione fermata-tratta con id_fermata nullo! ID relazione: " + rs.getLong("id"));
+            return null; // Salta questa relazione
+        }
+        
+        Fermata fermata = FermataDAO.getById(idFermata);
+        if (fermata == null) {
+            System.err.println("[FermataTrattaDAO] ERRORE: Fermata con ID " + idFermata + " non trovata nel database!");
+            return null; // Salta questa relazione
+        }
+        
+        ft.setFermata(fermata);
         return ft;
     }
 
@@ -87,14 +102,19 @@ public class FermataTrattaDAO {
             ps.setLong(1, idTratta);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()){
-                    lft.add(extractFermataTrattaFromResultSet(rs));
+                    FermataTratta ft = extractFermataTrattaFromResultSet(rs);
+                    if (ft != null) { // Aggiungi solo se non è nullo
+                        lft.add(ft);
+                    }
                 }
             }
         }
 
         if (!lft.isEmpty()) {
             for (int i = 0; i < lft.size() - 1; i++) {
-                lft.get(i).setProssimaFermata(lft.get(i + 1).getFermata());
+                if (lft.get(i) != null && lft.get(i + 1) != null) {
+                    lft.get(i).setProssimaFermata(lft.get(i + 1).getFermata());
+                }
             }
         }
 
