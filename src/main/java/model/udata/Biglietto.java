@@ -8,6 +8,7 @@ public class Biglietto {
     private Long id_tratta;
     private Timestamp dataAquisto;
     private Timestamp dataConvalida;
+    private Timestamp dataScadenza;
     private double prezzo;
     private StatoBiglietto stato;
     public  enum StatoBiglietto {ACQUISTATO,CONVALIDATO,SCADUTO,ANNULLATO}
@@ -26,6 +27,8 @@ public class Biglietto {
     public void setDataAquisto(Timestamp dataAquisto) {this.dataAquisto = dataAquisto;}
     public Timestamp getDataConvalida() {return dataConvalida;}
     public void setDataConvalida(Timestamp dataConvalida) {this.dataConvalida = dataConvalida;}
+    public Timestamp getDataScadenza() {return dataScadenza;}
+    public void setDataScadenza(Timestamp dataScadenza) {this.dataScadenza = dataScadenza;}
     public double getPrezzo() {return prezzo;}
     public void setPrezzo(double prezzo) {this.prezzo = prezzo;}
     public StatoBiglietto getStato() {return this.stato;}

@@ -18,6 +18,7 @@ public class BigliettiDAO {
         biglietto.setId_tratta(rs.getLong("id_tratta"));
         biglietto.setDataAquisto(rs.getTimestamp("data_acquisto"));
         biglietto.setDataConvalida(rs.getTimestamp("data_convalida"));
+        biglietto.setDataScadenza(rs.getTimestamp("data_scadenza"));
         biglietto.setStato(Biglietto.StatoBiglietto.valueOf(rs.getString("stato")));
         biglietto.setPrezzo(rs.getDouble("prezzo_pagato"));
         return  biglietto;
@@ -126,7 +127,7 @@ public class BigliettiDAO {
      * @throws SQLException Se c'è un errore nel database
      */
     public static boolean convalidaBiglietto(Long id) throws SQLException {
-        String sql = "UPDATE biglietto SET stato = ?, data_convalida = CURRENT_TIMESTAMP WHERE id = ? AND stato = ?";
+        String sql = "UPDATE biglietto SET stato = ?, data_convalida = CURRENT_TIMESTAMP, data_scadenza = DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 2 HOUR) WHERE id = ? AND stato = ?";
         
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
