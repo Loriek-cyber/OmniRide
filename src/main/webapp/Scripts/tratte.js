@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                     <tr class="${fermataIndex % 2 === 0 ? 'even-row' : 'odd-row'}">
                                         <td class="stop-cell">
                                             <div class="stop-info">
-                                                <span class="stop-icon">FERMATA</span>
+                                                <span class="stop-icon"><img src="${window.contextPath}/icons/pin.svg"></span>
                                                 <span class="stop-name">${fermata}</span>
                                             </div>
                                         </td>
@@ -97,14 +97,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 <div class="info-section">
                     <div class="info-card">
-                        <div class="info-icon">FERMATE</div>
+                        <div class="info-icon"><img src="${window.contextPath}/icons/pin.svg"></div>
                         <div class="info-content">
                             <div class="info-label">Fermate Totali</div>
                             <div class="info-value">${tratta.fermate.length}</div>
                         </div>
                     </div>
                     <div class="info-card">
-                        <div class="info-icon">ORARI</div>
+                        <div class="info-icon"><img src="${window.contextPath}/icons/clock.svg"></div>
                         <div class="info-content">
                             <div class="info-label">Orari Disponibili</div>
                             <div class="info-value">${tratta.orari.length}</div>

@@ -18,7 +18,7 @@
         <c:choose>
             <c:when test="${empty tratte}">
                 <div class="no-data">
-                    <div class="no-data-icon">🚫</div>
+                    <div class="no-data-icon"></div>
                     <p>Nessuna tratta disponibile al momento</p>
                 </div>
             </c:when>
@@ -36,11 +36,11 @@
 
                     <div class="info-section">
                                 <div class="tratta-stat">
-                                    <span class="stat-icon">🚏</span>
+                                    <span class="stat-icon">Fermate:</span>
                                     <span class="stat-value">${fn:length(tratta.fermataTrattaList)} fermate</span>
                                 </div>
                                 <div class="tratta-stat">
-                                    <span class="stat-icon">🕐</span>
+                                    <span class="stat-icon">Orari:</span>
                                     <span class="stat-value">${fn:length(tratta.orari)} orari</span>
                                 </div>
                             </div>
@@ -81,6 +81,7 @@
 <!-- Script per gestire i dati delle tratte -->
 <script>
     // Prepara i dati delle tratte per JavaScript
+    window.contextPath = '${pageContext.request.contextPath}';
     var tratteData = [
         <c:forEach var="tratta" items="${tratte}" varStatus="status">
             {

@@ -1,0 +1,96 @@
+/* Stili per la pagina dei risultati di ricerca */
+.results-layout {
+    display: flex;
+    gap: var(--space-xl);
+    padding: var(--space-lg);
+    max-width: 1400px;
+    margin: 0 auto;
+    height: calc(100vh - 150px);
+}
+
+/* Colonna sinistra - Lista risultati */
+.results-list-container {
+    flex: 1;
+    min-width: 350px;
+    max-width: 450px;
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-main);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+}
+
+.results-list-header {
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.results-list-header h2 {
+    font-size: 1.5rem;
+}
+
+.search-summary {
+    background-color: var(--primary-lighter);
+    padding: var(--space-md);
+    border-radius: var(--radius-btn);
+    margin-bottom: var(--space-lg);
+}
+
+.results-list {
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.percorso-card {
+    background-color: #fff;
+    border: 2px solid #e5e7eb;
+    border-radius: var(--radius-btn);
+    padding: var(--space-md);
+    margin-bottom: var(--space-md);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.percorso-card:hover {
+    border-color: var(--primary-light);
+    transform: translateY(-2px);
+}
+
+.percorso-card.selected {
+    border-color: var(--primary-dark);
+    background-color: var(--primary-lighter);
+}
+
+.percorso-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.percorso-price {
+    color: var(--primary-dark);
+}
+
+/* Colonna destra - Dettagli */
+.details-container {
+    flex: 2;
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-main);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-lg);
+    overflow-y: auto;
+}
+
+.segmento-detail {
+    border-left: 3px solid var(--primary-color);
+    padding-left: var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+.segmento-header {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}

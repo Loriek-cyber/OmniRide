@@ -1,0 +1,154 @@
+/* Stili per la pagina del Carrello */
+.cart-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: var(--space-lg);
+}
+
+.cart-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.cart-header h2 {
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--text-primary);
+}
+
+/* Contenitore degli item */
+.cart-items {
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-main);
+    box-shadow: var(--shadow-lg);
+    margin-bottom: var(--space-xl);
+    overflow: hidden;
+}
+
+.cart-item {
+    padding: var(--space-lg);
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color var(--transition-base);
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-md);
+}
+
+.item-route {
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.item-price {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+}
+
+.item-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-lg);
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.item-detail {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.item-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Controlli quantità */
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quantity-btn {
+    background-color: var(--primary-lighter);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-btn);
+    cursor: pointer;
+    transition: background-color var(--transition-base);
+}
+
+.quantity-btn:hover {
+    background-color: var(--primary-light);
+}
+
+.quantity-btn:disabled {
+    background-color: #e5e7eb;
+    cursor: not-allowed;
+}
+
+.quantity-display {
+    font-weight: 600;
+    padding: 0 0.5rem;
+}
+
+/* Riepilogo e azioni */
+.cart-summary {
+    background-color: var(--bg-secondary);
+    padding: var(--space-lg);
+    border-radius: var(--radius-main);
+    box-shadow: var(--shadow-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-md) 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.summary-row:last-child {
+    border-bottom: none;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.cart-actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+}
+
+/* Stato carrello vuoto */
+.empty-cart {
+    text-align: center;
+    padding: var(--space-xl);
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-main);
+    box-shadow: var(--shadow-lg);
+}
+
+.empty-cart .icon-large {
+    margin-bottom: 1rem;
+}
