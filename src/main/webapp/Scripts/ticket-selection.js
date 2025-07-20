@@ -133,9 +133,11 @@ function handleAddToCart() {
     const formData = getFormData();
     formData.action = 'addToCart';
     
-    submitForm('/selectTicketType', formData, function(success) {
+    submitForm('selectTicketType', formData, function(success) {
         if (success) {
-            window.location.href = '/carrello';
+            // Ottieni il context path dall'URL corrente
+            const contextPath = window.location.pathname.split('/')[1] ? '/' + window.location.pathname.split('/')[1] : '';
+            window.location.href = contextPath + '/carrello';
         } else {
             showError('Errore nell\'aggiunta al carrello. Riprova.');
         }
@@ -191,7 +193,9 @@ function getFormData() {
 function submitForm(url, data, callback) {
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = url;
+    // Aggiungi il context path se necessario
+    const contextPath = window.location.pathname.split('/')[1] ? '/' + window.location.pathname.split('/')[1] : '';
+    form.action = contextPath + '/' + url;
     
     // Add form fields
     Object.keys(data).forEach(key => {

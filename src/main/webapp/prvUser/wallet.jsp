@@ -125,17 +125,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const guestTicketsHTML = tickets.map(ticket => `
                 <div class="ticket-card guest-ticket">
                     <div class="ticket-info">
-                        <p><strong>Tipo:</strong> ${ticket.tipo}</p>
-                        <p><strong>Percorso:</strong> ${ticket.percorso}</p>
-                        <p><strong>Prezzo:</strong> ${ticket.prezzo}€</p>
-                        <p><strong>Data viaggio:</strong> ${ticket.data}</p>
-                        <p><strong>Orario:</strong> ${ticket.orario}</p>
-                        <p><strong>Acquistato il:</strong> ${new Date(ticket.dataAcquisto).toLocaleDateString('it-IT')}</p>
-                        <p><strong>Stato:</strong> <span class="ticket-status inactive">${ticket.stato}</span></p>
+                        <p><strong>Tipo:</strong> \${ticket.tipo}</p>
+                        <p><strong>Percorso:</strong> \${ticket.percorso}</p>
+                        <p><strong>Prezzo:</strong> \${ticket.prezzo}€</p>
+                        <p><strong>Data viaggio:</strong> \${ticket.data}</p>
+                        <p><strong>Orario:</strong> \${ticket.orario}</p>
+                        <p><strong>Acquistato il:</strong> \${new Date(ticket.dataAcquisto).toLocaleDateString('it-IT')}</p>
+                        <p><strong>Stato:</strong> <span class="ticket-status inactive">\${ticket.stato}</span></p>
                     </div>
                     <div class="ticket-actions">
-                        <button class="btn-qr" onclick="generateQR('${ticket.id}')" title="Genera QR Code">📱 Salva QR</button>
-                        <button class="btn-remove" onclick="removeGuestTicket('${ticket.id}')" title="Rimuovi Biglietto">🗑️</button>
+                        <button class="btn-qr" onclick="generateQR('\${ticket.id}')" title="Genera QR Code">📱 Salva QR</button>
+                        <button class="btn-remove" onclick="removeGuestTicket('\${ticket.id}')" title="Rimuovi Biglietto">🗑️</button>
                     </div>
                 </div>
             `).join('');

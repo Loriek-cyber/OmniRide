@@ -16,9 +16,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Imposta la data di oggi come default
     document.getElementById('data').value = today;
     
-    // Imposta l'orario corrente come default
+    // Imposta l'orario corrente come default in formato 24 ore
     const now = new Date();
-    const currentTime = now.toTimeString().slice(0, 5);
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const currentTime = `${hours}:${minutes}`;
     document.getElementById('orario').value = currentTime;
     
     // Gestione del form di ricerca
@@ -119,9 +121,13 @@ function createRouteCard(percorso, fermataPartenza, fermataArrivo, data, orario)
                     <label for="quantity-${index}">Quantità:</label>
                     <input type="number" id="quantity-${index}" min="1" max="10" value="1" class="quantity-input">
                 </div>
-                <button class="add-to-cart-btn" onclick="addToCart(${JSON.stringify(percorso).replace(/"/g, '&quot;')}, '${data}', '${orario}', ${index})">
+                <button class="add-to-cart-btn" onclick="showTicketSelectionModal({
+                    percorso: '${fermataPartenza.nome} - ${fermataArrivo.nome}',
+                    data: '${data}',
+                    orario: '${orario}'
+                }, '${price}')">
                     <i class="fas fa-shopping-cart"></i>
-                    Aggiungi al carrello
+                    Seleziona Biglietto
                 </button>
             </div>
         </div>

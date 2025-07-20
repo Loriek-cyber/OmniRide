@@ -1,0 +1,443 @@
+/* Compact Ticket Selection Modal Styles */
+
+.ticket-selection-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 1;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.ticket-modal-content {
+    background-color: white;
+    border-radius: 12px;
+    max-width: 480px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.ticket-selection-modal .modal-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px 12px 0 0;
+}
+
+.ticket-selection-modal .modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.ticket-selection-modal .close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+    opacity: 0.8;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.ticket-selection-modal .close-btn:hover {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.ticket-selection-modal .modal-body {
+    padding: 24px;
+}
+
+/* Route Summary */
+.route-summary {
+    background: #f8fafc;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #667eea;
+}
+
+.route-summary .route-path {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.route-details {
+    display: flex;
+    gap: 16px;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.route-details span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.route-details i {
+    width: 14px;
+    color: #667eea;
+}
+
+/* Compact Ticket Types */
+.ticket-types-compact {
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.ticket-option {
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    background: white;
+}
+
+.ticket-option:hover {
+    border-color: #667eea;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+    transform: translateY(-1px);
+}
+
+.ticket-option.selected {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+    box-shadow: 0 2px 12px rgba(102, 126, 234, 0.2);
+    transform: translateY(-1px);
+}
+
+.ticket-option input[type="radio"] {
+    display: none;
+}
+
+.ticket-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 12px;
+    margin: 0;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    height: 100%;
+    justify-content: center;
+}
+
+.ticket-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.ticket-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #1f2937;
+    margin-bottom: 4px;
+}
+
+.ticket-duration {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.ticket-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #667eea;
+    margin-top: 4px;
+}
+
+/* Selected indicator */
+.ticket-option.selected::before {
+    content: '✓';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #667eea;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Quantity Section */
+.quantity-section-modal {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.quantity-section-modal label {
+    font-size: 1rem;
+    color: #374151;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.quantity-controls button {
+    background: #667eea;
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+
+.quantity-controls button:hover {
+    background: #5a67d8;
+}
+
+.quantity-controls button:active {
+    transform: scale(0.95);
+}
+
+.quantity-controls input {
+    width: 60px;
+    padding: 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Total Price */
+.total-price-modal {
+    background: #f1f5f9;
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    color: #334155;
+}
+
+.total-price-modal strong {
+    color: #667eea;
+    font-size: 1.3rem;
+}
+
+/* Modal Actions */
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.modal-actions .btn-secondary {
+    flex: 1;
+    padding: 12px 24px;
+    background: #6b7280;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-actions .btn-secondary:hover {
+    background: #5b6470;
+    transform: translateY(-1px);
+}
+
+.modal-actions .btn-primary {
+    flex: 2;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.modal-actions .btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.modal-actions .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.modal-actions .btn-primary:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .ticket-modal-content {
+        width: 95%;
+        margin: 10px;
+        max-height: 90vh;
+    }
+    
+    .ticket-selection-modal .modal-body {
+        padding: 20px 16px;
+    }
+    
+    .route-details {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    /* Make ticket cards stack vertically on mobile */
+    .ticket-types-compact {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .ticket-option {
+        border-radius: 8px;
+    }
+    
+    .ticket-label {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        text-align: left;
+    }
+    
+    .ticket-info {
+        align-items: flex-start;
+        margin-bottom: 0;
+    }
+    
+    .ticket-name {
+        font-size: 1rem;
+    }
+    
+    .ticket-duration {
+        font-size: 0.8rem;
+    }
+    
+    .ticket-price {
+        font-size: 1.2rem;
+        margin-top: 0;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+    
+    .modal-actions .btn-primary,
+    .modal-actions .btn-secondary {
+        flex: none;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .ticket-selection-modal .modal-header {
+        padding: 16px 20px;
+    }
+    
+    .ticket-selection-modal .modal-body {
+        padding: 16px;
+    }
+    
+    .ticket-selection-modal .modal-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .quantity-controls {
+        gap: 6px;
+    }
+    
+    .quantity-controls button {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .quantity-controls input {
+        width: 50px;
+        padding: 6px 12px;
+    }
+}
+
+/* Animation for cart messages */
+.cart-message {
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}

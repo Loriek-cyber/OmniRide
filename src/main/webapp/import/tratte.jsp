@@ -101,7 +101,8 @@
                     <c:forEach var="fermata" items="${tratta.fermataTrattaList}" varStatus="fermataStatus">
                         ${fermata.tempoProssimaFermata != null ? fermata.tempoProssimaFermata : 0}<c:if test="${!fermataStatus.last}">,</c:if>
                     </c:forEach>
-                ]
+                ],
+                prezzo: ${tratta.costo != null ? tratta.costo : 10.00}
             }<c:if test="${!status.last}">,</c:if>
         </c:forEach>
     ];

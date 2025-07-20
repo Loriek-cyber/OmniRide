@@ -45,7 +45,7 @@
                         <div class="form-group">
                             <label for="orario">Orario di partenza</label>
                             <div class="time-input-container">
-                                <input type="time" id="orario" name="orario" required>
+                            <input type="time" id="orario" name="orario" step="60" required>
                                 <i class="fas fa-clock time-icon"></i>
                             </div>
                         </div>
@@ -97,7 +97,9 @@
 <jsp:include page="import/footer.jsp"/>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-<script src="Scripts/search.js"></script>
+    <script src="Scripts/search.js"></script>
+    <script src="Scripts/ticket-modal.js"></script>
+    <link rel="stylesheet" href="Styles/ticket-modal.css">
 
 <script>
 $(document).ready(function() {

@@ -10,6 +10,8 @@
     <jsp:include page="import/metadata.jsp"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="Styles/search-results.css">
+    <link rel="stylesheet" href="Styles/ticket-modal.css">
+    <script src="Scripts/ticket-modal.js"></script>
 </head>
 <body>
 <jsp:include page="import/header.jsp"/>
@@ -130,9 +132,13 @@
                                         <i class="fas fa-euro-sign"></i>
                                         <span class="price-value"><fmt:formatNumber value="${tratta.costo}" type="currency" currencySymbol="€"/></span>
                                     </div>
-                                    <a href="${pageContext.request.contextPath}/selectTicketType?percorso=${param.partenza}-${param.arrivo}&data=${param.data}&orario=${param.orario}&prezzo=${tratta.costo}" class="btn-cart-route">
-                                        <i class="fas fa-shopping-cart"></i> Aggiungi al Carrello
-                                    </a>
+                                    <button onclick="showTicketSelectionModal({
+                                        percorso: '${param.partenza} - ${param.arrivo}',
+                                        data: '${param.data}',
+                                        orario: '${param.orario}'
+                                    }, '${tratta.costo}')" class="btn-cart-route">
+                                        <i class="fas fa-shopping-cart"></i> Seleziona Biglietto
+                                    </button>
                                 </div>
                             </div>
                         </c:forEach>

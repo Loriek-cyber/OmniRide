@@ -20,12 +20,18 @@ import java.util.List;
 public class VisualizzaTratteServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Long id = Long.parseLong(req.getParameter("id_tratta"));
+        String id_tratta = req.getParameter("id");
+        Long id;
+        if(id_tratta != null) {
+            id = Long.parseLong(id_tratta);
+        } else {
+            id = 0L;
+        }
         try {
             // Carica le tratte direttamente dal database
 
             List<Tratta> tratte = TrattaDAO.getAll();
-            if(id != null) {
+            if(id != 0L) {
                 tratte.forEach(tratta ->{
                     if(tratta.getId() != id) {
                         tratte.remove(tratta);
@@ -73,6 +79,10 @@ public class VisualizzaTratteServlet extends HttpServlet {
                 // Imposta gli attributi per la JSP
                 req.setAttribute("tratte", tratte);
                 req.setAttribute("orariFormattati", orariFormattati);
+                
+                // Aggiungi informazioni per la ricerca
+                req.setAttribute("searchPerformed", true);
+                req.setAttribute("resultCount", tratte.size());
                 
                 System.out.println("[VISUALIZZA_TRATTE] Caricate " + tratte.size() + " tratte");
                 

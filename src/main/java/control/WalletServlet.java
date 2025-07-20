@@ -16,10 +16,15 @@ public class WalletServlet extends HttpServlet {
         HttpSession session = req.getSession(false);
 
         // Se l'utente non è loggato, controlla se ha biglietti ospite nella sessione client-side
+
         if (session == null || session.getAttribute("utente") == null) {
             // Reindirizza alla pagina wallet ospite che gestirà i biglietti da sessionStorage
-            req.getRequestDispatcher("/guest-wallet.jsp").forward(req, resp);
+            req.getRequestDispatcher("/wallet.jsp").forward(req, resp);
             return;
+        }
+
+        if(session.getAttribute("utente") == null) {
+
         }
 
         // Se l'utente è loggato, mostro la pagina del portafoglio normale

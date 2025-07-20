@@ -19,26 +19,34 @@ public class SelectTicketTypeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         // Verify required parameters for ticket selection
         String percorsoJson = request.getParameter("percorso");
         String data = request.getParameter("data");
         String orario = request.getParameter("orario");
         String prezzoBaseStr = request.getParameter("prezzo");
         
+        // Debug log
+        System.out.println("[SELECT_TICKET_TYPE] Parametri ricevuti:");
+        System.out.println("  - percorso: " + percorsoJson);
+        System.out.println("  - data: " + data);
+        System.out.println("  - orario: " + orario);
+        System.out.println("  - prezzo: " + prezzoBaseStr);
+
         if (percorsoJson == null || data == null || orario == null || prezzoBaseStr == null) {
+            System.out.println("[SELECT_TICKET_TYPE] Parametri mancanti, redirect a visualizzaTratte");
             response.sendRedirect(request.getContextPath() + "/visualizzaTratte");
             return;
         }
-        
+
         try {
             double prezzoBase = Double.parseDouble(prezzoBaseStr);
-            
-            // Calculate prices for different ticket types
+
+            // Calculate prices as double values for JSP formatting
             double prezzoNormale = Biglietto.calcolaPrezzo(prezzoBase, Biglietto.TipoBiglietto.NORMALE);
             double prezzoGiornaliero = Biglietto.calcolaPrezzo(prezzoBase, Biglietto.TipoBiglietto.GIORNALIERO);
             double prezzoAnnuale = Biglietto.calcolaPrezzo(prezzoBase, Biglietto.TipoBiglietto.ANNUALE);
-            
+
             // Set attributes for the JSP
             request.setAttribute("percorso", percorsoJson);
             request.setAttribute("data", data);
@@ -47,10 +55,10 @@ public class SelectTicketTypeServlet extends HttpServlet {
             request.setAttribute("prezzoNormale", prezzoNormale);
             request.setAttribute("prezzoGiornaliero", prezzoGiornaliero);
             request.setAttribute("prezzoAnnuale", prezzoAnnuale);
-            
+
             // Forward to ticket selection page
             request.getRequestDispatcher("/selectTicketType.jsp").forward(request, response);
-            
+
         } catch (NumberFormatException e) {
             response.sendRedirect(request.getContextPath() + "/visualizzaTratte");
         }

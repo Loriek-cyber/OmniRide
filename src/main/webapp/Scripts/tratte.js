@@ -140,11 +140,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 percorso: tratta.nome,
                 data: today,
                 orario: tratta.orari[0] || currentTime, // Primo orario disponibile
-                prezzo: '10.00' // Prezzo base predefinito
+                prezzo: tratta.prezzo || '10.00' // Usa il prezzo reale della tratta dal database
             });
 
             // Reindirizza a selectTicketType
-            window.location.href = '/selectTicketType?' + params.toString();
+            // Ottieni il context path dall'URL corrente
+            const contextPath = window.location.pathname.split('/')[1] ? '/' + window.location.pathname.split('/')[1] : '';
+            window.location.href = contextPath + '/selectTicketType?' + params.toString();
         };
     }
 

@@ -123,6 +123,23 @@
     pointer-events: none;
 }
 
+/* Force 24-hour format display */
+input[type="time"]::-webkit-datetime-edit-ampm-field {
+    display: none !important;
+}
+
+/* Additional browser compatibility for 24-hour format */
+input[type="time"] {
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+/* Hide AM/PM in all browsers */
+input[type="time"][step="60"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
 /* Pulsante di ricerca */
 .btn-search {
     width: 100%;

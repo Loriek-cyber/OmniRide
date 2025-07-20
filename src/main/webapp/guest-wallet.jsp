@@ -21,7 +21,7 @@
                 const tickets = JSON.parse(sessionStorage.getItem('tickets'));
                 const ticketSection = document.querySelector('.ticket-section');
                 if (tickets && tickets.length > 0) {
-                    ticketSection.innerHTML = '<ul>' + tickets.map(ticket => `<li>${ticket.tipo} - ${ticket.data} - ${ticket.prezzo}€</li>`).join('') + '</ul>';
+                    ticketSection.innerHTML = '<ul>' + tickets.map(ticket => `<li>\${ticket.tipo} - \${ticket.data} - \${ticket.prezzo}€</li>`).join('') + '</ul>';
                     alert('Se non sei registrato potresti perdere i tuoi biglietti. Si consiglia di registrarsi o salvare il QR.');
                 } else {
                     ticketSection.innerHTML = '<p>Nessun biglietto trovato. Pianifica il tuo viaggio!</p>';

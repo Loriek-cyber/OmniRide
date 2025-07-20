@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import model.dao.TrattaDAO;
 import model.dao.udata.SessioneDAO;
 import model.sdata.Tratta;
+import model.udata.Biglietto;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -85,14 +86,20 @@ public class CarrelloServlet extends HttpServlet {
             String percorsoJson = request.getParameter("percorso");
             String data = request.getParameter("data");
             String orario = request.getParameter("orario");
+            String tipoStr = request.getParameter("tipo");
             double prezzo = Double.parseDouble(request.getParameter("prezzo"));
             int quantita = Integer.parseInt(request.getParameter("quantita"));
+            
+            final Biglietto.TipoBiglietto tipo = (tipoStr != null && !tipoStr.isEmpty()) 
+                ? parseTipoBiglietto(tipoStr) 
+                : Biglietto.TipoBiglietto.NORMALE;
             
             // Verifica se il biglietto è già nel carrello
             BigliettoCarrello existing = carrello.stream()
                 .filter(bc -> bc.getData().equals(data) && 
                              bc.getOrario().equals(orario) && 
-                             bc.getPrezzo() == prezzo)
+                             bc.getPrezzo() == prezzo &&
+                             bc.getTipo() == tipo)
                 .findFirst()
                 .orElse(null);
             
@@ -107,9 +114,21 @@ public class CarrelloServlet extends HttpServlet {
                 nuovoBiglietto.setOrario(orario);
                 nuovoBiglietto.setPrezzo(prezzo);
                 nuovoBiglietto.setQuantita(quantita);
+                nuovoBiglietto.setTipo(tipo);
                 
-                // Costruisci il nome dal percorsoJson
-                String nome = percorsoJson;
+                // Costruisci il nome leggibile dal percorsoJson
+                String nome = "Percorso Personalizzato";
+                if (percorsoJson != null && !percorsoJson.isEmpty()) {
+                    try {
+                        // Se il percorsoJson contiene informazioni leggibili, usa quelle
+                        if (percorsoJson.contains("-")) {
+                            nome = percorsoJson.replace("[", "").replace("]", "").replace("\"", "");
+                        }
+                    } catch (Exception e) {
+                        // Fallback al nome di default
+                        nome = "Percorso Personalizzato";
+                    }
+                }
                 nuovoBiglietto.setNome(nome);
                 
                 carrello.add(nuovoBiglietto);
@@ -144,6 +163,14 @@ public class CarrelloServlet extends HttpServlet {
         }
     }
     
+    private Biglietto.TipoBiglietto parseTipoBiglietto(String tipoStr) {
+        try {
+            return Biglietto.TipoBiglietto.valueOf(tipoStr);
+        } catch (IllegalArgumentException e) {
+            return Biglietto.TipoBiglietto.NORMALE;
+        }
+    }
+    
     // Classe interna per rappresentare un biglietto nel carrello
     public static class BigliettoCarrello {
         private String percorsoJson;
@@ -152,11 +179,11 @@ public class CarrelloServlet extends HttpServlet {
         private String orario;
         private double prezzo;
         private int quantita;
-        private model.udata.Biglietto.TipoBiglietto tipo;
+        private Biglietto.TipoBiglietto tipo;
         
         // Costruttori
         public BigliettoCarrello() {
-            this.tipo = model.udata.Biglietto.TipoBiglietto.NORMALE; // Default type
+            this.tipo = Biglietto.TipoBiglietto.NORMALE; // Default type
         }
         
         // Getters e Setters
