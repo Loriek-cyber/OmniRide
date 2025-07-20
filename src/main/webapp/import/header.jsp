@@ -9,9 +9,9 @@
     </div>
 
     <nav class="main-nav">
+        <a href="${pageContext.request.contextPath}/">Home</a>
         <a href="${pageContext.request.contextPath}/visualizzaTratte">Tratte</a>
         <a href="${pageContext.request.contextPath}/visualizzaAvvisi">Avvisi</a>
-        <a href="#">Car-pooling</a>
     </nav>
 
     <div class="user-actions">

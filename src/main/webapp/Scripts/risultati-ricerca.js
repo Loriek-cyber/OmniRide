@@ -9,8 +9,15 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Popola la lista dei percorsi
+    // Popola la lista dei percorsi utilizzando DocumentFragment per migliori prestazioni
+    const fragment = document.createDocumentFragment();
     percorsi.forEach((percorso, index) => {
+        const card = createPercorsoCard(percorso, index);
+        fragment.appendChild(card);
+    });
+    listContainer.appendChild(fragment);
+    
+    function createPercorsoCard(percorso, index) {
         const card = document.createElement('div');
         card.className = 'percorso-card';
         card.dataset.index = index;
@@ -31,9 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span>Durata: ${calculateDuration(percorso)}</span>
             </div>
         `;
+        
         card.addEventListener('click', () => showDetails(percorso, card));
-        listContainer.appendChild(card);
-    });
+        return card;
+    }
 
     function showDetails(percorso, cardElement) {
         // Evidenzia la card selezionata
@@ -58,28 +66,25 @@ document.addEventListener('DOMContentLoaded', () => {
         detailsHtml += `
             <div class="details-summary">
                 <p>Costo totale: <strong class="prezzo">€${percorso.costo.toFixed(2)}</strong></p>
-                <button id="addToCartBtn" class="btn btn-primary" style="width: 100%;">Aggiungi al Carrello</button>
+                <button id="addToCartBtn" class="btn btn-primary" style="width: 100%;">Seleziona Ticket</button>
             </div>`;
         
         detailsContainer.innerHTML = detailsHtml;
         detailsContainer.style.display = 'block';
 
-        document.getElementById('addToCartBtn').addEventListener('click', () => addToCart(percorso));
+        document.getElementById('addToCartBtn').addEventListener('click', () => transitionToTicketSelection(percorso));
     }
 
-    function addToCart(percorso) {
+    function transitionToTicketSelection(percorso) {
         const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = 'carrello';
+        form.method = 'GET';
+        form.action = 'selectTicketType';
         
         const data = {
-            action: 'aggiungi',
-            percorsoJson: JSON.stringify(percorso),
+            percorso: JSON.stringify(percorso),
             data: document.getElementById('data-viaggio').value,
             orario: document.getElementById('orario-viaggio').value,
-            prezzo: percorso.costo,
-            quantita: 1,
-            tipo: 'Percorso'
+            prezzo: percorso.costo
         };
 
         for (const key in data) {

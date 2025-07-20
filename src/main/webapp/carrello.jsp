@@ -110,6 +110,38 @@
                     <button type="button" class="btn btn-secondary" onclick="clearCart()">
                         <i class="fas fa-trash"></i> Svuota Carrello
                     </button>
+
+                    <form method="POST"">
+                        <div class="form-group">
+                            <label for="numero_carta">Numero Carta:</label>
+                            <input type="text" id="numero_carta" name="numero_carta" placeholder="1234 5678 9012 3456" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="data">Scadenza (MM/YY):</label>
+                                <input type="text" id="data" name="data" placeholder="12/25" maxlength="5" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cvv">CVV:</label>
+                                <input type="text" id="cvv" name="cvv" placeholder="123" maxlength="4" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="intestatario">Nome Intestatario:</label>
+                            <input type="text" id="intestatario" name="intestatario" placeholder="Mario Rossi" required>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Aggiungi Carta
+                            </button>
+                        </div>
+                    </form>
+
+
                     <form action="${pageContext.request.contextPath}/checkout" method="post" style="display: inline;">
                         <button type="submit" class="btn btn-primary">
                             Procedi all'Acquisto
@@ -123,9 +155,7 @@
                     <i class="fas fa-shopping-cart"></i>
                     <h3>Il tuo carrello è vuoto</h3>
                     <p>Aggiungi delle tratte al carrello per poterle acquistare.</p>
-                    <a href="${pageContext.request.contextPath}/" class="btn btn-primary">
-                        <i class="fas fa-search"></i> Cerca Biglietti
-                    </a>
+                    <a href="${pageContext.request.contextPath}/" class="btn btn-primary">Cerca Biglietti</a>
                 </div>
             </c:otherwise>
         </c:choose>

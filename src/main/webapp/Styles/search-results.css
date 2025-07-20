@@ -1,10 +1,15 @@
-/* Usa stesso layout di tratte.css */
+/* ===== SEARCH RESULTS STYLES ===== */
+
+/* Container principale dei risultati */
+.search-results-container,
 .tratte-layout {
     display: flex;
-    gap: var(--space-xl);
-    padding: var(--space-xl);
-    max-width: 1200px;
+    min-height: 80vh;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1400px;
     margin: 0 auto;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
 .tratte-list-container {
@@ -43,11 +48,14 @@
 
 /* Box informazioni ricerca */
 .search-info-box {
-    background-color: #e8f5e9;
-    border-radius: 8px;
-    padding: 15px;
+    background: linear-gradient(135deg, #32cd32 0%, #228b22 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
     margin-bottom: 20px;
-    border-left: 4px solid #32cd32;
+    box-shadow: 0 8px 32px rgba(50, 205, 50, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .search-route {
@@ -354,30 +362,37 @@
     margin-right: 5px;
 }
 
-/* Percorso Cards - simile a tratta-item */
+/* Percorso Cards - intera card cliccabile con colori bianco/lime */
 .percorso-card {
-    background-color: white;
-    border-radius: 8px;
-    padding: 1rem;
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 15px;
+    margin: 15px;
+    padding: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(50, 205, 50, 0.3);
-    color: black;
-    border: 2px solid transparent;
-    margin-bottom: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.5s ease forwards;
+    text-decoration: none;
+    color: inherit;
 }
 
 .percorso-card:hover {
-    transform: translateX(5px);
-    box-shadow: 0 4px 16px rgba(50, 205, 50, 0.4);
+    background: #32cd32;
+    color: white;
     border-color: #32cd32;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(50, 205, 50, 0.4);
 }
 
 .percorso-card.selected {
-    border-color: #fff;
+    border: 2px solid #32cd32;
     background-color: #32cd32;
-    box-shadow: 0 4px 16px rgba(50, 205, 50, 0.5);
     color: white;
+    box-shadow: 0 8px 25px rgba(50, 205, 50, 0.6);
+    transform: scale(1.02);
 }
 
 .percorso-header {
@@ -400,11 +415,19 @@
     padding: 0.2rem 0.5rem;
     background-color: rgba(50, 205, 50, 0.1);
     border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.percorso-card:hover .percorso-price {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-weight: bold;
 }
 
 .percorso-card.selected .percorso-price {
     background-color: rgba(255, 255, 255, 0.2);
     color: white;
+    font-weight: bold;
 }
 
 .percorso-info {
@@ -413,10 +436,27 @@
     display: flex;
     gap: 1rem;
     align-items: center;
+    transition: all 0.3s ease;
+}
+
+.percorso-card:hover .percorso-info {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
 }
 
 .percorso-card.selected .percorso-info {
     color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+}
+
+/* Area azioni della card - nascosta ora che tutta la card è cliccabile */
+.percorso-actions {
+    display: none;
+}
+
+/* Pulsante Visualizza - nascosto */
+.btn-visualizza {
+    display: none;
 }
 
 /* Colonna destra - Dettagli come in tratte.jsp */
@@ -581,5 +621,176 @@
         width: 100%;
         justify-content: center;
         padding: 0.8rem 1rem;
+    }
+}
+
+/* Animazioni per le card percorso */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animazione per evidenziare la selezione */
+@keyframes selectedPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(50, 205, 50, 0.6);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 4px 16px rgba(50, 205, 50, 0.5);
+    }
+}
+
+.percorso-card:nth-child(2) { animation-delay: 0.1s; }
+.percorso-card:nth-child(3) { animation-delay: 0.2s; }
+.percorso-card:nth-child(4) { animation-delay: 0.3s; }
+.percorso-card:nth-child(5) { animation-delay: 0.4s; }
+
+/* Effetti hover migliorati */
+.percorso-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, #32cd32 0%, #228b22 100%);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+    transform-origin: bottom;
+}
+
+.percorso-card:hover::before {
+    transform: scaleY(1);
+    width: 6px;
+}
+
+.percorso-card.selected::before {
+    transform: scaleY(1);
+    width: 6px;
+    background: white;
+}
+
+/* Stili per il pulsante seleziona tipo biglietto */
+.select-ticket-btn {
+    background: linear-gradient(135deg, #32cd32 0%, #228b22 100%);
+    color: white;
+    border: none;
+    padding: 18px 30px;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.select-ticket-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.select-ticket-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(50, 205, 50, 0.4);
+    background: linear-gradient(135deg, #228b22 0%, #1a6b1a 100%);
+}
+
+.select-ticket-btn:hover::before {
+    left: 100%;
+}
+
+.select-ticket-btn:active {
+    transform: translateY(0);
+}
+
+.select-ticket-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Animazione slideInRight per le notifiche */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Miglioramenti per la price-summary */
+.price-summary {
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin: 25px 0;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(39, 174, 96, 0.3);
+}
+
+.price-summary strong {
+    font-size: 28px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Responsive migliorato */
+@media (max-width: 768px) {
+    .tratte-layout {
+        flex-direction: column;
+        padding: 15px;
+        gap: 15px;
+    }
+    
+    .tratte-list-container,
+    .details-section {
+        max-height: none;
+    }
+    
+    .percorso-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .percorso-price {
+        align-self: flex-end;
+    }
+    
+    .search-route {
+        font-size: 16px;
+    }
+    
+    .search-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
     }
 }

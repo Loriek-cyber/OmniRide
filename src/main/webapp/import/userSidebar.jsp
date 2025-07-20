@@ -39,7 +39,7 @@
         </div>
         
         <div class="nav-item">
-            <a href="${pageContext.request.contextPath}/prvUser/wallet" class="nav-link" data-page="wallet">
+            <a href="${pageContext.request.contextPath}/prvUser/card" class="nav-link" data-page="wallet">
                 <span class="nav-icon">▶</span>
                 Portafoglio
             </a>

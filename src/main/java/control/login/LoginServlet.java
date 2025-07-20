@@ -153,7 +153,7 @@ public class LoginServlet extends HttpServlet {
             if (redirectURL != null && !redirectURL.trim().isEmpty()) {
                 resp.sendRedirect(req.getContextPath() + redirectURL);
             } else {
-                resp.sendRedirect(req.getContextPath() + "/prvUser/dashboard.jsp");
+                resp.sendRedirect(req.getContextPath() + "/prvUser/dashboard");
             }
         } else {
             // Login fallito

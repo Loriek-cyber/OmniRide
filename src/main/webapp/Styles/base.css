@@ -104,7 +104,7 @@ body {
 /* Main contenuto */
 main {
     flex: 1;
-    display: flex;
+    display: block;
     justify-content: center;
     align-items: flex-start;
     padding: 2rem 1rem;

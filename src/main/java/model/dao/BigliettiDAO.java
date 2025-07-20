@@ -366,6 +366,63 @@ public class BigliettiDAO {
         return biglietto != null && biglietto.getId_utente() == -1L;
     }
     
+    /**
+     * Reclama i biglietti guest assegnandoli a un utente registrato
+     * @param userId ID dell'utente che reclama i biglietti
+     * @param guestTicketIds Lista degli ID dei biglietti guest da reclamare
+     * @return Numero di biglietti reclamati con successo
+     */
+    public static int claimGuestTickets(Long userId, List<Long> guestTicketIds) {
+        if (guestTicketIds == null || guestTicketIds.isEmpty()) {
+            return 0;
+        }
+        
+        int claimedCount = 0;
+        
+        try (Connection conn = DBConnector.getConnection()) {
+            conn.setAutoCommit(false);
+            
+            String updateQuery = "UPDATE Biglietto SET id_utente = ? WHERE id = ? AND id_utente = -1";
+            try (PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+                for (Long ticketId : guestTicketIds) {
+                    stmt.setLong(1, userId);
+                    stmt.setLong(2, ticketId);
+                    
+                    int rowsUpdated = stmt.executeUpdate();
+                    if (rowsUpdated > 0) {
+                        claimedCount++;
+                    }
+                }
+            }
+            
+            conn.commit();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Errore durante il reclamo dei biglietti guest", e);
+        }
+        
+        return claimedCount;
+    }
+    
+    /**
+     * Reclama tutti i biglietti guest assegnandoli a un utente registrato
+     * @param userId ID dell'utente che reclama i biglietti
+     * @return Numero di biglietti reclamati con successo
+     */
+    public static int claimAllGuestTickets(Long userId) {
+        try (Connection conn = DBConnector.getConnection()) {
+            String updateQuery = "UPDATE Biglietto SET id_utente = ? WHERE id_utente = -1";
+            try (PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+                stmt.setLong(1, userId);
+                return stmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Errore durante il reclamo di tutti i biglietti guest", e);
+        }
+    }
+    
     // Metodo di utilità per mappare ResultSet a Biglietto
     private static Biglietto mapResultSetToBiglietto(ResultSet rs, Connection conn) throws SQLException {
         Biglietto biglietto = new Biglietto();

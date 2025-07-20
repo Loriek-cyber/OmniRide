@@ -131,13 +131,31 @@ function handleAddToCart() {
     setProcessingState(true);
     
     const formData = getFormData();
-    formData.action = 'addToCart';
     
+    // Aggiungi al sistema di cookie se disponibile
+    if (window.CartCookieManager) {
+        const itemData = {
+            percorsoJson: formData.percorso,
+            nome: extractRouteNameFromJson(formData.percorso),
+            data: formData.data,
+            orario: formData.orario,
+            prezzo: formData.prezzo,
+            quantita: formData.quantita,
+            tipo: formData.tipo
+        };
+        
+        window.CartCookieManager.addToCart(itemData);
+    }
+    
+    // Invia al server
     submitForm('selectTicketType', formData, function(success) {
         if (success) {
+            showSuccessMessage('Biglietto aggiunto al carrello!');
             // Ottieni il context path dall'URL corrente
             const contextPath = window.location.pathname.split('/')[1] ? '/' + window.location.pathname.split('/')[1] : '';
-            window.location.href = contextPath + '/carrello';
+            setTimeout(() => {
+                window.location.href = contextPath + '/carrello';
+            }, 1000);
         } else {
             showError('Errore nell\'aggiunta al carrello. Riprova.');
         }
@@ -241,8 +259,64 @@ function setProcessingState(processing) {
  * @param {string} message - Error message
  */
 function showError(message) {
-    // You can customize this to use your preferred notification system
-    alert(message);
+    showNotification(message, 'error');
+}
+
+/**
+ * Show success message
+ * @param {string} message - Success message
+ */
+function showSuccessMessage(message) {
+    showNotification(message, 'success');
+}
+
+/**
+ * Show notification message
+ * @param {string} message - Message text
+ * @param {string} type - Type of notification (success, error, info)
+ */
+function showNotification(message, type = 'info') {
+    // Rimuovi eventuali notifiche precedenti
+    const existingNotification = document.querySelector('.ticket-notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+
+    // Crea la notifica
+    const notification = document.createElement('div');
+    notification.className = `ticket-notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="${getIconForType(type)}"></i>
+            <span>${message}</span>
+            <button onclick="this.parentElement.parentElement.remove()" title="Chiudi">×</button>
+        </div>
+    `;
+    
+    // Stile della notifica
+    notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: ${getColorForType(type)};
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        z-index: 10000;
+        max-width: 400px;
+        font-size: 14px;
+        animation: slideInRight 0.3s ease-out;
+    `;
+
+    document.body.appendChild(notification);
+
+    // Rimuovi automaticamente la notifica dopo 4 secondi
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 4000);
 }
 
 /**
@@ -271,6 +345,109 @@ function changeQuantity(change) {
     quantityInput.value = newValue;
     updateTotalPrice();
 }
+
+/**
+ * Extract route name from JSON string
+ * @param {string} percorsoJson - JSON string of the route
+ * @returns {string} - Readable route name
+ */
+function extractRouteNameFromJson(percorsoJson) {
+    try {
+        const percorso = JSON.parse(percorsoJson);
+        if (percorso && percorso.segmenti && percorso.segmenti.length > 0) {
+            const primo = percorso.segmenti[0].fermataIn.nome;
+            const ultimo = percorso.segmenti[percorso.segmenti.length - 1].fermataOu.nome;
+            return `${primo} - ${ultimo}`;
+        }
+    } catch (e) {
+        console.warn('Errore nel parsing del percorso JSON:', e);
+    }
+    return 'Percorso Personalizzato';
+}
+
+function getIconForType(type) {
+    switch (type) {
+        case 'success':
+            return 'fas fa-check-circle';
+        case 'error':
+            return 'fas fa-exclamation-circle';
+        case 'warning':
+            return 'fas fa-exclamation-triangle';
+        default:
+            return 'fas fa-info-circle';
+    }
+}
+
+function getColorForType(type) {
+    switch (type) {
+        case 'success':
+            return 'linear-gradient(135deg, #32cd32 0%, #228b22 100%)';
+        case 'error':
+            return 'linear-gradient(135deg, #dc3545 0%, #b02a37 100%)';
+        case 'warning':
+            return 'linear-gradient(135deg, #ffc107 0%, #d39e00 100%)';
+        default:
+            return 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)';
+    }
+}
+
+// Aggiungi stili CSS dinamicamente
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    .ticket-notification .notification-content {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .ticket-notification button {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+        padding: 0;
+        margin-left: auto;
+    }
+    
+    .ticket-notification button:hover {
+        opacity: 0.8;
+    }
+    
+    .ticket-selection-container.loading {
+        pointer-events: none;
+        opacity: 0.7;
+    }
+    
+    .ticket-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .ticket-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .ticket-card.selected {
+        border-color: #007bff;
+        background-color: #f8f9ff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,123,255,0.2);
+    }
+`;
+document.head.appendChild(style);
 
 // Export functions for use in HTML
 window.selectTicket = selectTicket;

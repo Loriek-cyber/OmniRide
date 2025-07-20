@@ -31,10 +31,9 @@
                         <p>Da qui puoi gestire il tuo profilo, visualizzare i tuoi biglietti e accedere a tutte le funzionalità di Omniride.</p>
                         
                         <div class="dashboard-actions">
-                            <a href="${pageContext.request.contextPath}/prvUser/editProfile.jsp" class="btn">Modifica Profilo</a>
-                            <a href="${pageContext.request.contextPath}/biglietti.jsp" class="btn">I Miei Biglietti</a>
-                            <a href="${pageContext.request.contextPath}/prvUser/wallet" class="btn">Ricarica Credito</a>
-                            <a href="${pageContext.request.contextPath}/tratte.jsp" class="btn">Cerca Tratte</a>
+                            <a href="${pageContext.request.contextPath}/updateProfile" class="btn">Modifica Profilo</a>
+                            <a href="${pageContext.request.contextPath}/wallet" class="btn">I Miei Biglietti</a>
+                            <a href="${pageContext.request.contextPath}/visualizzaTrattep" class="btn">Cerca Tratte</a>
                         </div>
                     </c:if>
 
@@ -64,7 +63,6 @@
                 <p>Per accedere a questa pagina, devi prima effettuare il <a href="${pageContext.request.contextPath}/login">login</a>.</p>
             </div>
         </main>
-        <jsp:include page="/import/footer.jsp"/>
     </c:if>
 </body>
 </html>

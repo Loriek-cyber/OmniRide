@@ -7,12 +7,16 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Cookie;
 import model.dao.TrattaDAO;
 import model.dao.udata.SessioneDAO;
 import model.sdata.Tratta;
 import model.udata.Biglietto;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.HashMap;
@@ -20,6 +24,9 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 
 @WebServlet("/carrello")
 public class CarrelloServlet extends HttpServlet {
@@ -64,7 +71,7 @@ public class CarrelloServlet extends HttpServlet {
             session.setAttribute("carrello", carrello);
         }
         
-        switch (action) {
+switch (action) {
             case "aggiungi":
                 aggiungiAlCarrello(request, carrello);
                 break;
@@ -76,6 +83,9 @@ public class CarrelloServlet extends HttpServlet {
                 break;
             case "svuota":
                 carrello.clear();
+                break;
+            case "sync":
+                sincronizzaCarrello(request, carrello);
                 break;
         }
         
@@ -118,7 +128,7 @@ public class CarrelloServlet extends HttpServlet {
                 nuovoBiglietto.setQuantita(quantita);
                 nuovoBiglietto.setTipo(tipo);
                 
-                // Costruisci il nome leggibile dal percorsoJson
+// Costruisci il nome leggibile dal percorsoJson
                 String nome = "Percorso Personalizzato";
                 if (percorsoJson != null && !percorsoJson.isEmpty()) {
                     try {
@@ -132,6 +142,7 @@ public class CarrelloServlet extends HttpServlet {
                     }
                 }
                 nuovoBiglietto.setNome(nome);
+                nuovoBiglietto.setPercorsoJson(percorsoJson);
                 
                 carrello.add(nuovoBiglietto);
             }
@@ -170,6 +181,37 @@ public class CarrelloServlet extends HttpServlet {
             return Biglietto.TipoBiglietto.valueOf(tipoStr);
         } catch (IllegalArgumentException e) {
             return Biglietto.TipoBiglietto.NORMALE;
+        }
+    }
+    
+private void sincronizzaCarrello(HttpServletRequest request, List<BigliettoCarrello> carrello) {
+        try {
+            String cartData = request.getParameter("cartData");
+            if (cartData != null && !cartData.isEmpty()) {
+                Gson gson = new Gson();
+                Type listType = new TypeToken<List<BigliettoCarrello>>(){}.getType();
+                List<BigliettoCarrello> cookieCarrello = gson.fromJson(URLDecoder.decode(cartData, StandardCharsets.UTF_8.name()), listType);
+
+                for (BigliettoCarrello item : cookieCarrello) {
+                    boolean exists = false;
+                    for (BigliettoCarrello existingItem : carrello) {
+                        if (existingItem.getPercorsoJson().equals(item.getPercorsoJson()) &&
+                            existingItem.getData().equals(item.getData()) &&
+                            existingItem.getOrario().equals(item.getOrario()) &&
+                            existingItem.getTipo() == item.getTipo() &&
+                            existingItem.getPrezzo() == item.getPrezzo()) {
+                            existingItem.setQuantita(existingItem.getQuantita() + item.getQuantita());
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        carrello.add(item);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     

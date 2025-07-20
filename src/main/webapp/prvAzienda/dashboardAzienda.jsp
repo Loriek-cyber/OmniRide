@@ -86,7 +86,6 @@
             </c:forEach>
         </main>
     </div>
-    <jsp:include page="/import/footer.jsp"/>
     <script src="${pageContext.request.contextPath}/Scripts/commonSidebar.js"></script>
 </body>
 </html>

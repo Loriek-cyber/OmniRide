@@ -12,6 +12,7 @@ import model.udata.Utente;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/wallet")
@@ -31,13 +32,21 @@ public class WalletServlet extends HttpServlet {
         Utente utente = (Utente) session.getAttribute("utente");
         try {
             // Recupera tutti i biglietti dell'utente
-            List<Biglietto> biglietti = BigliettiDAO.getAllUser(utente.getId());
-            
+            List<Biglietto> biglietti = BigliettiDAO.getAllUserActive(utente.getId());
             // Aggiorna lo stato dei biglietti (verifica scadenze)
             biglietti.forEach(Biglietto::verificaScadenza);
             
             // Carica i biglietti completi nella sessione per la visualizzazione
             session.setAttribute("bigliettiCompleti", biglietti);
+            
+            // Controlla se ci sono biglietti guest da reclamare
+            @SuppressWarnings("unchecked")
+            List<Biglietto> guestTickets = (List<Biglietto>) session.getAttribute("guestTickets");
+            
+            if (guestTickets != null && !guestTickets.isEmpty()) {
+                req.setAttribute("guestTickets", guestTickets);
+                req.setAttribute("showClaimButton", true);
+            }
             
             // Passa i biglietti alla JSP
             req.setAttribute("biglietti", biglietti);
@@ -62,7 +71,60 @@ public class WalletServlet extends HttpServlet {
         
         String action = req.getParameter("action");
         
-        if ("activateTicket".equals(action)) {
+        if ("claimGuestTickets".equals(action)) {
+            // Reclama i biglietti guest
+            try {
+                @SuppressWarnings("unchecked")
+                List<Biglietto> guestTickets = (List<Biglietto>) session.getAttribute("guestTickets");
+                
+                if (guestTickets != null && !guestTickets.isEmpty()) {
+                    Utente utente = (Utente) session.getAttribute("utente");
+                    
+                    // Estrai gli ID dei biglietti guest che hanno un ID nel database
+                    List<Long> guestTicketIds = new ArrayList<>();
+                    for (Biglietto biglietto : guestTickets) {
+                        if (biglietto.getId() != null) {
+                            guestTicketIds.add(biglietto.getId());
+                        } else {
+                            // Se il biglietto non ha un ID, crealo prima nel database
+                            biglietto.setId_utente(-1L); // Temporaneamente assegnato a guest
+                            
+                            // Imposta valori di default per le liste se sono nulle
+                            if (biglietto.getId_tratte() == null) {
+                                biglietto.setId_tratte(new ArrayList<>());
+                            }
+                            if (biglietto.getNumero_fermate() == null) {
+                                biglietto.setNumero_fermate(new ArrayList<>());
+                            }
+                            
+                            Long bigliettoId = BigliettiDAO.create(biglietto);
+                            if (bigliettoId != null) {
+                                guestTicketIds.add(bigliettoId);
+                            }
+                        }
+                    }
+                    
+                    // Usa la funzione del DAO per reclamare i biglietti
+                    int claimedTickets = BigliettiDAO.claimGuestTickets(utente.getId(), guestTicketIds);
+                    
+                    // Svuota i biglietti guest dalla sessione
+                    session.removeAttribute("guestTickets");
+                    
+                    if (claimedTickets > 0) {
+                        req.setAttribute("success", "Hai reclamato " + claimedTickets + " biglietti!");
+                    } else {
+                        req.setAttribute("error", "Nessun biglietto è stato reclamato.");
+                    }
+                } else {
+                    req.setAttribute("error", "Nessun biglietto guest da reclamare.");
+                }
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+                req.setAttribute("error", "Errore nel reclamare i biglietti: " + e.getMessage());
+            }
+            
+        } else if ("activateTicket".equals(action)) {
             String bigliettoIdStr = req.getParameter("idBiglietto");
             
             if (bigliettoIdStr != null) {

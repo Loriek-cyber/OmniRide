@@ -65,7 +65,12 @@
         tickets.push(newTicket);
         
         try {
+            // Salva nel sessionStorage (per il client)
             sessionStorage.setItem('guestTickets', JSON.stringify(tickets));
+            
+            // Salva anche nella sessione del server tramite AJAX
+            saveGuestTicketToSession(newTicket);
+            
             updateGuestWalletVisibility();
             
             // Mostra una notifica di successo
@@ -203,13 +208,72 @@
         monitorSessionStorage();
     });
 
+    // Funzione per salvare il biglietto guest nella sessione del server
+    function saveGuestTicketToSession(ticketData) {
+        fetch('/guest-tickets', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                action: 'save',
+                ticketData: JSON.stringify(ticketData)
+            })
+        })
+        .catch(error => {
+            console.warn('Impossibile salvare il biglietto nella sessione server:', error);
+        });
+    }
+
+    // Funzione per ottenere i biglietti guest dalla sessione del server
+    function getGuestTicketsFromSession() {
+        return fetch('/guest-tickets?action=get', {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => data.tickets || [])
+        .catch(error => {
+            console.warn('Impossibile recuperare i biglietti dalla sessione server:', error);
+            return [];
+        });
+    }
+
+    // Funzione per unire i biglietti da sessionStorage e sessione server
+    function getAllGuestTickets() {
+        const localTickets = getGuestTickets();
+        
+        return getGuestTicketsFromSession()
+            .then(serverTickets => {
+                // Unisci i biglietti, evitando duplicati
+                const allTickets = [...localTickets];
+                
+                serverTickets.forEach(serverTicket => {
+                    const exists = localTickets.some(localTicket => 
+                        localTicket.codice === serverTicket.codice ||
+                        (localTicket.percorso === serverTicket.percorso &&
+                         localTicket.data === serverTicket.data &&
+                         localTicket.orario === serverTicket.orario)
+                    );
+                    
+                    if (!exists) {
+                        allTickets.push(serverTicket);
+                    }
+                });
+                
+                return allTickets;
+            })
+            .catch(() => localTickets); // Fallback ai biglietti locali
+    }
+
     // Esporta le funzioni globalmente per l'uso in altre parti del sito
     window.GuestWallet = {
         updateVisibility: updateGuestWalletVisibility,
         saveTicket: saveGuestTicket,
         removeTicket: removeGuestTicket,
         getTickets: getGuestTickets,
-        showNotification: showTicketNotification
+        getAllTickets: getAllGuestTickets,
+        showNotification: showTicketNotification,
+        saveToSession: saveGuestTicketToSession
     };
 
 })();
