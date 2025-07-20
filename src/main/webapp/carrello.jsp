@@ -15,31 +15,39 @@
 <main>
     <div class="container">
         <h2>Il Tuo Carrello</h2>
+        
+        <!-- Messaggi di successo/errore -->
+        <c:if test="${not empty successMessage}">
+            <div class="alert alert-success">${successMessage}</div>
+        </c:if>
+        <c:if test="${not empty errorMessage}">
+            <div class="alert alert-danger">${errorMessage}</div>
+        </c:if>
 
         <c:choose>
-            <c:when test="${not empty sessionScope.carrello && not empty sessionScope.carrello.values()}">
+            <c:when test="${not empty sessionScope.carrello}">
                 <table class="table">
                     <thead>
                         <tr>
                             <th>Tratta</th>
                             <th>Azienda</th>
-                            <th>Prezzo (stimato)</th>
+                            <th>Prezzo</th>
                             <th>Azione</th>
                         </tr>
                     </thead>
                     <tbody>
                         <c:set var="prezzoTotale" value="0"/>
-                        <c:forEach var="item" items="${sessionScope.carrello.values()}">
-                            <c:set var="prezzoTratta" value="2.50"/> <%-- Prezzo placeholder --%>
+                        <c:forEach var="tratta" items="${sessionScope.carrello}" varStatus="status">
+                            <c:set var="prezzoTratta" value="${tratta.costo > 0 ? tratta.costo : 2.50}"/>
                             <c:set var="prezzoTotale" value="${prezzoTotale + prezzoTratta}"/>
                             <tr>
-                                <td>${item.nome}</td>
-                                <td>${item.azienda.nome}</td>
+                                <td>${tratta.nome}</td>
+                                <td>${tratta.azienda.nome}</td>
                                 <td><fmt:formatNumber value="${prezzoTratta}" type="currency" currencySymbol="€"/></td>
                                 <td>
                                     <form action="${pageContext.request.contextPath}/carrello" method="post" style="display:inline;">
-                                        <input type="hidden" name="action" value="remove">
-                                        <input type="hidden" name="idTratta" value="${item.id}">
+                                        <input type="hidden" name="action" value="removeById">
+                                        <input type="hidden" name="trattaId" value="${tratta.id}">
                                         <button type="submit" class="btn btn-danger btn-sm">Rimuovi</button>
                                     </form>
                                 </td>
@@ -56,7 +64,11 @@
                 </table>
 
                 <div style="text-align: right; margin-top: 20px;">
-                    <form action="${pageContext.request.contextPath}/checkout" method="post">
+                    <form action="${pageContext.request.contextPath}/carrello" method="post" style="display: inline-block; margin-right: 10px;">
+                        <input type="hidden" name="action" value="clear">
+                        <button type="submit" class="btn btn-secondary" onclick="return confirm('Sei sicuro di voler svuotare il carrello?')">Svuota Carrello</button>
+                    </form>
+                    <form action="${pageContext.request.contextPath}/checkout" method="post" style="display: inline-block;">
                         <button type="submit" class="btn btn-primary">Procedi all'Acquisto</button>
                     </form>
                 </div>
@@ -66,7 +78,7 @@
                 <div class="empty-state">
                     <h3>Il tuo carrello è vuoto.</h3>
                     <p>Aggiungi delle tratte al carrello per poterle acquistare.</p>
-                    <a href="${pageContext.request.contextPath}/tratte" class="btn">Esplora le Tratte</a>
+                    <a href="${pageContext.request.contextPath}/visualizzaTratte" class="btn">Esplora le Tratte</a>
                 </div>
             </c:otherwise>
         </c:choose>

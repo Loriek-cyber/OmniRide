@@ -23,7 +23,8 @@
                     <button class="tab-link active">Biglietti</button>
                     <button class="tab-link">Abbonamenti</button>
                 </div>
-                <form class="search-form" action="#" method="post">
+                <form class="search-form" action="${pageContext.request.contextPath}/ricercaPercorsi" method="post">
+                    <input type="hidden" name="action" value="cerca">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="partenza">Partenza</label>

@@ -13,8 +13,8 @@ import model.sdata.Tratta;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @WebServlet("/carrello")
 public class CarrelloServlet extends HttpServlet {
@@ -26,9 +26,9 @@ public class CarrelloServlet extends HttpServlet {
         HttpSession session = request.getSession();
         
         // Inizializza il carrello se non esiste
-        Map<String, Object> carrello = (Map<String, Object>) session.getAttribute("carrello");
+        List<Tratta> carrello = (List<Tratta>) session.getAttribute("carrello");
         if (carrello == null) {
-            carrello = new HashMap<>();
+            carrello = new ArrayList<>();
             session.setAttribute("carrello", carrello);
         }
         
@@ -50,25 +50,77 @@ public class CarrelloServlet extends HttpServlet {
     }
     
     private void handleAction(HttpServletRequest request, HttpServletResponse response, 
-                            String action, Map<String, Object> carrello) 
+                            String action, List<Tratta> carrello) 
             throws ServletException, IOException {
         
         switch (action) {
+            case "addTratta":
+                // Aggiunge una tratta al carrello
+                String trattaId = request.getParameter("trattaId");
+                if (trattaId != null) {
+                    try {
+                        Long id = Long.parseLong(trattaId);
+                        Tratta tratta = TrattaDAO.getById(id);
+                        if (tratta != null && !carrello.contains(tratta)) {
+                            carrello.add(tratta);
+                            request.setAttribute("successMessage", "Tratta aggiunta al carrello!");
+                        } else if (carrello.contains(tratta)) {
+                            request.setAttribute("errorMessage", "La tratta è già presente nel carrello!");
+                        } else {
+                            request.setAttribute("errorMessage", "Tratta non trovata!");
+                        }
+                    } catch (NumberFormatException | SQLException e) {
+                        request.setAttribute("errorMessage", "Errore nell'aggiunta della tratta al carrello!");
+                        e.printStackTrace();
+                    }
+                }
+                break;
+                
             case "addPercorso":
-                // Aggiunge un percorso al carrello
+                // Compatibilità con codice esistente
                 String percorsoIndex = request.getParameter("percorso");
                 if (percorsoIndex != null) {
-                    carrello.put("percorso_" + Instant.now().toEpochMilli(), percorsoIndex);
-                    request.setAttribute("successMessage", "Percorso aggiunto al carrello!");
+                    try {
+                        Long id = Long.parseLong(percorsoIndex);
+                        Tratta tratta = TrattaDAO.getById(id);
+                        if (tratta != null && !carrello.contains(tratta)) {
+                            carrello.add(tratta);
+                            request.setAttribute("successMessage", "Percorso aggiunto al carrello!");
+                        }
+                    } catch (NumberFormatException | SQLException e) {
+                        request.setAttribute("errorMessage", "Errore nell'aggiunta del percorso!");
+                        e.printStackTrace();
+                    }
                 }
                 break;
                 
             case "remove":
-                // Rimuove un elemento dal carrello
-                String itemId = request.getParameter("itemId");
-                if (itemId != null) {
-                    carrello.remove(itemId);
-                    request.setAttribute("successMessage", "Elemento rimosso dal carrello!");
+                // Rimuove una tratta dal carrello per indice
+                String indexStr = request.getParameter("index");
+                if (indexStr != null) {
+                    try {
+                        int index = Integer.parseInt(indexStr);
+                        if (index >= 0 && index < carrello.size()) {
+                            carrello.remove(index);
+                            request.setAttribute("successMessage", "Tratta rimossa dal carrello!");
+                        }
+                    } catch (NumberFormatException e) {
+                        request.setAttribute("errorMessage", "Indice non valido!");
+                    }
+                }
+                break;
+                
+            case "removeById":
+                // Rimuove una tratta dal carrello per ID
+                String idToRemove = request.getParameter("trattaId");
+                if (idToRemove != null) {
+                    try {
+                        Long id = Long.parseLong(idToRemove);
+                        carrello.removeIf(tratta -> tratta.getId().equals(id));
+                        request.setAttribute("successMessage", "Tratta rimossa dal carrello!");
+                    } catch (NumberFormatException e) {
+                        request.setAttribute("errorMessage", "ID tratta non valido!");
+                    }
                 }
                 break;
                 

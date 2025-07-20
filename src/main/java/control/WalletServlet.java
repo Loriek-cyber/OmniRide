@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet("/wallet")
+@WebServlet(urlPatterns = {"/wallet", "/prvUser/wallet"})
 public class WalletServlet extends HttpServlet {
     
     @Override

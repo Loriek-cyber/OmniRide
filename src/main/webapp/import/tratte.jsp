@@ -115,9 +115,22 @@
                             </c:if>
                             
                             <div class="tratta-actions">
-                                <button class="btn btn-primary" onclick="selezionaTratta(${tratta.id})">
-                                     Prenota Biglietto
-                                </button>
+                                <form action="${pageContext.request.contextPath}/carrello" method="post" style="display: inline-block; margin-right: 5px;">
+                                    <input type="hidden" name="action" value="addTratta">
+                                    <input type="hidden" name="trattaId" value="${tratta.id}">
+                                    <button type="submit" class="btn btn-primary">
+                                         🛒 Aggiungi al Carrello
+                                    </button>
+                                </form>
+                                <c:if test="${not empty sessionScope.utente}">
+                                    <form action="${pageContext.request.contextPath}/trattePreferiti" method="post" style="display: inline-block; margin-right: 5px;">
+                                        <input type="hidden" name="action" value="add">
+                                        <input type="hidden" name="trattaId" value="${tratta.id}">
+                                        <button type="submit" class="btn btn-success">
+                                            ❤️ Aggiungi ai Preferiti
+                                        </button>
+                                    </form>
+                                </c:if>
                                 <button class="btn btn-secondary" onclick="mostraDettagli(${tratta.id})">
                                      Vedi Dettagli
                                 </button>
