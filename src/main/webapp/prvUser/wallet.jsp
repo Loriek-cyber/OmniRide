@@ -16,8 +16,6 @@
 
 <main>
     <div class="wallet-container">
-        <h2>Il Mio Portafoglio</h2>
-
         <div class="wallet-section">
             <h3><i class="fas fa-ticket-alt"></i> I Miei Biglietti</h3>
             <div class="wallet-section-content">
