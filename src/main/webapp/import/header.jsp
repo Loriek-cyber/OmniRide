@@ -12,7 +12,7 @@
         <a href="${pageContext.request.contextPath}/ricercaPercorsi">Ricerca Percorsi</a>
         <a href="${pageContext.request.contextPath}/biglietti.jsp">Biglietti</a>
         <a href="${pageContext.request.contextPath}/visualizzaTratte">Tratte</a>
-        <a href="${pageContext.request.contextPath}/trattePreferite">Tratte Preferite</a>
+        <a href="${pageContext.request.contextPath}/trattePreferiti">Tratte Preferite</a>
         <a href="${pageContext.request.contextPath}/visualizzaAvvisi">Avvisi</a>
         <a href="${pageContext.request.contextPath}/faq">FAQ</a>
     </nav>

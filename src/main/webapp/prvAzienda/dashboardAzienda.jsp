@@ -7,6 +7,14 @@
     <title>Dashboard Azienda - Omniride</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/base.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/dashboard.css">
+    <style>
+        .content-section {
+            min-height: 400px;
+        }
+        .content-section.active {
+            display: block !important;
+        }
+    </style>
 </head>
 <body>
     <jsp:include page="/import/header.jsp"/>
@@ -57,7 +65,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#sezione8" class="nav-link" onclick="showSection(8)">
+                    <a href="${pageContext.request.contextPath}/azienda/employeeManagement" class="nav-link">
                         Gestione Dipendenti
                     </a>
                 </li>
@@ -167,12 +175,20 @@
     </div>
 
     <script>
+        // Debug: Log when script loads
+        console.log('Dashboard script loaded');
+        
         // Gestione navigazione sidebar
         function showSection(sectionNumber) {
+            console.log('Showing section:', sectionNumber);
+            
             // Nascondi tutte le sezioni
             const allSections = document.querySelectorAll('.content-section');
+            console.log('Found sections:', allSections.length);
+            
             allSections.forEach(section => {
                 section.style.display = 'none';
+                section.classList.remove('active');
             });
 
             // Rimuovi classe active da tutti i link
@@ -183,8 +199,13 @@
 
             // Mostra la sezione selezionata
             const targetSection = document.getElementById(`content-sezione${sectionNumber}`);
+            console.log('Target section found:', targetSection);
+            
             if (targetSection) {
                 targetSection.style.display = 'block';
+                targetSection.classList.add('active');
+            } else {
+                console.error('Section not found:', `content-sezione${sectionNumber}`);
             }
 
             // Aggiungi classe active al link corrente

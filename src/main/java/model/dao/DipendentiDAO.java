@@ -185,5 +185,83 @@ public class DipendentiDAO {
         return dipendenti;
     }
 
+    /**
+     * Alias method for getByAzienda compatibility.
+     * 
+     * @param idAzienda ID dell'azienda
+     * @return Lista di dipendenti dell'azienda (inclusi inattivi)
+     * @throws SQLException in caso di errore del database
+     */
+    public static List<Dipendenti> getByAzienda(Long idAzienda) throws SQLException {
+        String sql = "SELECT * FROM Dipendente WHERE id_azienda = ?";
+        List<Dipendenti> dipendenti = new ArrayList<>();
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setLong(1, idAzienda);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    dipendenti.add(extractDipendenteFromResultSet(rs));
+                }
+            }
+        }
+        return dipendenti;
+    }
 
+    /**
+     * Alias method for getById compatibility.
+     * 
+     * @param idUtente ID utente
+     * @param idAzienda ID azienda
+     * @return Dipendente se trovato, null altrimenti
+     * @throws SQLException in caso di errore del database
+     */
+    public static Dipendenti getByUserAndCompany(Long idUtente, Long idAzienda) throws SQLException {
+        return getById(idUtente, idAzienda);
+    }
+
+    /**
+     * Aggiorna solo il ruolo di un dipendente.
+     * 
+     * @param idUtente ID utente
+     * @param idAzienda ID azienda
+     * @param nuovoRuolo Nuovo ruolo
+     * @return true se aggiornamento riuscito
+     * @throws SQLException in caso di errore del database
+     */
+    public static boolean updateRole(Long idUtente, Long idAzienda, String nuovoRuolo) throws SQLException {
+        String sql = "UPDATE Dipendente SET ruolo = ? WHERE id_utente = ? AND id_azienda = ?";
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setString(1, nuovoRuolo);
+            ps.setLong(2, idUtente);
+            ps.setLong(3, idAzienda);
+            
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * Aggiorna solo lo stato attivo di un dipendente.
+     * 
+     * @param idUtente ID utente
+     * @param idAzienda ID azienda
+     * @param attivo Nuovo stato
+     * @return true se aggiornamento riuscito
+     * @throws SQLException in caso di errore del database
+     */
+    public static boolean updateStatus(Long idUtente, Long idAzienda, boolean attivo) throws SQLException {
+        String sql = "UPDATE Dipendente SET attivo = ? WHERE id_utente = ? AND id_azienda = ?";
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setBoolean(1, attivo);
+            ps.setLong(2, idUtente);
+            ps.setLong(3, idAzienda);
+            
+            return ps.executeUpdate() > 0;
+        }
+    }
 }

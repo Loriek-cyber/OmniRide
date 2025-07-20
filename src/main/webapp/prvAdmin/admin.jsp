@@ -20,8 +20,9 @@
             <p>Benvenuto nell'area di amministrazione. Qui puoi gestire utenti, tratte e altre impostazioni del sistema.</p>
             <p>Funzionalità disponibili:</p>
             <ul>
-                <li><a href="#">Gestione Utenti</a></li>
+<li><a href="${pageContext.request.contextPath}/admin/userManagement">Gestione Utenti</a></li>
                 <li><a href="${pageContext.request.contextPath}/admin/gestoreTratte">Gestione Tratte</a></li>
+                <li><a href="${pageContext.request.contextPath}/admin/ticketValidation">Convalida Biglietti</a></li>
                 <li><a href="addTratta.jsp">Aggiungi Tratta</a></li>
                 <li><a href="addFermata.jsp">Aggiungi Fermata</a></li>
                 <li><a href="#">Report e Statistiche</a></li>

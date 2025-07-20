@@ -143,6 +143,11 @@ public class AziendaDAO {
 
 
 
+    public static Azienda getByUserId(Long userId) throws SQLException {
+        // Try to find company through employee relationship
+        return fromIDutente(userId);
+    }
+
     public static Azienda fromIDutente(Long id) throws SQLException {
         String sql = "SELECT id_azienda FROM Dipendente WHERE id_utente = ? AND attivo = 1";
         try (Connection con = DBConnector.getConnection();

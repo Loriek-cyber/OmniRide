@@ -131,6 +131,56 @@ public class UtenteDAO {
     }
 
     /**
+     * Aggiorna solo il ruolo di un utente.
+     *
+     * @param id L'ID dell'utente.
+     * @param nuovoRuolo Il nuovo ruolo da assegnare.
+     * @return true se l'aggiornamento ha avuto successo.
+     * @throws SQLException in caso di errore del database.
+     */
+    public static boolean updateRole(Long id, String nuovoRuolo) throws SQLException {
+        String sql = "UPDATE Utente SET ruolo = ? WHERE id = ?";
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, nuovoRuolo);
+            ps.setLong(2, id);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * Cerca utenti per nome, cognome o email.
+     *
+     * @param searchTerm Il termine di ricerca da cercare in nome, cognome o email.
+     * @return Lista di utenti che corrispondono ai criteri di ricerca.
+     * @throws SQLException in caso di errore del database.
+     */
+    public static List<Utente> searchUsers(String searchTerm) throws SQLException {
+        String sql = "SELECT * FROM Utente WHERE " +
+                     "LOWER(nome) LIKE LOWER(?) OR " +
+                     "LOWER(cognome) LIKE LOWER(?) OR " +
+                     "LOWER(email) LIKE LOWER(?) " +
+                     "ORDER BY nome, cognome";
+        
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            String searchPattern = "%" + searchTerm + "%";
+            ps.setString(1, searchPattern);
+            ps.setString(2, searchPattern);
+            ps.setString(3, searchPattern);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                List<Utente> utenti = new ArrayList<>();
+                while (rs.next()) {
+                    utenti.add(getUtenteFromSet(rs));
+                }
+                return utenti;
+            }
+        }
+    }
+
+    /**
      * Alias per compatibilità con codice esistente.
      * @deprecated Usare getAll() invece
      */
