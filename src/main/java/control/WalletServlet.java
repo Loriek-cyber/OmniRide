@@ -185,6 +185,53 @@ public class WalletServlet extends HttpServlet {
                 req.setAttribute("error", "Errore nel reclamare i biglietti: " + e.getMessage());
             }
             
+        } else if ("associateGuestTicket".equals(action)) {
+            // Associa un biglietto guest all'utente corrente
+            String guestTicketId = req.getParameter("guestTicketId");
+            
+            resp.setContentType("application/json");
+            resp.setCharacterEncoding("UTF-8");
+            
+            if (guestTicketId == null || guestTicketId.trim().isEmpty()) {
+                resp.getWriter().write("{\"success\": false, \"message\": \"ID biglietto non fornito\"}");
+                return;
+            }
+            
+            try {
+                Utente utente = (Utente) session.getAttribute("utente");
+                
+                // Cerca il biglietto guest nel database
+                Biglietto guestTicket = BigliettiDAO.findGuestTicketByCode(guestTicketId.trim());
+                
+                if (guestTicket == null) {
+                    resp.getWriter().write("{\"success\": false, \"message\": \"Biglietto non trovato o già associato\"}");
+                    return;
+                }
+                
+                // Verifica che il biglietto non sia già associato a un utente
+                if (guestTicket.getId_utente() != null && guestTicket.getId_utente() > 0) {
+                    resp.getWriter().write("{\"success\": false, \"message\": \"Questo biglietto è già associato a un account\"}");
+                    return;
+                }
+                
+                // Associa il biglietto all'utente corrente
+                boolean success = BigliettiDAO.associateGuestTicketToUser(guestTicket.getId(), utente.getId());
+                
+                if (success) {
+                    resp.getWriter().write("{\"success\": true, \"message\": \"Biglietto associato con successo\"}");
+                } else {
+                    resp.getWriter().write("{\"success\": false, \"message\": \"Errore nell'associazione del biglietto\"}");
+                }
+                
+            } catch (SQLException e) {
+                e.printStackTrace();
+                resp.getWriter().write("{\"success\": false, \"message\": \"Errore del database: \" + e.getMessage()}");
+            } catch (Exception e) {
+                e.printStackTrace();
+                resp.getWriter().write("{\"success\": false, \"message\": \"Errore interno del server\"}");
+            }
+            return;
+            
         } else if ("activateTicket".equals(action)) {
             String bigliettoIdStr = req.getParameter("idBiglietto");
             

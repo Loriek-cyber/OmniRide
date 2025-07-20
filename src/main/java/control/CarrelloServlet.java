@@ -54,9 +54,20 @@ public class CarrelloServlet extends HttpServlet {
                 .mapToDouble(bc -> bc.getPrezzo() * bc.getQuantita())
                 .sum();
         
-        // Non è più necessario caricare le carte di credito - il pagamento è semplificato
-        // Manteniamo compatibilità con vecchio sistema se necessario
-        request.setAttribute("carteCredito", new ArrayList<CartaCredito>());
+        // Carica le carte di credito se l'utente è loggato
+        Utente utente = (Utente) session.getAttribute("utente");
+        List<CartaCredito> carteCredito = new ArrayList<>();
+        
+        if (utente != null) {
+            try {
+                carteCredito = Carta_CreditoDAO.getByUserId(utente.getId());
+            } catch (SQLException e) {
+                Logger.getLogger(CarrelloServlet.class.getName()).warning("Errore nel caricamento delle carte di credito: " + e.getMessage());
+                carteCredito = new ArrayList<>();
+            }
+        }
+        
+        request.setAttribute("carteCredito", carteCredito);
         
         request.setAttribute("carrello", carrello);
         request.setAttribute("totale", totale);

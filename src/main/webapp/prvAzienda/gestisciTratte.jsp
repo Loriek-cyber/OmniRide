@@ -142,6 +142,9 @@
                                             </td>
                                             <td>
                                                 <div class="actions-group">
+                                                    <a href="${pageContext.request.contextPath}/prvAzienda/editTratta?id=${tratta.id}" class="action-btn edit" title="Modifica tratta">
+                                                        <i class="fas fa-edit"></i> Modifica
+                                                    </a>
                                                     <form action="${pageContext.request.contextPath}/prvAzienda/gestisciTratte" method="post" style="display: inline;">
                                                         <input type="hidden" name="trattaId" value="${tratta.id}" />
                                                         <c:choose>

@@ -608,5 +608,43 @@ public class BigliettiDAO {
         
         return Timestamp.valueOf(LocalDateTime.of(oggi, dataFine));
     }
+    
+    /**
+     * Trova un biglietto guest tramite il codice
+     */
+    public static Biglietto findGuestTicketByCode(String ticketCode) throws SQLException {
+        String sql = "SELECT * FROM Biglietto WHERE (id_utente IS NULL OR id_utente = -1) AND " +
+                     "(CONCAT('OM', LPAD(id, 7, '0')) = ? OR codice_biglietto = ?)";
+        
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setString(1, ticketCode);
+            ps.setString(2, ticketCode);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToBiglietto(rs, con);
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Associa un biglietto guest a un utente
+     */
+    public static boolean associateGuestTicketToUser(Long ticketId, Long userId) throws SQLException {
+        String sql = "UPDATE Biglietto SET id_utente = ? WHERE id = ? AND (id_utente IS NULL OR id_utente = -1)";
+        
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setLong(1, userId);
+            ps.setLong(2, ticketId);
+            
+            return ps.executeUpdate() > 0;
+        }
+    }
 }
 

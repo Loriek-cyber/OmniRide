@@ -83,28 +83,37 @@ public class CheckoutServlet extends HttpServlet {
                     }
                     newBiglietto.setTipo(tipo);
                     
-                    // Tickets purchased are validated and activated immediately
-                    newBiglietto.setStato(Biglietto.StatoBiglietto.CONVALIDATO);
-                    newBiglietto.setDataConvalida(LocalTime.now());
-                    
-                    // Set expiry date based on ticket type - usare LocalDateTime per calcoli precisi
-                    LocalDateTime nowDateTime = LocalDateTime.now();
-                    LocalTime dataFine;
-                    
-                    switch (tipo) {
-                        case GIORNALIERO:
-                            dataFine = nowDateTime.plusHours(24).toLocalTime(); // Valid for 24 hours
-                            break;
-                        case ANNUALE:
-                            dataFine = nowDateTime.plusDays(365).toLocalTime(); // Valid for 365 days
-                            break;
-                        case NORMALE:
-                        default:
-                            dataFine = nowDateTime.plusHours(4).toLocalTime(); // Valid for 4 hours
-                            break;
+                    // Per utenti registrati, i biglietti rimangono inattivi fino all'attivazione manuale
+                    // Per guest, i biglietti vengono attivati immediatamente per compatibilità
+                    if (isGuest) {
+                        // Guest tickets are activated immediately
+                        newBiglietto.setStato(Biglietto.StatoBiglietto.CONVALIDATO);
+                        newBiglietto.setDataConvalida(LocalTime.now());
+                        
+                        // Set expiry date based on ticket type
+                        LocalDateTime nowDateTime = LocalDateTime.now();
+                        LocalTime dataFine;
+                        
+                        switch (tipo) {
+                            case GIORNALIERO:
+                                dataFine = nowDateTime.plusHours(24).toLocalTime();
+                                break;
+                            case ANNUALE:
+                                dataFine = nowDateTime.plusDays(365).toLocalTime();
+                                break;
+                            case NORMALE:
+                            default:
+                                dataFine = nowDateTime.plusHours(4).toLocalTime();
+                                break;
+                        }
+                        
+                        newBiglietto.setDataFine(dataFine);
+                    } else {
+                        // Registered users: tickets start as purchased but not activated
+                        newBiglietto.setStato(Biglietto.StatoBiglietto.ACQUISTATO);
+                        newBiglietto.setDataConvalida(null); // Will be set when activated
+                        newBiglietto.setDataFine(null); // Will be calculated when activated
                     }
-                    
-                    newBiglietto.setDataFine(dataFine);
                     
                     // Set nome field - required for new database structure
                     String nome = item.getNome(); // Assuming BigliettoCarrello has getNome() method

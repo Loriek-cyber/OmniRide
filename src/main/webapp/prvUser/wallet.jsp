@@ -79,9 +79,33 @@
                         </c:otherwise>
                     </c:choose>
                 </div>
+        </div>
+        
+        <!-- Sezione Associazione Biglietti Ospite -->
+        <div class="wallet-section">
+            <h3><i class="fas fa-link"></i> Associa Biglietti Ospite</h3>
+            <div class="wallet-section-content">
+                <div class="guest-tickets-associate">
+                    <p>Se hai acquistato biglietti come ospite, puoi associarli al tuo account inserendo l'ID del biglietto.</p>
+                    
+                    <form id="associateTicketForm" class="associate-form">
+                        <div class="form-group">
+                            <label for="guestTicketId">ID Biglietto Ospite:</label>
+                            <input type="text" id="guestTicketId" name="guestTicketId" 
+                                   placeholder="Es: OMR1234567" required>
+                            <small class="help-text">L'ID del biglietto si trova nella email di conferma o sul QR code</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-link"></i> Associa Biglietto
+                        </button>
+                    </form>
+                    
+                    <div id="associateResult" class="associate-result" style="display: none;"></div>
+                </div>
             </div>
         </div>
-
+    </div>
+</main>
     </div>
 </main>
 
@@ -288,6 +312,78 @@ function showNotification(message, type = 'info') {
         }
     }, 3000);
 }
+
+// Gestione associazione biglietti ospite
+document.addEventListener('DOMContentLoaded', function() {
+    const associateForm = document.getElementById('associateTicketForm');
+    const resultDiv = document.getElementById('associateResult');
+    
+    if (associateForm) {
+        associateForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const guestTicketId = document.getElementById('guestTicketId').value.trim();
+            
+            if (!guestTicketId) {
+                showAssociateResult('Per favore inserisci un ID biglietto valido.', 'error');
+                return;
+            }
+            
+            // Mostra loading
+            showAssociateResult('Ricerca del biglietto in corso...', 'info');
+            
+            // Invio richiesta al server
+            fetch('${pageContext.request.contextPath}/wallet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=associateGuestTicket&guestTicketId=${encodeURIComponent(guestTicketId)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAssociateResult('Biglietto associato con successo! Ricaricando la pagina...', 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    showAssociateResult(data.message || 'Errore nell\'associazione del biglietto.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Errore:', error);
+                showAssociateResult('Errore di comunicazione con il server.', 'error');
+            });
+        });
+    }
+    
+    function showAssociateResult(message, type) {
+        if (resultDiv) {
+            resultDiv.style.display = 'block';
+            resultDiv.className = `associate-result ${type}`;
+            resultDiv.textContent = message;
+            
+            if (type === 'success') {
+                resultDiv.style.backgroundColor = '#d4edda';
+                resultDiv.style.color = '#155724';
+                resultDiv.style.border = '1px solid #c3e6cb';
+            } else if (type === 'error') {
+                resultDiv.style.backgroundColor = '#f8d7da';
+                resultDiv.style.color = '#721c24';
+                resultDiv.style.border = '1px solid #f5c6cb';
+            } else {
+                resultDiv.style.backgroundColor = '#d1ecf1';
+                resultDiv.style.color = '#0c5460';
+                resultDiv.style.border = '1px solid #bee5eb';
+            }
+            
+            resultDiv.style.padding = '15px';
+            resultDiv.style.borderRadius = '5px';
+            resultDiv.style.marginTop = '15px';
+        }
+    }
+});
 </script>
 
 </body>

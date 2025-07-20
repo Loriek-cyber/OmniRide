@@ -66,4 +66,9 @@ public class Carta_CreditoDAO {
             return  cartaCredito;
         }
     }
+    
+    // Alias method for compatibility
+    public static List<CartaCredito> getByUserId(Long id) throws SQLException {
+        return byIDUtente(id);
+    }
 }
