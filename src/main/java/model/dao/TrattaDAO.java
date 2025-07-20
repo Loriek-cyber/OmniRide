@@ -260,4 +260,8 @@ public class TrattaDAO {
     public static List<Tratta> doRetrieveAll() throws SQLException {
         return getAll();
     }
+
+    public static void delete(Long routeId) {
+        return;
+    }
 }

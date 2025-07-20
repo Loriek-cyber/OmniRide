@@ -45,7 +45,7 @@ public class AddCardServlet extends HttpServlet {
 
         try {
             Carta_CreditoDAO.create(cartaCredito);
-            resp.sendRedirect(req.getContextPath() + "/prvUser/card?success=add");
+            resp.sendRedirect(req.getContextPath() + "/prvUser/card");
         } catch (SQLException e) {
             resp.sendRedirect(req.getContextPath() + "/prvUser/card?error=database_error");
         }

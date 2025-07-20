@@ -29,14 +29,51 @@
                 </div>
                 
                 <div id="tickets-container">
-                    <div class="empty-state" id="empty-state">
-                        <i class="fas fa-ticket-alt"></i>
-                        <p>Nessun biglietto nel tuo portafoglio temporaneo.</p>
-                        <p><em>I biglietti acquistati come ospite appariranno qui.</em></p>
-                        <a href="${pageContext.request.contextPath}/" class="btn btn-primary">
-                            <i class="fas fa-search"></i> Cerca Biglietti
-                        </a>
-                    </div>
+                    <c:choose>
+                        <c:when test="${not empty requestScope.biglietti}">
+                            <!-- Biglietti dal database per guest -->
+                            <c:forEach var="biglietto" items="${requestScope.biglietti}">
+                                <div class="ticket-card">
+                                    <div class="ticket-info">
+                                        <p><strong>Percorso:</strong> ${not empty biglietto.nome ? biglietto.nome : 'Percorso Non Definito'}</p>
+                                        <p><strong>Tipo:</strong> ${biglietto.tipo}</p>
+                                        <p><strong>Prezzo:</strong> <fmt:formatNumber value="${biglietto.prezzo}" type="currency" currencySymbol="€"/></p>
+                                        <p><strong>Acquistato il:</strong> ${biglietto.dataAcquisto}</p>
+                                        <c:if test="${biglietto.dataConvalida != null}">
+                                            <p><strong>Convalidato il:</strong> ${biglietto.dataConvalida}</p>
+                                        </c:if>
+                                        <c:if test="${biglietto.dataFine != null}">
+                                            <p><strong>Valido fino:</strong> ${biglietto.dataFine}</p>
+                                        </c:if>
+                                        <p><strong>Stato:</strong> <span class="ticket-status ${biglietto.stato eq 'ACQUISTATO' ? 'inactive' : (biglietto.stato eq 'CONVALIDATO' ? 'active' : 'expired')}">${biglietto.stato}</span></p>
+                                        <p><strong>Codice:</strong> <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px; font-family: monospace;">${not empty biglietto.codiceBiglietto ? biglietto.codiceBiglietto : 'OM'.concat(String.format("%07d", biglietto.id))}</code></p>
+                                    </div>
+                                    
+                                    <!-- QR Code Container -->
+                                    <div class="qr-container" style="text-align: center; margin: 15px 0;">
+                                        <div class="qr-code" id="qr-${biglietto.id}" style="width:100px;height:100px;margin:0 auto 10px;"></div>
+                                        <div class="qr-code-text" style="font-family: monospace; font-size: 12px; color: #666;">${not empty biglietto.codiceBiglietto ? biglietto.codiceBiglietto : 'OM'.concat(String.format("%07d", biglietto.id))}</div>
+                                    </div>
+                                    
+                                    <div class="ticket-actions">
+                                        <button class="btn-qr" onclick="downloadQRFromDB('${not empty biglietto.codiceBiglietto ? biglietto.codiceBiglietto : 'OM'.concat(String.format("%07d", biglietto.id))}', 'qr-${biglietto.id}')" title="Scarica QR Code">
+                                            <i class="fas fa-download"></i> Scarica QR
+                                        </button>
+                                    </div>
+                                </div>
+                            </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="empty-state" id="empty-state">
+                                <i class="fas fa-ticket-alt"></i>
+                                <p>Nessun biglietto nel tuo portafoglio temporaneo.</p>
+                                <p><em>I biglietti acquistati come ospite appariranno qui.</em></p>
+                                <a href="${pageContext.request.contextPath}/" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Cerca Biglietti
+                                </a>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
         </div>
@@ -75,7 +112,19 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Funzione per ottenere i biglietti guest dal sessionStorage
+    // Controlla se siamo in modalità guest e abbiamo biglietti dal server
+    const isGuest = ${not empty requestScope.isGuest ? 'true' : 'false'};
+    const serverBiglietti = ${not empty requestScope.biglietti ? requestScope.biglietti.size() : 0};
+    
+    console.log('[WALLET DEBUG] isGuest:', isGuest, 'serverBiglietti:', serverBiglietti);
+    
+    // Se siamo in modalità guest e abbiamo biglietti dal server, non usare sessionStorage
+    if (isGuest && serverBiglietti > 0) {
+        console.log('[WALLET DEBUG] Usando biglietti dal database per guest');
+        return; // I biglietti sono già renderizzati dal server
+    }
+    
+    // Funzione per ottenere i biglietti guest dal sessionStorage (fallback)
     function getGuestTickets() {
         try {
             return JSON.parse(sessionStorage.getItem('guestTickets') || '[]');
@@ -257,8 +306,47 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
     
-    // Carica e visualizza i biglietti al caricamento della pagina
-    displayGuestTickets();
+    // Funzione per scaricare QR da biglietti del database
+    window.downloadQRFromDB = function(ticketCode, qrElementId) {
+        try {
+            const qrElement = document.getElementById(qrElementId);
+            const canvas = qrElement ? qrElement.querySelector('canvas') : null;
+            
+            if (canvas) {
+                const link = document.createElement('a');
+                link.download = `biglietto-${ticketCode}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+                
+                showNotification('QR Code scaricato con successo!', 'success');
+            } else {
+                showNotification('Errore nel download del QR Code', 'error');
+            }
+        } catch (error) {
+            console.error('Errore nel download:', error);
+            showNotification('Errore nel download del QR Code', 'error');
+        }
+    };
+    
+    // Genera i QR codes per i biglietti dal database
+    setTimeout(() => {
+        const qrElements = document.querySelectorAll('[id^="qr-"]');
+        qrElements.forEach(qrElement => {
+            if (qrElement.innerHTML === '') {
+                const ticketCode = qrElement.parentElement.querySelector('.qr-code-text').textContent;
+                new QRCode(qrElement, {
+                    text: ticketCode,
+                    width: 100,
+                    height: 100
+                });
+            }
+        });
+    }, 100);
+    
+    // Carica e visualizza i biglietti al caricamento della pagina (solo se non ci sono biglietti dal server)
+    if (!(isGuest && serverBiglietti > 0)) {
+        displayGuestTickets();
+    }
     
     // Monitora i cambiamenti nel sessionStorage
     const originalSetItem = sessionStorage.setItem;

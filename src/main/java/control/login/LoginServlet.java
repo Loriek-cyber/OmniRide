@@ -46,6 +46,45 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
+        // ADMIN LOGIN CON PASSWORD FISSA
+        if ("admin@omniride.local".equals(email.trim()) && "Loriek2004@".equals(password)) {
+            System.out.println("[LOGIN DEBUG] Tentativo di login admin con credenziali fisse");
+            
+            // Cerca o crea l'utente admin
+            Utente adminUser = null;
+            try {
+                adminUser = UtenteDAO.findByEmail("admin@omniride.local");
+                
+                // Se l'admin non esiste, lo creiamo
+                if (adminUser == null) {
+                    System.out.println("[LOGIN DEBUG] Admin non trovato, creazione in corso...");
+                    adminUser = new Utente();
+                    adminUser.setNome("Admin");
+                    adminUser.setCognome("Sistema");
+                    adminUser.setEmail("admin@omniride.local");
+                    adminUser.setPasswordHash(BCrypt.hashpw("Loriek2004@", BCrypt.gensalt()));
+                    adminUser.setRuolo("admin");
+                    
+                    UtenteDAO.create(adminUser);
+                    // Ricarica l'utente per ottenere l'ID generato
+                    adminUser = UtenteDAO.findByEmail("admin@omniride.local");
+                    System.out.println("[LOGIN DEBUG] Admin creato con successo, ID: " + adminUser.getId());
+                }
+                
+                // Login immediato per l'admin
+                loginSuccessful(req, resp, adminUser);
+                return;
+                
+            } catch (Exception e) {
+                System.out.println("[LOGIN ERROR] Errore durante la gestione admin: " + e.getMessage());
+                e.printStackTrace();
+                req.setAttribute("errorMessage", "Errore del sistema admin. Riprova più tardi.");
+                req.getRequestDispatcher("/login/login.jsp").forward(req, resp);
+                return;
+            }
+        }
+        
+        // LOGIN NORMALE
         Utente utente = null;
         
         try {
@@ -160,6 +199,58 @@ public class LoginServlet extends HttpServlet {
             System.out.println("[LOGIN FAILED] Login fallito per: " + email);
             req.setAttribute("errorMessage", "Email o password non validi. Riprova.");
             req.getRequestDispatcher("/login/login.jsp").forward(req, resp);
+        }
+    }
+    
+    /**
+     * Gestisce il login riuscito per un utente
+     */
+    private void loginSuccessful(HttpServletRequest req, HttpServletResponse resp, Utente utente) 
+            throws ServletException, IOException {
+        System.out.println("[LOGIN SUCCESS] Login riuscito per: " + utente.getEmail());
+        HttpSession httpSession = req.getSession(true);
+        
+        // Creo una nuova sessione personalizzata
+        Sessione sessione = new Sessione();
+        sessione.setUtente(utente);
+        sessione.setValid(true);
+        sessione.setCreationTime(Instant.now().getEpochSecond());
+        sessione.setLastAccessTime(Instant.now().getEpochSecond());
+        
+        try {
+            // Salvo la sessione nel database
+            SessioneDAO.salvaSessione(sessione);
+            
+            // Salvo sia l'utente che la sessione nella HttpSession
+            httpSession.setAttribute("utente", utente);
+            httpSession.setAttribute("sessionId", sessione.getSessionId());
+            httpSession.setAttribute("sessione", sessione);
+            
+            System.out.println("[SESSION DEBUG] Sessione creata con ID: " + sessione.getSessionId());
+            
+        } catch (SQLException e) {
+            System.out.println("[SESSION ERROR] Errore durante il salvataggio della sessione: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Anche se c'è un errore nel salvataggio della sessione personalizzata,
+            // procedo con la sessione HTTP standard
+            httpSession.setAttribute("utente", utente);
+            System.out.println("[SESSION WARNING] Continuo con sessione HTTP standard senza persistenza database");
+        } catch (Exception e) {
+            System.out.println("[SESSION ERROR] Errore generico durante la creazione della sessione: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Fallback a sessione HTTP standard
+            httpSession.setAttribute("utente", utente);
+            System.out.println("[SESSION WARNING] Fallback a sessione HTTP standard");
+        }
+        
+        // Gestione del reindirizzamento
+        String redirectURL = req.getParameter("redirectURL");
+        if (redirectURL != null && !redirectURL.trim().isEmpty()) {
+            resp.sendRedirect(req.getContextPath() + redirectURL);
+        } else {
+            resp.sendRedirect(req.getContextPath() + "/prvUser/dashboard");
         }
     }
 }

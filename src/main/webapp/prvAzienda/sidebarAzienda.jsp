@@ -24,13 +24,8 @@
       </a>
     </li>
     <li class="nav-item">
-      <a href="${pageContext.request.contextPath}/prvAzienda/gestisciTratte" class="nav-link">
+      <a href="${pageContext.request.contextPath}/prvAzienda/routes" class="nav-link">
         Gestione Tratte
-      </a>
-    </li>
-    <li class="nav-item">
-      <a href="${pageContext.request.contextPath}/prvAzienda/flotta" class="nav-link">
-        Gestione Flotta
       </a>
     </li>
     <li class="nav-item">
@@ -39,7 +34,7 @@
       </a>
     </li>
     <li class="nav-item">
-      <a href="${pageContext.request.contextPath}/prvAzienda/dipendenti" class="nav-link">
+      <a href="${pageContext.request.contextPath}//prvAzienda/employees" class="nav-link">
         Gestione Dipendenti
       </a>
     </li>

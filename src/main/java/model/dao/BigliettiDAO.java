@@ -3,7 +3,7 @@ import model.db.DBConnector;
 import model.udata.Biglietto;
 
 import java.sql.*;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +47,9 @@ public class BigliettiDAO {
         "DELETE FROM Biglietto_Tratta WHERE id_biglietto = ?";
     private static final String SELECT_BY_TYPE = "Select * from Biglietto where tipo = ?";
     private static final String SELECT_BY_USER_AND_TYPE = "SELECT * from Biglietto where id_utente = ? AND tipo = ?";
+    
+    private static final String UPDATE_EXPIRED_TICKETS = 
+        "UPDATE Biglietto SET stato = 'SCADUTO' WHERE stato = 'CONVALIDATO' AND data_scadenza < NOW()";
 
     //funzioni basilari
     public static void delete(Biglietto biglietto) {
@@ -144,6 +147,7 @@ public class BigliettiDAO {
             // Ensure guest user exists if creating a guest ticket
             if (biglietto.getId_utente() == -1L) {
                 ensureGuestUserExists();
+                System.out.println("[BIGLIETTI_DAO DEBUG] Creando biglietto guest per utente ID: -1");
             }
             
             Long bigliettoId = null;
@@ -152,9 +156,13 @@ public class BigliettiDAO {
             try (PreparedStatement stmt = conn.prepareStatement(INSERT_BIGLIETTO, Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setLong(1, biglietto.getId_utente());
                 stmt.setString(2, biglietto.getNome());
-                stmt.setTimestamp(3, biglietto.getDataAcquisto() != null ? Timestamp.valueOf(biglietto.getDataAcquisto().atDate(java.time.LocalDate.now())) : null);
-                stmt.setTimestamp(4, biglietto.getDataConvalida() != null ? Timestamp.valueOf(biglietto.getDataConvalida().atDate(java.time.LocalDate.now())) : null);
-                stmt.setTimestamp(5, biglietto.getDataFine() != null ? Timestamp.valueOf(biglietto.getDataFine().atDate(java.time.LocalDate.now())) : null);
+                // Conversione da LocalTime a LocalDateTime usando la data corrente
+                stmt.setTimestamp(3, biglietto.getDataAcquisto() != null ? 
+                    Timestamp.valueOf(biglietto.getDataAcquisto().atDate(java.time.LocalDate.now())) : null);
+                stmt.setTimestamp(4, biglietto.getDataConvalida() != null ? 
+                    Timestamp.valueOf(biglietto.getDataConvalida().atDate(java.time.LocalDate.now())) : null);
+                stmt.setTimestamp(5, biglietto.getDataFine() != null ? 
+                    createDataFineTimestamp(biglietto.getDataFine()) : null);
                 stmt.setString(6, biglietto.getStato().name());
                 stmt.setDouble(7, biglietto.getPrezzo());
                 stmt.setString(8, biglietto.getTipo() != null ? biglietto.getTipo().name() : "NORMALE");
@@ -251,7 +259,9 @@ public class BigliettiDAO {
         List<Biglietto> biglietti = new ArrayList<>();
         
         try (Connection conn = DBConnector.getConnection()) {
-            try (PreparedStatement stmt = conn.prepareStatement(SELECT_BY_USER_ACTIVE)) {
+            // Query ottimizzata: usa la data di scadenza direttamente nella query
+            String query = "SELECT * FROM Biglietto WHERE id_utente = ? AND stato IN ('ACQUISTATO', 'CONVALIDATO') AND (data_scadenza IS NULL OR data_scadenza > NOW()) ORDER BY data_acquisto DESC";
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
                 stmt.setLong(1, userId);
                 
                 try (ResultSet rs = stmt.executeQuery()) {
@@ -423,6 +433,84 @@ public class BigliettiDAO {
         }
     }
     
+    /**
+     * Invalida automaticamente tutti i biglietti che hanno superato il tempo di scadenza.
+     * Questo metodo aggiorna lo stato dei biglietti convalidati la cui data di scadenza
+     * è precedente al momento attuale, impostandoli come "SCADUTO".
+     * 
+     * @return Il numero di biglietti invalidati
+     */
+    public static int invalidaBigliettiScaduti() {
+        try (Connection conn = DBConnector.getConnection()) {
+            try (PreparedStatement stmt = conn.prepareStatement(UPDATE_EXPIRED_TICKETS)) {
+                int bigliettiInvalidati = stmt.executeUpdate();
+                
+                if (bigliettiInvalidati > 0) {
+                    System.out.println("Invalidati " + bigliettiInvalidati + " biglietti scaduti.");
+                }
+                
+                return bigliettiInvalidati;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Errore durante l'invalidamento dei biglietti scaduti", e);
+        }
+    }
+    
+    /**
+     * Recupera i biglietti attivi (non scaduti) tramite una lista di ID
+     * Utile per i biglietti guest salvati come ID nella sessione
+     * 
+     * @param ticketIds Lista degli ID dei biglietti da recuperare
+     * @return Lista di biglietti attivi corrispondenti agli ID forniti
+     */
+    public static List<Biglietto> getActiveTicketsByIds(List<Long> ticketIds) {
+        List<Biglietto> biglietti = new ArrayList<>();
+        
+        if (ticketIds == null || ticketIds.isEmpty()) {
+            return biglietti;
+        }
+        
+        // Prima invalida tutti i biglietti scaduti
+        invalidaBigliettiScaduti();
+        
+        try (Connection conn = DBConnector.getConnection()) {
+            // Costruisci la query con placeholder per ogni ID
+            StringBuilder queryBuilder = new StringBuilder("SELECT * FROM Biglietto WHERE id IN (");
+            for (int i = 0; i < ticketIds.size(); i++) {
+                if (i > 0) queryBuilder.append(", ");
+                queryBuilder.append("?");
+            }
+            queryBuilder.append(") AND stato IN ('ACQUISTATO', 'CONVALIDATO')");
+            
+            try (PreparedStatement stmt = conn.prepareStatement(queryBuilder.toString())) {
+                // Imposta i parametri
+                for (int i = 0; i < ticketIds.size(); i++) {
+                    stmt.setLong(i + 1, ticketIds.get(i));
+                }
+                
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        Biglietto biglietto = mapResultSetToBiglietto(rs, conn);
+                        
+                        // Doppio controllo: verifica la scadenza in memoria
+                        biglietto.verificaScadenza();
+                        
+                        // Aggiungi solo se non è scaduto dopo la verifica in memoria
+                        if (biglietto.getStato() != Biglietto.StatoBiglietto.SCADUTO) {
+                            biglietti.add(biglietto);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Errore durante il recupero dei biglietti per ID", e);
+        }
+        
+        return biglietti;
+    }
+    
     // Metodo di utilità per mappare ResultSet a Biglietto
     private static Biglietto mapResultSetToBiglietto(ResultSet rs, Connection conn) throws SQLException {
         Biglietto biglietto = new Biglietto();
@@ -441,20 +529,35 @@ public class BigliettiDAO {
             biglietto.setTipo(Biglietto.TipoBiglietto.NORMALE); // Default
         }
         
-        // Conversione timestamp a LocalTime
+        // Conversione timestamp a LocalTime mantenendo la logica della data
         Timestamp dataAcquisto = rs.getTimestamp("data_acquisto");
         if (dataAcquisto != null) {
-            biglietto.setDataAcquisto(dataAcquisto.toLocalDateTime().toLocalTime());
+            LocalDateTime dataAcquistoDateTime = dataAcquisto.toLocalDateTime();
+            biglietto.setDataAcquisto(dataAcquistoDateTime.toLocalTime());
         }
         
         Timestamp dataConvalida = rs.getTimestamp("data_convalida");
         if (dataConvalida != null) {
-            biglietto.setDataConvalida(dataConvalida.toLocalDateTime().toLocalTime());
+            LocalDateTime dataConvalidaDateTime = dataConvalida.toLocalDateTime();
+            biglietto.setDataConvalida(dataConvalidaDateTime.toLocalTime());
         }
         
         Timestamp dataScadenza = rs.getTimestamp("data_scadenza");
         if (dataScadenza != null) {
-            biglietto.setDataFine(dataScadenza.toLocalDateTime().toLocalTime());
+            LocalDateTime dataScadenzaDateTime = dataScadenza.toLocalDateTime();
+            // Per la data di scadenza, convertiamo a LocalTime ma gestiamo la logica della data
+            // Se la data di scadenza è in un giorno futuro rispetto a oggi, aggiungiamo 24 ore al LocalTime
+            LocalDateTime oggi = LocalDateTime.now();
+            java.time.LocalTime scadenzaTime = dataScadenzaDateTime.toLocalTime();
+            
+            // Se il biglietto scade in un giorno futuro, aggiungiamo le ore necessarie
+            long giorniDifferenza = java.time.temporal.ChronoUnit.DAYS.between(oggi.toLocalDate(), dataScadenzaDateTime.toLocalDate());
+            if (giorniDifferenza > 0) {
+                // Aggiungiamo 24 ore per ogni giorno di differenza
+                scadenzaTime = scadenzaTime.plusHours(24 * giorniDifferenza);
+            }
+            
+            biglietto.setDataFine(scadenzaTime);
         }
         
         // Carica le tratte associate dalla tabella Biglietto_Tratta
@@ -481,6 +584,29 @@ public class BigliettiDAO {
                 biglietto.setNumero_fermate(numeroFermate);
             }
         }
+    }
+    
+    /**
+     * Crea un Timestamp per la data di fine biglietto, gestendo correttamente i casi
+     * dove la data di fine supera la mezzanotte (giorno successivo)
+     * @param dataFine LocalTime che rappresenta l'ora di scadenza
+     * @return Timestamp con data e ora corrette
+     */
+    private static Timestamp createDataFineTimestamp(java.time.LocalTime dataFine) {
+        if (dataFine == null) {
+            return null;
+        }
+        
+        java.time.LocalDate oggi = java.time.LocalDate.now();
+        java.time.LocalTime ora = java.time.LocalTime.now();
+        
+        // Se l'ora di scadenza è precedente all'ora attuale,
+        // significa che il biglietto scade il giorno successivo
+        if (dataFine.isBefore(ora)) {
+            oggi = oggi.plusDays(1);
+        }
+        
+        return Timestamp.valueOf(LocalDateTime.of(oggi, dataFine));
     }
 }
 

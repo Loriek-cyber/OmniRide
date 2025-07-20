@@ -21,9 +21,72 @@ public class WalletServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
 
-        // Se l'utente non è loggato, controlla se ha biglietti ospite nella sessione client-side
+        // Se l'utente non è loggato, gestisci i biglietti guest tramite ID dai cookie
         if (session == null || session.getAttribute("utente") == null) {
-            // Reindirizza alla pagina wallet ospite che gestirà i biglietti da sessionStorage
+            // Recupera gli ID dei biglietti guest dai cookie
+            List<Long> guestTicketIds = new ArrayList<>();
+            
+            jakarta.servlet.http.Cookie[] cookies = req.getCookies();
+            if (cookies != null) {
+                for (jakarta.servlet.http.Cookie cookie : cookies) {
+                    if ("guestTicketIds".equals(cookie.getName())) {
+                        String idsString = cookie.getValue();
+                        if (idsString != null && !idsString.isEmpty()) {
+                            String[] idStrings = idsString.split(",");
+                            for (String idStr : idStrings) {
+                                try {
+                                    guestTicketIds.add(Long.parseLong(idStr.trim()));
+                                } catch (NumberFormatException e) {
+                                    System.err.println("ID biglietto non valido nel cookie: " + idStr);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            
+            List<Biglietto> guestBiglietti = new ArrayList<>();
+            
+            if (!guestTicketIds.isEmpty()) {
+                System.out.println("[WALLET DEBUG] Recuperando " + guestTicketIds.size() + " biglietti guest dal database (cookie)");
+                
+                // Usa il nuovo metodo per recuperare biglietti attivi tramite ID
+                try {
+                    guestBiglietti = BigliettiDAO.getActiveTicketsByIds(guestTicketIds);
+                    System.out.println("[WALLET DEBUG] Trovati " + guestBiglietti.size() + " biglietti attivi");
+                    
+                    // Se alcuni biglietti sono scaduti o non esistono più, aggiorna il cookie
+                    if (guestBiglietti.size() < guestTicketIds.size()) {
+                        List<Long> validIds = guestBiglietti.stream()
+                            .map(Biglietto::getId)
+                            .collect(java.util.stream.Collectors.toList());
+                        
+                        String updatedIdsString = validIds.stream()
+                            .map(String::valueOf)
+                            .collect(java.util.stream.Collectors.joining(","));
+                        
+                        jakarta.servlet.http.Cookie updatedCookie = new jakarta.servlet.http.Cookie("guestTicketIds", updatedIdsString);
+                        updatedCookie.setMaxAge(30 * 24 * 60 * 60); // 30 giorni
+                        updatedCookie.setPath("/");
+                        updatedCookie.setHttpOnly(true);
+                        resp.addCookie(updatedCookie);
+                        
+                        System.out.println("[WALLET DEBUG] Cookie aggiornato con " + validIds.size() + " ID validi");
+                    }
+                } catch (Exception e) {
+                    System.err.println("Errore nel recupero dei biglietti guest: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+            
+            // Passa i biglietti alla JSP
+            req.setAttribute("biglietti", guestBiglietti);
+            req.setAttribute("isGuest", true);
+            
+            System.out.println("[WALLET DEBUG] Passando " + guestBiglietti.size() + " biglietti alla JSP guest");
+            
+            // Reindirizza alla pagina wallet guest con i biglietti dal database
             req.getRequestDispatcher("/wallet.jsp").forward(req, resp);
             return;
         }
@@ -31,10 +94,8 @@ public class WalletServlet extends HttpServlet {
         // Se l'utente è loggato, carica i suoi biglietti dal database
         Utente utente = (Utente) session.getAttribute("utente");
         try {
-            // Recupera tutti i biglietti dell'utente
+            // Recupera tutti i biglietti attivi dell'utente (già filtrati dalla query)
             List<Biglietto> biglietti = BigliettiDAO.getAllUserActive(utente.getId());
-            // Aggiorna lo stato dei biglietti (verifica scadenze)
-            biglietti.forEach(Biglietto::verificaScadenza);
             
             // Carica i biglietti completi nella sessione per la visualizzazione
             session.setAttribute("bigliettiCompleti", biglietti);

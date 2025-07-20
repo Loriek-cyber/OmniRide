@@ -49,6 +49,10 @@ public class DashboardServlet extends HttpServlet {
             // Gli utenti azienda vengono reindirizzati alla loro dashboard specifica
             response.sendRedirect(request.getContextPath() + "/prvAzienda/dashboard");
             return;
+        } else if ("admin".equals(utente.getRuolo())) {
+            // Gli admin vengono reindirizzati alla dashboard admin
+            response.sendRedirect(request.getContextPath() + "/prvAdmin/dashboard");
+            return;
         }
         
         // Verifica e aggiorna la sessione personalizzata

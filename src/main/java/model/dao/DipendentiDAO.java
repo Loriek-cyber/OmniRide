@@ -188,4 +188,20 @@ public class DipendentiDAO {
     }
 
 
+    public static List<Dipendenti> getByAzienda(Long companyId) throws SQLException {
+        String sql = "SELECT * FROM Dipendente WHERE id_azienda = ?";
+        List<Dipendenti> dipendenti = new ArrayList<>();
+        if (companyId != null) {
+            throw  new UnsupportedOperationException("Not supported yet.");
+        }
+        try (Connection conn = DBConnector.getConnection()){
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setLong(1, companyId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                dipendenti.add(extractDipendenteFromResultSet(rs));
+            }
+            return dipendenti;
+        }
+    }
 }

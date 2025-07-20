@@ -7,12 +7,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.dao.BigliettiDAO;
+import model.dao.Carta_CreditoDAO;
 import model.udata.Biglietto;
 import model.udata.Utente;
+import model.udata.CartaCredito;
 import control.CarrelloServlet.BigliettoCarrello;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.time.LocalTime;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,20 +87,24 @@ public class CheckoutServlet extends HttpServlet {
                     newBiglietto.setStato(Biglietto.StatoBiglietto.CONVALIDATO);
                     newBiglietto.setDataConvalida(LocalTime.now());
                     
-                    // Set expiry date based on ticket type
-                    LocalTime now = LocalTime.now();
+                    // Set expiry date based on ticket type - usare LocalDateTime per calcoli precisi
+                    LocalDateTime nowDateTime = LocalDateTime.now();
+                    LocalTime dataFine;
+                    
                     switch (tipo) {
                         case GIORNALIERO:
-                            newBiglietto.setDataFine(now.plusHours(24)); // Valid for 24 hours
+                            dataFine = nowDateTime.plusHours(24).toLocalTime(); // Valid for 24 hours
                             break;
                         case ANNUALE:
-                            newBiglietto.setDataFine(now.plusHours(24 * 365)); // Valid for 365 days
+                            dataFine = nowDateTime.plusDays(365).toLocalTime(); // Valid for 365 days
                             break;
                         case NORMALE:
                         default:
-                            newBiglietto.setDataFine(now.plusHours(4)); // Valid for 4 hours
+                            dataFine = nowDateTime.plusHours(4).toLocalTime(); // Valid for 4 hours
                             break;
                     }
+                    
+                    newBiglietto.setDataFine(dataFine);
                     
                     // Set nome field - required for new database structure
                     String nome = item.getNome(); // Assuming BigliettoCarrello has getNome() method
@@ -113,13 +123,12 @@ public class CheckoutServlet extends HttpServlet {
                     newBiglietto.setCodiceBiglietto(ticketCode);
                     newBiglietto.setNome(nome);
                     
-                    // Set lists for tratte - add dummy data for now
+                    // Set lists for tratte - initialize empty lists
                     List<Long> idTratte = new ArrayList<>();
                     List<Integer> numeroFermate = new ArrayList<>();
                     
-                    // Add a default tratta ID (this should be populated from the cart item's percorso)
-                    idTratte.add(1L); // Default tratta ID
-                    numeroFermate.add(1); // Default number of stops
+                    // TODO: In futuro, popolare le tratte dal percorso del carrello
+                    // Per ora lasciamo le liste vuote per evitare errori con ID tratte inesistenti
                     
                     newBiglietto.setId_tratte(idTratte);
                     newBiglietto.setNumero_fermate(numeroFermate);
@@ -129,6 +138,7 @@ public class CheckoutServlet extends HttpServlet {
                     if (bigliettoId != null) {
                         newBiglietto.setId(bigliettoId);
                         biglietti.add(newBiglietto);
+                        System.out.println("[CHECKOUT DEBUG] Biglietto creato con ID: " + bigliettoId + " per utente: " + utente.getId());
                     } else {
                         throw new RuntimeException("Impossibile creare il biglietto nel database");
                     }
@@ -141,16 +151,50 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
         
-// Save ticket ID in session for guests
+// Save ticket IDs in cookies for guests (new approach)
         if (isGuest) {
-            List<Long> guestTicketIds = (List<Long>) session.getAttribute("guestTicketIds");
-            if (guestTicketIds == null) {
-                guestTicketIds = new ArrayList<>();
-                session.setAttribute("guestTicketIds", guestTicketIds);
+            // Recupera gli ID esistenti dai cookie
+            String existingIdsStr = "";
+            jakarta.servlet.http.Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (jakarta.servlet.http.Cookie cookie : cookies) {
+                    if ("guestTicketIds".equals(cookie.getName())) {
+                        existingIdsStr = cookie.getValue();
+                        break;
+                    }
+                }
             }
+            
+            // Combina gli ID esistenti con i nuovi
+            List<Long> guestTicketIds = new ArrayList<>();
+            if (!existingIdsStr.isEmpty()) {
+                String[] existingIds = existingIdsStr.split(",");
+                for (String idStr : existingIds) {
+                    try {
+                        guestTicketIds.add(Long.parseLong(idStr.trim()));
+                    } catch (NumberFormatException e) {
+                        // Ignora ID non validi
+                    }
+                }
+            }
+            
+            // Aggiungi i nuovi ID
             for (Biglietto biglietto : biglietti) {
                 guestTicketIds.add(biglietto.getId());
             }
+            
+            // Salva nel cookie (max 30 giorni)
+            String idsString = guestTicketIds.stream()
+                .map(String::valueOf)
+                .collect(java.util.stream.Collectors.joining(","));
+            
+            jakarta.servlet.http.Cookie guestCookie = new jakarta.servlet.http.Cookie("guestTicketIds", idsString);
+            guestCookie.setMaxAge(30 * 24 * 60 * 60); // 30 giorni
+            guestCookie.setPath("/");
+            guestCookie.setHttpOnly(true); // Sicurezza
+            response.addCookie(guestCookie);
+            
+            System.out.println("[CHECKOUT DEBUG] Salvati " + biglietti.size() + " ID biglietti guest nei cookie. Totale: " + guestTicketIds.size());
         }
 
         // Clear the cart after successful checkout

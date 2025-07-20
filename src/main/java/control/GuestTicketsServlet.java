@@ -45,6 +45,12 @@ public class GuestTicketsServlet extends HttpServlet {
                 guestTickets = new ArrayList<>();
             }
             
+            // Debug: stampa gli ID dei biglietti guest
+            System.out.println("[GUEST_TICKETS DEBUG] Trovati " + guestTickets.size() + " biglietti guest nella sessione:");
+            for (Biglietto biglietto : guestTickets) {
+                System.out.println("[GUEST_TICKETS DEBUG] - Biglietto ID: " + biglietto.getId() + ", Tipo: " + biglietto.getTipo() + ", Prezzo: " + biglietto.getPrezzo());
+            }
+            
             Gson gson = new Gson();
             JsonObject jsonResponse = new JsonObject();
             jsonResponse.add("tickets", gson.toJsonTree(guestTickets));

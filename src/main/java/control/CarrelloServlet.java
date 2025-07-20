@@ -10,8 +10,11 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Cookie;
 import model.dao.TrattaDAO;
 import model.dao.udata.SessioneDAO;
+import model.dao.Carta_CreditoDAO;
 import model.sdata.Tratta;
 import model.udata.Biglietto;
+import model.udata.CartaCredito;
+import model.udata.Utente;
 
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -50,6 +53,10 @@ public class CarrelloServlet extends HttpServlet {
         double totale = carrello.stream()
                 .mapToDouble(bc -> bc.getPrezzo() * bc.getQuantita())
                 .sum();
+        
+        // Non è più necessario caricare le carte di credito - il pagamento è semplificato
+        // Manteniamo compatibilità con vecchio sistema se necessario
+        request.setAttribute("carteCredito", new ArrayList<CartaCredito>());
         
         request.setAttribute("carrello", carrello);
         request.setAttribute("totale", totale);
