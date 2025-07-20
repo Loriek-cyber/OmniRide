@@ -1,0 +1,412 @@
+/* Stili per la gestione delle tratte - Admin e Azienda */
+.route-management-container {
+    padding: var(--space-lg);
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header della sezione */
+.route-management-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-md);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.route-management-title {
+    font-size: 2rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.route-management-actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+/* Messaggi */
+.message {
+    padding: var(--space-md);
+    margin: var(--space-md) 0;
+    border-radius: var(--radius-btn);
+    font-weight: 500;
+}
+
+.message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Statistiche rapide */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.stat-card {
+    background: var(--bg-secondary);
+    padding: var(--space-lg);
+    border-radius: var(--radius-main);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: var(--space-xs);
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.stat-card.routes-total .stat-value { color: #007bff; }
+.stat-card.routes-active .stat-value { color: #28a745; }
+.stat-card.routes-inactive .stat-value { color: #dc3545; }
+.stat-card.average-cost .stat-value { color: #17a2b8; }
+
+/* Barra di ricerca */
+.search-container {
+    margin-bottom: var(--space-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.search-input {
+    flex: 1;
+    max-width: 400px;
+    padding: var(--space-sm) var(--space-md);
+    border: 2px solid #e1e5e9;
+    border-radius: var(--radius-btn);
+    font-size: 1rem;
+    transition: all var(--transition-base);
+}
+
+.search-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Tabella delle tratte */
+.routes-table-container {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-main);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+.routes-table-header {
+    background: var(--primary-color);
+    color: white;
+    padding: var(--space-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.routes-table-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.routes-count {
+    background: rgba(255, 255, 255, 0.2);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-btn);
+    font-size: 0.85rem;
+}
+
+.routes-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.routes-table th {
+    background: #f8f9fa;
+    padding: var(--space-md);
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 2px solid #dee2e6;
+    white-space: nowrap;
+}
+
+.routes-table td {
+    padding: var(--space-md);
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle;
+}
+
+.routes-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Badge di stato */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-btn);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.status-badge.active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-badge.inactive {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* Badge azienda */
+.company-badge {
+    background: var(--info-color);
+    color: white;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-btn);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* ID Badge */
+.id-badge {
+    background: #6c757d;
+    color: white;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-btn);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Prezzo */
+.price-display {
+    color: var(--success-color);
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* Gruppo pulsanti azioni */
+.actions-group {
+    display: flex;
+    gap: var(--space-xs);
+    align-items: center;
+}
+
+.action-btn {
+    padding: var(--space-xs) var(--space-sm);
+    border: none;
+    border-radius: var(--radius-btn);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all var(--transition-base);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.action-btn.edit {
+    background: var(--warning-color);
+    color: white;
+}
+
+.action-btn.edit:hover {
+    background: #e0a800;
+}
+
+.action-btn.toggle {
+    background: var(--info-color);
+    color: white;
+}
+
+.action-btn.toggle:hover {
+    background: #138496;
+}
+
+.action-btn.delete {
+    background: var(--danger-color);
+    color: white;
+}
+
+.action-btn.delete:hover {
+    background: #c82333;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: var(--space-xxl);
+    color: var(--text-secondary);
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    color: #dee2e6;
+    margin-bottom: var(--space-lg);
+}
+
+.empty-state h3 {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-md);
+}
+
+.empty-state p {
+    margin-bottom: var(--space-lg);
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Modal personalizzazioni */
+.modal-header {
+    background: var(--primary-color);
+    color: white;
+    border-bottom: none;
+    border-radius: var(--radius-main) var(--radius-main) 0 0;
+}
+
+.modal-header .btn-close {
+    filter: invert(1);
+}
+
+.modal-body {
+    padding: var(--space-xl);
+}
+
+.modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding: var(--space-lg) var(--space-xl);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .route-management-header {
+        flex-direction: column;
+        gap: var(--space-md);
+        align-items: stretch;
+    }
+
+    .route-management-actions {
+        justify-content: center;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .routes-table-container {
+        overflow-x: auto;
+    }
+
+    .routes-table {
+        min-width: 700px;
+    }
+
+    .search-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-input {
+        max-width: none;
+    }
+
+    .actions-group {
+        flex-direction: column;
+        gap: var(--space-xs);
+    }
+
+    .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Animazioni */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.route-management-container {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.stat-card {
+    transition: transform var(--transition-base);
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Focus states per accessibilità */
+.action-btn:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.search-input:focus {
+    outline: none;
+}
+
+/* Print styles */
+@media print {
+    .route-management-actions,
+    .actions-group {
+        display: none;
+    }
+    
+    .routes-table-container {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+}

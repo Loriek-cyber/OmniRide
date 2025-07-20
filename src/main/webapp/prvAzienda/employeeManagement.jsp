@@ -1,12 +1,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<jsp:include page="/import/metadata.jsp"/>
-<html>
+<!DOCTYPE html>
+<html lang="it">
 <head>
-    <title>Gestione Dipendenti - Azienda</title>
+    <jsp:include page="/import/metadata.jsp"/>
+    <title>Gestione Dipendenti - Omniride</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/base.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/admin.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/dashboard.css">
     <style>
         .admin-container {
             max-width: 1200px;
@@ -129,15 +130,21 @@
         }
     </style>
 </head>
-<body class="admin-layout">
-    <div class="admin-container">
-        <div class="admin-header">
-            <h1>👷 Gestione Dipendenti</h1>
-            <div>
-                <a href="${pageContext.request.contextPath}/prvAzienda/dashboard" class="btn btn-secondary">← Dashboard</a>
-                <a href="${pageContext.request.contextPath}/prvAzienda/routes" class="btn btn-primary">🚌 Le Mie Tratte</a>
-            </div>
-        </div>
+<body>
+    <jsp:include page="/import/header.jsp"/>
+    <div class="dashboard-layout">
+        <jsp:include page="sidebarAzienda.jsp"/>
+        
+        <!-- Contenuto principale -->
+        <main class="main-content">
+            <!-- Toggle button per mobile -->
+            <button id="sidebarToggle" class="sidebar-toggle">☰</button>
+            
+            <div class="content-section active">
+                <div class="content-header">
+                    <h1>Gestione Dipendenti</h1>
+                    <div class="breadcrumb">Dashboard > Gestione Dipendenti</div>
+                </div>
         
         <!-- Messaggi di successo/errore -->
         <c:if test="${not empty success}">
@@ -157,7 +164,6 @@
                         <label for="userEmail">Email Utente *</label>
                         <input type="email" id="userEmail" name="userEmail" class="form-control" 
                                placeholder="mario.rossi@email.com" required>
-                        <small>Inserisci l'email dell'utente che vuoi assumere</small>
                     </div>
                     <div class="form-group">
                         <label for="ruolo">Ruolo *</label>
@@ -172,6 +178,7 @@
                     <div class="form-group">
                         <button type="submit" class="btn btn-success">✅ Assumi</button>
                     </div>
+                    <small>Inserisci l'email dell'utente che vuoi assumere</small>
                 </div>
             </form>
         </div>
@@ -354,5 +361,9 @@
             }
         });
     </script>
+            </div>
+        </main>
+    </div>
+    <script src="${pageContext.request.contextPath}/Scripts/commonSidebar.js"></script>
 </body>
 </html>

@@ -42,8 +42,8 @@ public class TrattaManagementServlet extends HttpServlet {
                 return;
             }
             
-            // Recupera le tratte dell'azienda
-            List<Tratta> tratteAzienda = TrattaDAO.getTratteByAzienda(azienda.getId());
+            // Recupera le tratte dell'azienda (incluse quelle inattive)
+            List<Tratta> tratteAzienda = TrattaDAO.getTratteByAziendaIncludingInactive(azienda.getId());
             
             // Passa i dati alla JSP
             req.setAttribute("azienda", azienda);
@@ -82,6 +82,12 @@ public class TrattaManagementServlet extends HttpServlet {
             Long trattaId = Long.parseLong(trattaIdStr);
             
             switch (action) {
+                case "attiva":
+                    TrattaDAO.setStatus(trattaId, true);
+                    break;
+                case "disattiva":
+                    TrattaDAO.setStatus(trattaId, false);
+                    break;
                 case "toggle":
                     toggleTrattaStatus(trattaId);
                     break;
@@ -93,16 +99,30 @@ public class TrattaManagementServlet extends HttpServlet {
                     return;
             }
             
-            // Risposta JSON per le richieste AJAX
-            resp.setContentType("application/json");
-            resp.getWriter().write("{\"success\": true}");
+            // Verifica se è una richiesta AJAX
+            String acceptHeader = req.getHeader("Accept");
+            if (acceptHeader != null && acceptHeader.contains("application/json")) {
+                // Risposta JSON per le richieste AJAX
+                resp.setContentType("application/json");
+                resp.getWriter().write("{\"success\": true}");
+            } else {
+                // Redirect per le richieste normali form
+                resp.sendRedirect(req.getContextPath() + "/prvAzienda/gestisciTratte");
+            }
             
         } catch (NumberFormatException e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID tratta non valido");
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Errore nell'operazione sulla tratta", e);
-            resp.setContentType("application/json");
-            resp.getWriter().write("{\"success\": false, \"error\": \"" + e.getMessage() + "\"}");
+            
+            String acceptHeader = req.getHeader("Accept");
+            if (acceptHeader != null && acceptHeader.contains("application/json")) {
+                resp.setContentType("application/json");
+                resp.getWriter().write("{\"success\": false, \"error\": \"" + e.getMessage() + "\"}");
+            } else {
+                req.setAttribute("errore", "Errore nell'operazione: " + e.getMessage());
+                doGet(req, resp); // Ricarica la pagina con l'errore
+            }
         }
     }
     

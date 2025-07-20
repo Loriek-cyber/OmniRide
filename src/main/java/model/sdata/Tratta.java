@@ -205,6 +205,33 @@ public class Tratta implements Serializable {
     public boolean hasOrariAttivi() {
         return orari != null && orari.stream().anyMatch(OrarioTratta::isAttivo);
     }
+    
+    /**
+     * Ottiene il nome della fermata di partenza (prima fermata)
+     */
+    public String getPartenza() {
+        if (fermataTrattaList != null && !fermataTrattaList.isEmpty()) {
+            return fermataTrattaList.stream()
+                    .filter(ft -> ft.getSequenza() == 1)
+                    .findFirst()
+                    .map(ft -> ft.getFermata().getNome())
+                    .orElse(null);
+        }
+        return null;
+    }
+    
+    /**
+     * Ottiene il nome della fermata di arrivo (ultima fermata)
+     */
+    public String getArrivo() {
+        if (fermataTrattaList != null && !fermataTrattaList.isEmpty()) {
+            return fermataTrattaList.stream()
+                    .max((ft1, ft2) -> Integer.compare(ft1.getSequenza(), ft2.getSequenza()))
+                    .map(ft -> ft.getFermata().getNome())
+                    .orElse(null);
+        }
+        return null;
+    }
 
     @Override
     public String toString() {

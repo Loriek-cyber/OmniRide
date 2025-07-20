@@ -174,4 +174,21 @@ public class OrarioTrattaDAO {
             return ps.executeUpdate() > 0;
         }
     }
+    
+    /**
+     * Elimina tutti gli orari associati a una specifica tratta.
+     * Utilizzato quando si elimina una tratta.
+     *
+     * @param trattaId L'ID della tratta.
+     * @param conn La connessione al database (per transazioni).
+     * @return true se l'eliminazione ha avuto successo.
+     * @throws SQLException in caso di errore del database.
+     */
+    public static boolean deleteByTrattaId(Long trattaId, Connection conn) throws SQLException {
+        String sql = "DELETE FROM Tratta_Orari WHERE id_tratta = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, trattaId);
+            return ps.executeUpdate() >= 0;
+        }
+    }
 }

@@ -103,7 +103,6 @@
             <h1>🚌 Gestione Tratte</h1>
             <div>
                 <a href="${pageContext.request.contextPath}/prvAdmin/dashboard" class="btn btn-secondary">← Dashboard</a>
-                <a href="${pageContext.request.contextPath}/prvAdmin/routes?action=create" class="btn btn-primary">+ Nuova Tratta</a>
             </div>
         </div>
         

@@ -26,8 +26,7 @@
                 <a href="${pageContext.request.contextPath}/prvAdmin/dashboard" class="nav-link active">📊 Dashboard</a>
                 <a href="${pageContext.request.contextPath}/prvAdmin/users" class="nav-link">👥 Gestione Utenti</a>
                 <a href="${pageContext.request.contextPath}/prvAdmin/routes" class="nav-link">🚌 Gestione Tratte</a>
-                <a href="${pageContext.request.contextPath}/prvAdmin/employees" class="nav-link">👷 Gestione Dipendenti</a>
-                <a href="${pageContext.request.contextPath}/prvAdmin/tickets" class="nav-link">🎫 Gestione Biglietti</a>
+                <a href="${pageContext.request.contextPath}/prvAdmin/test-db.jsp" class="nav-link">🪣 Test Database</a>
             </div>
         </div>
         
@@ -134,7 +133,6 @@
             <div class="content-card">
                 <div class="card-header">
                     <h3>🎫 Attività Biglietti</h3>
-                    <a href="${pageContext.request.contextPath}/prvAdmin/tickets" class="btn btn-sm btn-primary">Vedi Tutti</a>
                 </div>
                 <div class="card-content">
                     <c:choose>

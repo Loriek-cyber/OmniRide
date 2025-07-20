@@ -100,12 +100,15 @@ public class AdminRouteManagementServlet extends HttpServlet {
     private void listRoutes(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         try {
-            List<Tratta> routes = TrattaDAO.getAll();
+            // Carica tutte le tratte incluse quelle inattive per la gestione admin
+            List<Tratta> routes = TrattaDAO.getAllIncludingInactive();
             List<Azienda> companies = AziendaDAO.getAll();
             
             request.setAttribute("routes", routes);
             request.setAttribute("companies", companies);
+            
             request.getRequestDispatcher("/prvAdmin/routeManagement.jsp").forward(request, response);
+            
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Errore nel caricamento delle tratte");
@@ -113,7 +116,7 @@ public class AdminRouteManagementServlet extends HttpServlet {
         }
     }
     
-    private void createRoute(HttpServletRequest request, HttpServletResponse response) 
+    private void createRoute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
             String nome = request.getParameter("nome");

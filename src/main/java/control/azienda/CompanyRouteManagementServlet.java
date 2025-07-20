@@ -110,11 +110,8 @@ public class CompanyRouteManagementServlet extends HttpServlet {
                 return;
             }
             
-            // Carica solo le tratte dell'azienda corrente
-            List<Tratta> allRoutes = TrattaDAO.getAll();
-            List<Tratta> companyRoutes = allRoutes.stream()
-                .filter(route -> route.getAzienda().getId().equals(companyId))
-                .collect(Collectors.toList());
+            // Carica tutte le tratte dell'azienda corrente (incluse quelle inattive)
+            List<Tratta> companyRoutes = TrattaDAO.getTratteByAziendaIncludingInactive(companyId);
             
             Azienda company = AziendaDAO.getById(companyId);
             

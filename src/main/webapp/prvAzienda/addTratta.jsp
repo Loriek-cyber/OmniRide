@@ -2,10 +2,13 @@
 <%@ page import="java.util.List" %>
 <%@ page import="model.sdata.Fermata" %>
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
+    <jsp:include page="/import/metadata.jsp"/>
     <title>Aggiungi Tratta - Omniride</title>
-    <%@ include file="../import/metadata.jsp" %>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/base.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/addTratta.css">
 </head>
 <%-- Mostra un messaggio di errore se esiste --%>
 <%
@@ -22,9 +25,22 @@
 </div>
 <% } %>
 <body>
-    <div class="add-tratta-container">
-        <a href="../dashboard" class="back-link">← Torna alla Dashboard</a>
-        <h1 class="add-tratta-title">Aggiungi Nuova Tratta</h1>
+    <jsp:include page="/import/header.jsp"/>
+    <div class="dashboard-layout">
+        <jsp:include page="sidebarAzienda.jsp"/>
+        
+        <!-- Contenuto principale -->
+        <main class="main-content">
+            <!-- Toggle button per mobile -->
+            <button id="sidebarToggle" class="sidebar-toggle">☰</button>
+            
+            <div class="content-section active">
+                <div class="content-header">
+                    <h1>Aggiungi Nuova Tratta</h1>
+                    <div class="breadcrumb">Dashboard > Gestione Tratte > Aggiungi Tratta</div>
+                </div>
+                
+                <div class="add-tratta-container">
 
         <form action="addTratta" method="post" id="addTrattaForm">
             <!-- Informazioni Base -->
@@ -152,6 +168,11 @@
     </script>
 
     <!-- Script per la gestione del form -->
-    <script src="../Scripts/addTratta.js"></script>
+    <script src="${pageContext.request.contextPath}/Scripts/addTratta.js"></script>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="${pageContext.request.contextPath}/Scripts/commonSidebar.js"></script>
 </body>
 </html>

@@ -1,78 +1,103 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<!DOCTYPE html>
-<html lang="it">
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<jsp:include page="/import/metadata.jsp"/>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Tratte - Omniride</title>
-    <link href="<c:url value='/css/bootstrap.min.css'/>" rel="stylesheet">
-    <link href="<c:url value='/css/dashboard.css'/>" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="<c:url value='/css/routeManagement.css'/>" rel="stylesheet">
+    <title>Gestione Tratte - Azienda</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/base.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/admin.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        .btn-warning { background-color: #ffc107; color: black; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn-info { background-color: #17a2b8; color: white; }
+        
+        .routes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .routes-table th, .routes-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .routes-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .routes-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-active { background-color: #28a745; color: white; }
+        .status-inactive { background-color: #dc3545; color: white; }
+        
+        .message {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .search-container {
+            margin-bottom: 20px;
+        }
+        .search-input {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
 </head>
-<body class="bg-light">
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="<c:url value='/prvAzienda/dashboard'/>">
-                <i class="fas fa-bus"></i> Omniride - Azienda
-            </a>
-            <div class="navbar-nav ms-auto">
-                <span class="navbar-text me-3">
-                    Benvenuto, ${sessionScope.utente.nome}!
-                </span>
-                <a class="nav-link" href="<c:url value='/logout'/>">
-                    <i class="fas fa-sign-out-alt"></i> Esci
-                </a>
+<body class="admin-layout">
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>🚌 Gestione Tratte</h1>
+            <div>
+                <a href="${pageContext.request.contextPath}/prvAzienda/dashboard" class="btn btn-secondary">← Dashboard</a>
+                <a href="${pageContext.request.contextPath}/prvAzienda/addTratta.jsp" class="btn btn-primary">➕ Aggiungi Tratta</a>
             </div>
         </div>
-    </nav>
-
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="<c:url value='/prvAzienda/dashboard'/>">
-                                <i class="fas fa-tachometer-alt"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="<c:url value='/prvAzienda/routes'/>">
-                                <i class="fas fa-route"></i> Gestione Tratte
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="<c:url value='/prvAzienda/employees'/>">
-                                <i class="fas fa-users"></i> Gestione Dipendenti
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-
-            <!-- Main content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">
-                        <i class="fas fa-route"></i> Gestione Tratte
-                        <c:if test="${not empty company}">
-                            <small class="text-muted">- ${company.nome}</small>
-                        </c:if>
-                    </h1>
-                    <div class="btn-toolbar mb-2 mb-md-0">
-                        <div class="btn-group me-2">
-                            <a href="<c:url value='/prvAzienda/routes?action=create'/>" 
-                               class="btn btn-success">
-                                <i class="fas fa-plus"></i> Nuova Tratta
-                            </a>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Alerts -->
                 <c:if test="${not empty error}">
@@ -157,7 +182,7 @@
                                                             <a href="<c:url value='/prvAzienda/routes?action=edit&id=${route.id}'/>" 
                                                                class="btn btn-outline-primary btn-sm"
                                                                title="Modifica">
-                                                                <i class="fas fa-edit"></i>
+                                                                <i class="fas fa-edit"></i> Modifica
                                                             </a>
 
                                                             <!-- Toggle Status Button -->
@@ -165,7 +190,7 @@
                                                                     class="btn btn-outline-warning btn-sm"
                                                                     title="${route.attiva ? 'Disattiva' : 'Attiva'}"
                                                                     onclick="toggleRoute(${route.id}, '${route.nome}', ${route.attiva})">
-                                                                <i class="fas fa-${route.attiva ? 'pause' : 'play'}"></i>
+                                                                <i class="fas fa-${route.attiva ? 'pause' : 'play'}">${route.attiva ? 'Disattiva' : 'Attiva'}</i>
                                                             </button>
 
                                                             <!-- Delete Button -->
@@ -173,7 +198,7 @@
                                                                     class="btn btn-outline-danger btn-sm"
                                                                     title="Elimina"
                                                                     onclick="deleteRoute(${route.id}, '${route.nome}')">
-                                                                <i class="fas fa-trash"></i>
+                                                                <i class="fas fa-trash"></i> Elimina
                                                             </button>
                                                         </div>
                                                     </td>
@@ -275,9 +300,10 @@
                         </div>
                     </div>
                 </div>
-            </main>
-        </div>
+            </div>
+        </main>
     </div>
+    <script src="${pageContext.request.contextPath}/Scripts/commonSidebar.js"></script>
 
     <!-- Delete Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -337,7 +363,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="<c:url value='/js/bootstrap.bundle.min.js'/>"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
         // Delete Route Function
         function deleteRoute(routeId, routeName) {

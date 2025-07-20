@@ -10,10 +10,13 @@ import java.util.List;
 
 public class TrattaDAO {
     private static final String TRATTA_ALL = "SELECT * FROM Tratta WHERE attiva = 1";
+    private static final String TRATTA_ALL_INCLUDING_INACTIVE = "SELECT * FROM Tratta";
     private static final String TRATTA_BY_ID = "SELECT * FROM Tratta WHERE id = ?";
     private static final String TRATTA_BY_AZIENDA = "SELECT * FROM Tratta WHERE id_azienda = ?";
+    private static final String TRATTA_BY_AZIENDA_INCLUDING_INACTIVE = "SELECT * FROM Tratta WHERE id_azienda = ?";
     private static final String INSERT_TRATTA = "INSERT INTO Tratta (nome, id_azienda, costo, attiva) VALUES (?, ?, ?, 1)";
     private static final String UPDATE_TRATTA = "UPDATE Tratta SET nome = ?, costo = ?, attiva = ? WHERE id = ?";
+    private static final String DELETE_TRATTA = "DELETE FROM Tratta WHERE id = ?";
     private static final String NOACTIVE = "UPDATE Tratta SET attiva = 0 WHERE id = ?";
     private static final String ACTIVE = "UPDATE Tratta SET attiva = 1 WHERE id = ?";
     private static final String AZIENDA = "SELECT * FROM Tratta WHERE id_azienda = ?";
@@ -190,6 +193,22 @@ public class TrattaDAO {
         return tratte;
     }
     
+    /**
+     * Ottiene tutte le tratte dal database, incluse quelle inattive
+     * Utilizzato per le sezioni di gestione admin e azienda
+     */
+    public static List<Tratta> getAllIncludingInactive() throws SQLException {
+        List<Tratta> tratte = new ArrayList<>();
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(TRATTA_ALL_INCLUDING_INACTIVE);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                tratte.add(getTrattaFromResultSet(rs));
+            }
+        }
+        return tratte;
+    }
+    
     public static List<Tratta> getTratteByAzienda(Long idAzienda) throws SQLException {
         List<Tratta> tratte = new ArrayList<>();
         try (Connection con = DBConnector.getConnection();
@@ -204,9 +223,39 @@ public class TrattaDAO {
         return tratte;
     }
     
+    /**
+     * Ottiene tutte le tratte di un'azienda dal database, incluse quelle inattive
+     * Utilizzato per le sezioni di gestione azienda
+     */
+    public static List<Tratta> getTratteByAziendaIncludingInactive(Long idAzienda) throws SQLException {
+        List<Tratta> tratte = new ArrayList<>();
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(TRATTA_BY_AZIENDA_INCLUDING_INACTIVE)) {
+            ps.setLong(1, idAzienda);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    tratte.add(getTrattaFromResultSet(rs));
+                }
+            }
+        }
+        return tratte;
+    }
+    
     public static boolean deativate(Long id) throws SQLException {
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(NOACTIVE)) {
+            ps.setLong(1, id);
+            return ps.executeUpdate() > 0;
+        }
+    }
+    
+    /**
+     * Imposta lo stato attivo/inattivo di una tratta
+     */
+    public static boolean setStatus(Long id, boolean active) throws SQLException {
+        String query = active ? ACTIVE : NOACTIVE;
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
             ps.setLong(1, id);
             return ps.executeUpdate() > 0;
         }
@@ -261,7 +310,49 @@ public class TrattaDAO {
         return getAll();
     }
 
-    public static void delete(Long routeId) {
-        return;
+    /**
+     * Elimina definitivamente una tratta dal database
+     * Utilizzato per le sezioni di gestione admin e azienda
+     */
+    public static boolean delete(Long routeId) throws SQLException {
+        Connection con = null;
+        try {
+            con = DBConnector.getConnection();
+            con.setAutoCommit(false);
+            
+            // Prima elimina gli orari associati
+            OrarioTrattaDAO.deleteByTrattaId(routeId, con);
+            
+            // Poi elimina le fermate associate
+            FermataTrattaDAO.deleteByTrattaId(routeId, con);
+            
+            // Infine elimina la tratta
+            try (PreparedStatement ps = con.prepareStatement(DELETE_TRATTA)) {
+                ps.setLong(1, routeId);
+                int rowsAffected = ps.executeUpdate();
+                
+                con.commit();
+                return rowsAffected > 0;
+            }
+            
+        } catch (SQLException e) {
+            if (con != null) {
+                try {
+                    con.rollback();
+                } catch (SQLException rollbackEx) {
+                    System.err.println("Errore durante il rollback: " + rollbackEx.getMessage());
+                }
+            }
+            throw e;
+        } finally {
+            if (con != null) {
+                try {
+                    con.setAutoCommit(true);
+                    con.close();
+                } catch (SQLException e) {
+                    System.err.println("Errore durante la chiusura della connessione: " + e.getMessage());
+                }
+            }
+        }
     }
 }
