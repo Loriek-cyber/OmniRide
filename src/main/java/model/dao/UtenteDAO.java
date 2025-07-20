@@ -3,6 +3,7 @@ import model.db.DBConnector;
 import model.udata.Utente;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,6 +24,15 @@ public class UtenteDAO {
         utente.setDataRegistrazione(rs.getTimestamp("data_registrazione"));
         utente.setRuolo(rs.getString("ruolo"));
         utente.setAvatar(rs.getBytes("avatar"));
+        
+        // Handle balance column gracefully - set to 0.00 if column doesn't exist
+        try {
+            utente.setBalance(rs.getBigDecimal("balance"));
+        } catch (SQLException e) {
+            // Column 'balance' not found - set default value
+            utente.setBalance(BigDecimal.ZERO);
+        }
+        
         return utente;
     }
 
@@ -69,21 +79,41 @@ public class UtenteDAO {
     }
 
     public static boolean create(Utente nuovoUtente) throws SQLException {
-        String QRstr="INSERT INTO Utente (nome, cognome, email, password_hash, data_registrazione, ruolo, avatar) " +
-                "VALUES (?,?,?,?,?,?,?) ";
-        try(Connection con=DBConnector.getConnection();
-            PreparedStatement ps=con.prepareStatement(QRstr)){
-            ps.setString(1, nuovoUtente.getNome());
-            ps.setString(2, nuovoUtente.getCognome());
-            ps.setString(3, nuovoUtente.getEmail());
-            ps.setString(4, nuovoUtente.getPasswordHash());
-            ps.setTimestamp(5, nuovoUtente.getDataRegistrazione());
-            ps.setString(6, nuovoUtente.getRuolo());
-            ps.setBytes(7, nuovoUtente.getAvatar());
-            if(ps.executeUpdate()>=1){
-                return true;
-            }else return false;
-
+        // First try with balance column
+        try {
+            String QRstr="INSERT INTO Utente (nome, cognome, email, password_hash, data_registrazione, ruolo, avatar, balance) " +
+                    "VALUES (?,?,?,?,?,?,?,?) ";
+            try(Connection con=DBConnector.getConnection();
+                PreparedStatement ps=con.prepareStatement(QRstr)){
+                ps.setString(1, nuovoUtente.getNome());
+                ps.setString(2, nuovoUtente.getCognome());
+                ps.setString(3, nuovoUtente.getEmail());
+                ps.setString(4, nuovoUtente.getPasswordHash());
+                ps.setTimestamp(5, nuovoUtente.getDataRegistrazione());
+                ps.setString(6, nuovoUtente.getRuolo());
+                ps.setBytes(7, nuovoUtente.getAvatar());
+                ps.setBigDecimal(8, nuovoUtente.getBalance() != null ? nuovoUtente.getBalance() : BigDecimal.ZERO);
+                return ps.executeUpdate() >= 1;
+            }
+        } catch (SQLException e) {
+            // If balance column doesn't exist, try without it
+            if (e.getMessage().contains("balance") || e.getMessage().contains("Unknown column")) {
+                String QRstr="INSERT INTO Utente (nome, cognome, email, password_hash, data_registrazione, ruolo, avatar) " +
+                        "VALUES (?,?,?,?,?,?,?) ";
+                try(Connection con=DBConnector.getConnection();
+                    PreparedStatement ps=con.prepareStatement(QRstr)){
+                    ps.setString(1, nuovoUtente.getNome());
+                    ps.setString(2, nuovoUtente.getCognome());
+                    ps.setString(3, nuovoUtente.getEmail());
+                    ps.setString(4, nuovoUtente.getPasswordHash());
+                    ps.setTimestamp(5, nuovoUtente.getDataRegistrazione());
+                    ps.setString(6, nuovoUtente.getRuolo());
+                    ps.setBytes(7, nuovoUtente.getAvatar());
+                    return ps.executeUpdate() >= 1;
+                }
+            } else {
+                throw e; // Re-throw if it's a different error
+            }
         }
     }
 
@@ -92,26 +122,50 @@ public class UtenteDAO {
     }
 
     public static boolean update(Utente utenteInSessione) throws SQLException {
-        String sql = "UPDATE Utente " +
-                "SET nome=?,cognome=?,email=?,password_hash=?,data_registrazione=?,ruolo=?,avatar=?" +
-                " WHERE id=?";
-        try (Connection conn = DBConnector.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)){
-            ps.setLong(8,utenteInSessione.getId());
+        // First try with balance column
+        try {
+            String sql = "UPDATE Utente " +
+                    "SET nome=?,cognome=?,email=?,password_hash=?,data_registrazione=?,ruolo=?,avatar=?,balance=?" +
+                    " WHERE id=?";
+            try (Connection conn = DBConnector.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)){
+                ps.setLong(9,utenteInSessione.getId());
 
-            ps.setString(1, utenteInSessione.getNome());
-            ps.setString(2, utenteInSessione.getCognome());
-            ps.setString(3, utenteInSessione.getEmail());
-            ps.setString(4, utenteInSessione.getPasswordHash());
-            ps.setTimestamp(5, utenteInSessione.getDataRegistrazione());
-            ps.setString(6, utenteInSessione.getRuolo());
-            ps.setBytes(7, utenteInSessione.getAvatar());
+                ps.setString(1, utenteInSessione.getNome());
+                ps.setString(2, utenteInSessione.getCognome());
+                ps.setString(3, utenteInSessione.getEmail());
+                ps.setString(4, utenteInSessione.getPasswordHash());
+                ps.setTimestamp(5, utenteInSessione.getDataRegistrazione());
+                ps.setString(6, utenteInSessione.getRuolo());
+                ps.setBytes(7, utenteInSessione.getAvatar());
+                ps.setBigDecimal(8, utenteInSessione.getBalance());
 
-            if(ps.executeUpdate()>=1){
-                return true;
-            }else return false;
+                return ps.executeUpdate() >= 1;
+            }
+        } catch (SQLException e) {
+            // If balance column doesn't exist, try without it
+            if (e.getMessage().contains("balance") || e.getMessage().contains("Unknown column")) {
+                String sql = "UPDATE Utente " +
+                        "SET nome=?,cognome=?,email=?,password_hash=?,data_registrazione=?,ruolo=?,avatar=?" +
+                        " WHERE id=?";
+                try (Connection conn = DBConnector.getConnection();
+                     PreparedStatement ps = conn.prepareStatement(sql)){
+                    ps.setLong(8,utenteInSessione.getId());
+
+                    ps.setString(1, utenteInSessione.getNome());
+                    ps.setString(2, utenteInSessione.getCognome());
+                    ps.setString(3, utenteInSessione.getEmail());
+                    ps.setString(4, utenteInSessione.getPasswordHash());
+                    ps.setTimestamp(5, utenteInSessione.getDataRegistrazione());
+                    ps.setString(6, utenteInSessione.getRuolo());
+                    ps.setBytes(7, utenteInSessione.getAvatar());
+
+                    return ps.executeUpdate() >= 1;
+                }
+            } else {
+                throw e; // Re-throw if it's a different error
+            }
         }
-
     }
 
     /**

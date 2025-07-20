@@ -20,7 +20,14 @@ public class BigliettiDAO {
         biglietto.setDataConvalida(rs.getTimestamp("data_convalida"));
         biglietto.setDataScadenza(rs.getTimestamp("data_scadenza"));
         biglietto.setStato(Biglietto.StatoBiglietto.valueOf(rs.getString("stato")));
-        biglietto.setPrezzo(rs.getDouble("prezzo_pagato"));
+        // Handle price column gracefully - use getBigDecimal for DECIMAL columns
+        try {
+            java.math.BigDecimal prezzoBigDecimal = rs.getBigDecimal("prezzo_pagato");
+            biglietto.setPrezzo(prezzoBigDecimal != null ? prezzoBigDecimal.doubleValue() : 0.0);
+        } catch (SQLException e) {
+            // Fallback to getDouble if getBigDecimal fails
+            biglietto.setPrezzo(rs.getDouble("prezzo_pagato"));
+        }
         return  biglietto;
 
     }

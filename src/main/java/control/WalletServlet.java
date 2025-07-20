@@ -30,7 +30,9 @@ public class WalletServlet extends HttpServlet {
         if (utente != null) {
             // Utente loggato: recupera i biglietti dal database
             try {
+                System.out.println("[WALLET DEBUG] Recupero biglietti per utente ID: " + utente.getId());
                 List<Biglietto> biglietti = BigliettiDAO.GetBigliettoFromUserID(utente.getId());
+                System.out.println("[WALLET DEBUG] Trovati " + biglietti.size() + " biglietti");
                 
                 // Carica le informazioni delle tratte per ogni biglietto
                 Map<Long, String> tratteNomi = new HashMap<>();

@@ -14,6 +14,7 @@ public class Utente {
     private Timestamp dataRegistrazione;
     private String ruolo;
     private byte[] avatar;
+    private BigDecimal balance;
 
 
     // Costruttore vuoto
@@ -68,6 +69,14 @@ public class Utente {
     }
     public void setAvatar(byte[] avatar) {
         this.avatar = avatar;
+    }
+    
+    public BigDecimal getBalance() {
+        return balance;
+    }
+    
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
     }
 
 
