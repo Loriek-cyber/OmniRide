@@ -6,196 +6,7 @@
 <head>
     <jsp:include page="/import/metadata.jsp"/>
     <title>Acquisto Completato - OmniRide</title>
-    <style>
-        /* Success page styles */
-        .success-page {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-
-        .success-container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            padding: 3rem 2rem;
-            margin: 2rem 0;
-            text-align: center;
-        }
-
-        .success-icon {
-            font-size: 5rem;
-            color: #32cd32;
-            margin-bottom: 1rem;
-        }
-
-        .success-title {
-            font-size: 2.5rem;
-            font-weight: 600;
-            color: #2d3436;
-            margin-bottom: 1rem;
-        }
-
-        .success-message {
-            font-size: 1.2rem;
-            color: #636e72;
-            margin-bottom: 2rem;
-            line-height: 1.6;
-        }
-
-        .ticket-info {
-            background: #f0fff0;
-            border: 2px solid #32cd32;
-            border-radius: 8px;
-            padding: 2rem;
-            margin: 2rem 0;
-            text-align: left;
-        }
-
-        .ticket-info h3 {
-            color: #32cd32;
-            margin-top: 0;
-            margin-bottom: 1rem;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 1rem 0;
-        }
-
-        .info-item {
-            background: white;
-            padding: 1rem;
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .info-label {
-            font-size: 0.85rem;
-            color: #636e72;
-            margin-bottom: 0.3rem;
-        }
-
-        .info-value {
-            font-weight: 600;
-            color: #2d3436;
-            font-size: 1.1rem;
-        }
-
-        .guest-notice {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 2rem 0;
-            text-align: left;
-        }
-
-        .guest-notice h4 {
-            color: #856404;
-            margin-top: 0;
-            margin-bottom: 1rem;
-        }
-
-        .guest-notice ul {
-            margin: 0;
-            padding-left: 1.5rem;
-        }
-
-        .guest-notice li {
-            margin-bottom: 0.5rem;
-            color: #856404;
-        }
-
-        .actions-section {
-            margin-top: 2rem;
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: #32cd32;
-            color: white;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background: #28a428;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: #f8f9fa;
-            color: #2d3436;
-            border: 1px solid #ddd;
-        }
-
-        .btn-secondary:hover {
-            background: #e9ecef;
-        }
-
-        .tickets-list {
-            margin-top: 2rem;
-        }
-
-        .ticket-item {
-            background: #f8f9fa;
-            border-radius: 6px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            text-align: left;
-        }
-
-        .ticket-id {
-            font-family: monospace;
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #32cd32;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Print styles */
-        @media print {
-            .actions-section {
-                display: none;
-            }
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .success-container {
-                padding: 2rem 1rem;
-            }
-            
-            .success-title {
-                font-size: 2rem;
-            }
-            
-            .actions-section {
-                flex-direction: column;
-            }
-            
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 <jsp:include page="/import/header.jsp"/>
@@ -248,8 +59,19 @@
                         <div class="ticket-item">
                             <div class="ticket-id">Biglietto #${ticketId}</div>
                             <p style="margin: 0; color: #636e72; font-size: 0.9rem;">
-                                Codice: OMR${String.format("%08d", ticketId)}
+                                Codice: OM${String.format("%07d", ticketId)}
                             </p>
+                            <!-- QR Code Container -->
+                            <div id="qrcode-${ticketId}" style="width:120px; height:120px; margin:15px auto;"></div>
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    new QRCode(document.getElementById("qrcode-${ticketId}"), {
+                                        text: "OM${String.format("%07d", ticketId)}",
+                                        width: 120,
+                                        height: 120
+                                    });
+                                });
+                            </script>
                         </div>
                     </c:forEach>
                 </div>
@@ -266,7 +88,12 @@
             </ul>
         </div>
 
+        <div id="ticketSaveStatus" style="margin: 20px 0; padding: 15px; border-radius: 8px; display: none; text-align: center;">
+            <!-- Status message will be inserted here by JavaScript -->
+        </div>
+        
         <div class="actions-section">
+            <a href="${pageContext.request.contextPath}/wallet" class="btn btn-primary" style="background: linear-gradient(135deg, #32cd32 0%, #228b22 100%);">💼 Visualizza Portafoglio</a>
             <button onclick="window.print()" class="btn btn-secondary">
                 🖨️ Stampa Biglietti
             </button>
@@ -275,9 +102,7 @@
                 🏠 Torna alla Home
             </a>
             
-            <a href="${pageContext.request.contextPath}/visualizzaTratte" class="btn btn-secondary">
-                🔍 Cerca Altri Viaggi
-            </a>
+            <a href="${pageContext.request.contextPath}/register" class="btn btn-primary" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">👤 Registrati Ora</a>
         </div>
     </div>
 
@@ -312,11 +137,108 @@ window.addEventListener('load', function() {
     window.scrollTo(0, 0);
 });
 
-// Optional: Clear guest ticket IDs after a certain time to avoid session bloat
-setTimeout(function() {
-    // This would need to be implemented server-side for actual cleanup
-    console.log('Guest checkout completed');
-}, 5000);
+// Salva i biglietti nel sessionStorage per utenti guest
+document.addEventListener('DOMContentLoaded', function() {
+    // Recupera i biglietti dal server e li salva nel sessionStorage
+    const tickets = [
+        <c:forEach var="biglietto" items="${purchasedTickets}" varStatus="status">
+        {
+            id: '${biglietto.id}',
+            tipo: '${biglietto.tipo}',
+            nome: '${biglietto.nome}',
+            prezzo: ${biglietto.prezzo},
+            dataAcquisto: '${biglietto.dataAcquisto}',
+            dataConvalida: '${biglietto.dataConvalida}',
+            dataFine: '${biglietto.dataFine}',
+            stato: '${biglietto.stato}',
+            codice: '${not empty biglietto.codiceBiglietto ? biglietto.codiceBiglietto : "OM".concat(String.format("%07d", biglietto.id))}',
+            percorso: '${biglietto.nome}',
+            quantita: 1,
+            data: new Date().toISOString().split('T')[0],
+            orario: new Date().toTimeString().split(' ')[0].substring(0, 5)
+        }<c:if test="${!status.last}">,</c:if>
+        </c:forEach>
+    ];
+    
+    // Se non ci sono biglietti dal server, crea biglietti dai guestTicketIds
+    if (tickets.length === 0 && ${not empty sessionScope.guestTicketIds}) {
+        <c:forEach var="ticketId" items="${sessionScope.guestTicketIds}" varStatus="status">
+        tickets.push({
+            id: '${ticketId}',
+            tipo: 'NORMALE',
+            nome: 'Biglietto Guest',
+            prezzo: 0,
+            dataAcquisto: new Date().toISOString(),
+            dataConvalida: null,
+            dataFine: null,
+            stato: 'ACQUISTATO',
+            codice: 'OM${String.format("%07d", ticketId)}',
+            percorso: 'Biglietto Guest',
+            quantita: 1,
+            data: new Date().toISOString().split('T')[0],
+            orario: new Date().toTimeString().split(' ')[0].substring(0, 5)
+        });
+        </c:forEach>
+    }
+    
+    if (tickets.length > 0) {
+        try {
+            // Recupera i biglietti esistenti
+            let existingTickets = JSON.parse(sessionStorage.getItem('guestTickets') || '[]');
+            
+            // Aggiunge i nuovi biglietti (evita duplicati)
+            tickets.forEach(newTicket => {
+                const exists = existingTickets.some(existing => existing.id === newTicket.id);
+                if (!exists) {
+                    existingTickets.push(newTicket);
+                }
+            });
+            
+            // Salva nel sessionStorage
+            sessionStorage.setItem('guestTickets', JSON.stringify(existingTickets));
+            
+            // Aggiorna la visibilità del wallet nell'header
+            if (window.GuestWallet) {
+                window.GuestWallet.updateVisibility();
+                // Mostra notifica di successo
+                window.GuestWallet.showNotification('Biglietti salvati nel portafoglio temporaneo!');
+            }
+            
+            // Mostra messaggio di successo
+            const statusDiv = document.getElementById('ticketSaveStatus');
+            if (statusDiv) {
+                statusDiv.style.background = '#d4edda';
+                statusDiv.style.border = '1px solid #c3e6cb';
+                statusDiv.style.color = '#155724';
+                statusDiv.innerHTML = '✅ I tuoi biglietti sono stati salvati nel portafoglio temporaneo!';
+                statusDiv.style.display = 'block';
+            }
+            
+            console.log('Biglietti salvati con successo:', existingTickets);
+            
+        } catch (error) {
+            console.error('Errore nel salvataggio dei biglietti:', error);
+            
+            // Mostra messaggio di errore
+            const statusDiv = document.getElementById('ticketSaveStatus');
+            if (statusDiv) {
+                statusDiv.style.background = '#f8d7da';
+                statusDiv.style.border = '1px solid #f5c6cb';
+                statusDiv.style.color = '#721c24';
+                statusDiv.innerHTML = '⚠️ Errore nel salvataggio dei biglietti. I tuoi biglietti sono comunque validi.';
+                statusDiv.style.display = 'block';
+            }
+        }
+        
+        // Auto-hide status message after 5 seconds
+        setTimeout(function() {
+            const statusDiv = document.getElementById('ticketSaveStatus');
+            if (statusDiv) {
+                statusDiv.style.display = 'none';
+            }
+        }, 8000);
+    }
+});
 </script>
 
 </body>

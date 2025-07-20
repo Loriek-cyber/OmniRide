@@ -1,5 +1,6 @@
 package control;
 
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 @WebServlet("/carrello")
 public class CarrelloServlet extends HttpServlet {
@@ -186,6 +188,7 @@ public class CarrelloServlet extends HttpServlet {
             this.tipo = Biglietto.TipoBiglietto.NORMALE; // Default type
         }
         
+        public String getPercorso() { return nome; }
         // Getters e Setters
         public String getPercorsoJson() { return percorsoJson; }
         public void setPercorsoJson(String percorsoJson) { this.percorsoJson = percorsoJson; }

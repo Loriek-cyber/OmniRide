@@ -103,6 +103,16 @@ public class CheckoutServlet extends HttpServlet {
                     }
                     newBiglietto.setNome(nome);
                     
+                    // Generate formatted ticket code (OM0000001 format)
+                    // Use a combination of timestamp and random number to ensure uniqueness
+                    long timestamp = System.currentTimeMillis();
+                    int uniqueNumber = (int) (timestamp % 9999999) + 1; // Ensures number between 1-9999999
+                    String ticketCode = String.format("OM%07d", uniqueNumber);
+                    
+                    // Set the ticket code in the dedicated field
+                    newBiglietto.setCodiceBiglietto(ticketCode);
+                    newBiglietto.setNome(nome);
+                    
                     // Set lists for tratte - add dummy data for now
                     List<Long> idTratte = new ArrayList<>();
                     List<Integer> numeroFermate = new ArrayList<>();
@@ -152,8 +162,9 @@ public class CheckoutServlet extends HttpServlet {
         
         // Redirect based on user type
         if (isGuest) {
-            // For guests, redirect to a confirmation page that doesn't require login
-            response.sendRedirect(request.getContextPath() + "/guestCheckoutSuccess.jsp");
+            // Per gli utenti guest, passa i biglietti alla pagina di successo per salvarli nel sessionStorage
+            request.setAttribute("purchasedTickets", biglietti);
+            request.getRequestDispatcher("/guestCheckoutSuccess.jsp").forward(request, response);
         } else {
             // For logged-in users, redirect to dashboard
             response.sendRedirect(request.getContextPath() + "/prvUser/dashboard.jsp");

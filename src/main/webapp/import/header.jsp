@@ -102,6 +102,14 @@
 
             <%-- Caso 2: L'utente non è loggato --%>
             <c:otherwise>
+                <!-- Wallet per utenti guest (inizialmente nascosto) -->
+                <a href="${pageContext.request.contextPath}/wallet" class="btnHeader-icon" title="Portafoglio" id="guestWalletIcon" style="display: none;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21 8V18C21 19.1046 20.1046 20 19 20H5C3.89543 20 3 19.1046 3 18V6C3 4.89543 3.89543 4 5 4H17C18.1046 4 19 4.89543 19 6V8H21ZM19 8H17V6H5V18H19V8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M17 10H15C13.8954 10 13 10.8954 13 12C13 13.1046 13.8954 14 15 14H17V10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="badge" id="guestWalletBadge">0</span>
+                </a>
                 <a href="${pageContext.request.contextPath}/carrello" class="btnHeader-icon" title="Carrello">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V17C17 18.1 16.1 19 15 19H9C7.9 19 7 18.1 7 17V13M17 13H7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -114,3 +122,6 @@
         </c:choose>
     </div>
 </header>
+
+<!-- Script globale per gestione wallet guest -->
+<script src="${pageContext.request.contextPath}/Scripts/guest-wallet.js"></script>

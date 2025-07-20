@@ -29,14 +29,17 @@ public class VisualizzaTratteServlet extends HttpServlet {
         }
         try {
             // Carica le tratte direttamente dal database
-
-            List<Tratta> tratte = TrattaDAO.getAll();
+            @SuppressWarnings("unchecked")
+            List<Tratta> tratte = (List<Tratta>) getServletContext().getAttribute("tratte");
+            if(tratte == null) {
+                tratte = TrattaDAO.getAll();
+            }
             if(id != 0L) {
-                tratte.forEach(tratta ->{
+                for(Tratta tratta : tratte) {
                     if(tratta.getId() != id) {
                         tratte.remove(tratta);
                     }
-                });
+                }
             }
             if (tratte != null && !tratte.isEmpty()) {
                 // Prepara i dati degli orari per la JSP

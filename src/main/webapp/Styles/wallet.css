@@ -1,0 +1,246 @@
+/* Wallet styles */
+.wallet-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.wallet-section {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.wallet-section h2 {
+    background: linear-gradient(135deg, #32cd32 0%, #228b22 100%);
+    color: white;
+    padding: 20px 30px;
+    margin: 0;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.wallet-section h3 {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9f7e9 100%);
+    color: #228b22;
+    padding: 15px 30px;
+    margin: 0;
+    font-size: 1.2rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.wallet-section-content {
+    padding: 30px;
+}
+
+/* Ticket cards */
+.ticket-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.ticket-card:hover {
+    box-shadow: 0 4px 15px rgba(50, 205, 50, 0.15);
+    border-color: #32cd32;
+    transform: translateY(-2px);
+}
+
+.ticket-card.guest-ticket {
+    border-color: #ffc107;
+    background: linear-gradient(135deg, #fff9e6 0%, #fffbf0 100%);
+}
+
+.ticket-info {
+    margin-bottom: 15px;
+}
+
+.ticket-info p {
+    margin: 8px 0;
+    color: #333;
+}
+
+.ticket-info strong {
+    color: #228b22;
+    font-weight: 600;
+}
+
+/* Ticket status badges */
+.ticket-status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.ticket-status.active {
+    background: linear-gradient(135deg, #28a745 0%, #20a942 100%);
+    color: white;
+}
+
+.ticket-status.inactive {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    color: white;
+}
+
+.ticket-status.expired {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+}
+
+/* Ticket actions */
+.ticket-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-activate {
+    background: linear-gradient(135deg, #32cd32 0%, #228b22 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-activate:hover {
+    background: linear-gradient(135deg, #228b22 0%, #1e7e1e 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(50, 205, 50, 0.3);
+}
+
+.btn-qr, .btn-remove {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.btn-qr:hover {
+    background: #32cd32;
+    color: white;
+    border-color: #32cd32;
+}
+
+.btn-remove:hover {
+    background: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: #dee2e6;
+    margin-bottom: 15px;
+}
+
+.empty-state p {
+    margin: 10px 0;
+    font-size: 1.1rem;
+}
+
+.empty-state em {
+    font-size: 0.9rem;
+    color: #9ca3af;
+}
+
+/* Warning messages */
+.warning-message {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.warning-message a {
+    color: #32cd32;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.warning-message a:hover {
+    color: #228b22;
+    text-decoration: underline;
+}
+
+/* Success/Error messages */
+.success-message {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .wallet-container {
+        padding: 15px;
+    }
+
+    .wallet-section h2 {
+        font-size: 1.3rem;
+        padding: 15px 20px;
+    }
+
+    .wallet-section h3 {
+        font-size: 1.1rem;
+        padding: 12px 20px;
+    }
+
+    .wallet-section-content {
+        padding: 20px;
+    }
+
+    .ticket-card {
+        padding: 15px;
+    }
+
+    .ticket-actions {
+        flex-direction: column;
+    }
+
+    .btn-activate, .btn-qr, .btn-remove {
+        width: 100%;
+        justify-content: center;
+    }
+}

@@ -7,6 +7,9 @@
 <head>
     <jsp:include page="../import/metadata.jsp"/>
     <title>Il Mio Portafoglio - Omniride</title>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/Styles/base.css">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/Styles/wallet.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 <jsp:include page="../import/header.jsp"/>
@@ -15,55 +18,69 @@
     <div class="wallet-container">
         <h2>Il Mio Portafoglio</h2>
 
-<div class="wallet-section">
-            <h3>I Miei Biglietti</h3>
-            <div id="guest-tickets-warning" class="warning-message" style="display: none; background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
-                <strong>⚠️ Attenzione!</strong> Se non sei registrato potresti perdere i tuoi biglietti. <a href="${pageContext.request.contextPath}/register">Registrati ora</a> o salva il QR code dei tuoi biglietti.
-            </div>
-            <div id="tickets-container">
-                <c:choose>
-                    <c:when test="${not empty biglietti}">
-                        <c:forEach var="biglietto" items="${biglietti}">
-                            <div class="ticket-card">
-                                <div class="ticket-info">
-                                    <p><strong>Tratta:</strong> ${biglietto.tratta.nome}</p>
-                                    <p><strong>Acquistato il:</strong> <fmt:formatDate value="${biglietto.dataAcquisto}" pattern="dd/MM/yyyy HH:mm"/></p>
-                                    <p><strong>Stato:</strong> <span class="ticket-status ${biglietto.stato eq 'ACQUISTATO' ? 'inactive' : (biglietto.stato eq 'CONVALIDATO' ? 'active' : 'expired')}">${biglietto.stato}</span></p>
+        <div class="wallet-section">
+            <h3><i class="fas fa-ticket-alt"></i> I Miei Biglietti</h3>
+            <div class="wallet-section-content">
+                <c:if test="${not empty error}">
+                    <div class="error-message" style="background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+                        <i class="fas fa-exclamation-triangle"></i> <strong>Errore:</strong> ${error}
+                    </div>
+                </c:if>
+                <div class="tickets-grid">
+                    <c:choose>
+                        <c:when test="${not empty biglietti}">
+                            <c:forEach var="biglietto" items="${biglietti}">
+                                <div class="ticket-card">
+                                    <div class="ticket-info">
+                                        <p><strong>Percorso:</strong> ${not empty biglietto.nome ? biglietto.nome : 'Percorso Non Definito'}</p>
+                                        <p><strong>Tipo:</strong> ${biglietto.tipo}</p>
+                                        <p><strong>Prezzo:</strong> <fmt:formatNumber value="${biglietto.prezzo}" type="currency" currencySymbol="€"/></p>
+                                        <p><strong>Acquistato il:</strong> ${biglietto.dataAcquisto}</p>
+                                        <c:if test="${biglietto.dataConvalida != null}">
+                                            <p><strong>Convalidato il:</strong> ${biglietto.dataConvalida}</p>
+                                        </c:if>
+                                        <c:if test="${biglietto.dataFine != null}">
+                                            <p><strong>Valido fino:</strong> ${biglietto.dataFine}</p>
+                                        </c:if>
+                                        <p><strong>Stato:</strong> <span class="ticket-status ${biglietto.stato eq 'ACQUISTATO' ? 'inactive' : (biglietto.stato eq 'CONVALIDATO' ? 'active' : 'expired')}">${biglietto.stato}</span></p>
+                                        <p><strong>Codice:</strong> <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px; font-family: monospace;">${not empty biglietto.codiceBiglietto ? biglietto.codiceBiglietto : 'OM'.concat(String.format("%07d", biglietto.id))}</code></p>
+                                    </div>
+                                    
+                                    <!-- QR Code Container -->
+                                    <div class="qr-container" style="text-align: center; margin: 15px 0;">
+                                        <div class="qr-code" id="qr-${biglietto.id}" style="width:100px;height:100px;margin:0 auto 10px;"></div>
+                                        <div class="qr-code-text" style="font-family: monospace; font-size: 12px; color: #666;">${not empty biglietto.codiceBiglietto ? biglietto.codiceBiglietto : 'OM'.concat(String.format("%07d", biglietto.id))}</div>
+                                    </div>
+                                    
+                                    <div class="ticket-actions">
+                                        <c:if test="${biglietto.stato eq 'ACQUISTATO'}">
+                                            <form action="${pageContext.request.contextPath}/wallet" method="post" style="display: inline;">
+                                                <input type="hidden" name="action" value="activateTicket">
+                                                <input type="hidden" name="idBiglietto" value="${biglietto.id}">
+                                                <button type="submit" class="btn-activate">
+                                                    <i class="fas fa-play"></i> Attiva Biglietto
+                                                </button>
+                                            </form>
+                                        </c:if>
+                                        <button class="btn-qr" onclick="downloadQR('${not empty biglietto.codiceBiglietto ? biglietto.codiceBiglietto : 'OM'.concat(String.format("%07d", biglietto.id))}', 'qr-${biglietto.id}')" title="Scarica QR Code">
+                                            <i class="fas fa-download"></i> Scarica QR
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="ticket-actions">
-                                    <c:if test="${biglietto.stato eq 'ACQUISTATO'}">
-                                        <form action="${pageContext.request.contextPath}/wallet" method="post">
-                                            <input type="hidden" name="action" value="activateTicket">
-                                            <input type="hidden" name="idBiglietto" value="${biglietto.id}">
-                                            <button type="submit" class="btn-activate">Attiva Biglietto</button>
-                                        </form>
-                                    </c:if>
-                                </div>
+                            </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="empty-state">
+                                <i class="fas fa-ticket-alt"></i>
+                                <p>Non hai ancora acquistato biglietti.</p>
+                                <p><em>I tuoi biglietti appariranno qui dopo l'acquisto.</em></p>
+                                <a href="${pageContext.request.contextPath}/" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Cerca Biglietti
+                                </a>
                             </div>
-                        </c:forEach>
-                    </c:when>
-                    <c:otherwise>
-                        <div class="empty-state" id="empty-state">
-                            <p>Nessun biglietto nel tuo portafoglio.</p>
-                        </div>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-        </div>
-
-        <div class="wallet-section">
-            <h3>I Miei Abbonamenti</h3>
-            <div class="empty-state">
-                <p>Nessun abbonamento attivo al momento.</p>
-                <p><em>Funzionalità in sviluppo.</em></p>
-            </div>
-        </div>
-
-        <div class="wallet-section">
-            <h3>Carte di Credito Salvate</h3>
-            <div class="empty-state">
-                <p>Nessuna carta di credito salvata.</p>
-                <p><em>Funzionalità in sviluppo.</em></p>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
             </div>
         </div>
 
@@ -211,7 +228,68 @@ document.addEventListener('DOMContentLoaded', function() {
     if (guestTickets.length > 0) {
         updateTicketsBadge(guestTickets.length);
     }
+    
+    // Genera i QR codes per i biglietti degli utenti registrati
+    setTimeout(() => {
+        const qrElements = document.querySelectorAll('[id^="qr-"]');
+        qrElements.forEach(qrElement => {
+            if (qrElement.innerHTML === '') {
+                const ticketCode = qrElement.parentElement.querySelector('.qr-code-text').textContent;
+                new QRCode(qrElement, {
+                    text: ticketCode,
+                    width: 100,
+                    height: 100
+                });
+            }
+        });
+    }, 100);
 });
+
+// Funzione per scaricare QR code (utenti registrati)
+function downloadQR(ticketCode, qrElementId) {
+    try {
+        const qrElement = document.getElementById(qrElementId);
+        const canvas = qrElement.querySelector('canvas');
+        
+        if (canvas) {
+            const link = document.createElement('a');
+            link.download = `biglietto-${ticketCode}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+            
+            showNotification('QR Code scaricato con successo!', 'success');
+        } else {
+            showNotification('Errore nel download del QR Code', 'error');
+        }
+    } catch (error) {
+        console.error('Errore nel download:', error);
+        showNotification('Errore nel download del QR Code', 'error');
+    }
+}
+
+// Funzione per mostrare notifiche
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    
+    const isSuccess = type === 'success';
+    const bgColor = isSuccess ? '#d4edda' : '#d1ecf1';
+    const borderColor = isSuccess ? '#c3e6cb' : '#bee5eb';
+    const textColor = isSuccess ? '#155724' : '#0c5460';
+    
+    notification.style.cssText = 'position: fixed; top: 90px; right: 20px; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); z-index: 10000; max-width: 300px; font-size: 14px;';
+    notification.style.background = bgColor;
+    notification.style.border = '1px solid ' + borderColor;
+    notification.style.color = textColor;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(function() {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 3000);
+}
 </script>
 
 </body>

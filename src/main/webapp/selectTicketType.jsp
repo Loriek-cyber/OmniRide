@@ -10,47 +10,6 @@
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/Styles/base.css">
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/Styles/form.css">
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/Styles/ticket-selection.css">
-    <style>
-        .trip-details-list {
-            list-style: none;
-            padding: 0;
-            margin: 15px 0;
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-        }
-        .trip-details-list li {
-            padding: 8px 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-        .trip-details-list li:last-child {
-            border-bottom: none;
-        }
-        .ticket-card {
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 10px;
-            background: white;
-        }
-        .ticket-card:hover {
-            border-color: #007bff;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,123,255,0.2);
-        }
-        .ticket-card.selected {
-            border-color: #007bff;
-            background: #f8f9ff;
-        }
-        .ticket-price {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #007bff;
-            margin: 10px 0;
-        }
-    </style>
 </head>
 <body>
 <jsp:include page="import/header.jsp"/>
@@ -75,8 +34,8 @@
             <input type="hidden" name="orario" value="${orario}">
             <input type="hidden" name="prezzo" value="" id="selectedPrice">
             <input type="hidden" name="tipo" value="" id="selectedType">
-            
-            <div class="ticket-options">
+
+            <span class="ticket-options">
                 <!-- Biglietto Normale -->
                 <div class="ticket-card" data-type="NORMALE" data-price="${prezzoNormale}">
                     <input type="radio" name="ticketType" value="NORMALE" id="normale">
@@ -85,11 +44,7 @@
                     <div class="ticket-price">
                         <fmt:formatNumber value="${prezzoNormale}" type="currency" currencySymbol="€"/>
                     </div>
-                    <ul class="ticket-features">
-                        <li>✓ Valido per una singola corsa</li>
-                        <li>✓ Attivazione richiesta</li>
-                        <li>✓ Perfetto per viaggi occasionali</li>
-                    </ul>
+
                 </div>
                 
                 <!-- Biglietto Giornaliero -->
@@ -100,30 +55,20 @@
                     <div class="ticket-price">
                         <fmt:formatNumber value="${prezzoGiornaliero}" type="currency" currencySymbol="€"/>
                     </div>
-                    <ul class="ticket-features">
-                        <li>✓ Viaggi illimitati per 24 ore</li>
-                        <li>✓ Attivazione automatica</li>
-                        <li>✓ Ideale per più viaggi nella giornata</li>
-                        <li>✓ Risparmio del 50% rispetto a 3 biglietti normali</li>
-                    </ul>
                 </div>
                 
-                <!-- Abbonamento Annuale -->
-                <div class="ticket-card" data-type="ANNUALE" data-price="${prezzoAnnuale}">
-                    <input type="radio" name="ticketType" value="ANNUALE" id="annuale">
-                    <div class="ticket-title">Abbonamento Annuale</div>
-                    <div class="ticket-duration">Valido per 365 giorni</div>
-                    <div class="ticket-price">
-                        <fmt:formatNumber value="${prezzoAnnuale}" type="currency" currencySymbol="€"/>
+                <!-- Abbonamento Annuale  Solo per gli utenti registrati-->
+                <c:if test="${not empty sessionScope.utente}">
+                    <div class="ticket-card" data-type="ANNUALE" data-price="${prezzoAnnuale}">
+                        <input type="radio" name="ticketType" value="ANNUALE" id="annuale">
+                        <div class="ticket-title">Abbonamento Annuale</div>
+                        <div class="ticket-duration">Valido per 365 giorni</div>
+                        <div class="ticket-price">
+                            <fmt:formatNumber value="${prezzoAnnuale}" type="currency" currencySymbol="€"/>
+                        </div>
                     </div>
-                    <ul class="ticket-features">
-                        <li>✓ Viaggi illimitati per un anno</li>
-                        <li>✓ Attivazione automatica</li>
-                        <li>✓ Massimo risparmio per viaggiatori frequenti</li>
-                        <li>✓ Nessuna scadenza giornaliera</li>
-                    </ul>
-                </div>
-            </div>
+                </c:if>
+            </span>
             
             <div class="quantity-section">
                 <label for="quantita"><strong>Quantità:</strong></label>

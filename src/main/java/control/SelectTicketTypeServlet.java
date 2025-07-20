@@ -119,6 +119,22 @@ public class SelectTicketTypeServlet extends HttpServlet {
                 nuovoBiglietto.setPrezzo(prezzo);
                 nuovoBiglietto.setQuantita(quantita);
                 nuovoBiglietto.setTipo(tipo);
+                
+                // Set a readable route name
+                String nome = "Percorso Personalizzato";
+                if (percorsoJson != null && !percorsoJson.isEmpty()) {
+                    try {
+                        // If the percorsoJson contains readable information, use it
+                        if (percorsoJson.contains("-")) {
+                            nome = percorsoJson.replace("[", "").replace("]", "").replace("\"", "");
+                        }
+                    } catch (Exception e) {
+                        // Fallback to default name
+                        nome = "Percorso Personalizzato";
+                    }
+                }
+                nuovoBiglietto.setNome(nome);
+                
                 carrello.add(nuovoBiglietto);
             }
 

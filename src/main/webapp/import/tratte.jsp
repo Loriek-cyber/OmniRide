@@ -10,7 +10,7 @@
     <!-- Colonna sinistra - Lista tratte -->
     <div class="tratte-list-container">
         <div class="tratte-list-header">
-            <h2>🚌 Tratte Disponibili</h2>
+            <h2> Tratte Disponibili</h2>
             <span class="tratte-count">${fn:length(tratte)} tratte totali</span>
         </div>
         

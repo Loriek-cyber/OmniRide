@@ -7,6 +7,7 @@ import model.dao.*;
 import model.sdata.*;
 import model.udata.Azienda;
 import model.udata.Utente;
+import model.util.ContextRefreshUtil;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -254,6 +255,10 @@ public class AddTrattaServlet extends HttpServlet {
             System.out.println("[ADD_TRATTA] Iniziando la creazione della tratta: " + nome);
             trattaId = TrattaDAO.create(tratta);
             System.out.println("[ADD_TRATTA] Tratta creata con successo, ID: " + trattaId);
+            
+            // Aggiorna il context dopo la creazione
+            ContextRefreshUtil.refreshTratte(getServletContext());
+            System.out.println("[ADD_TRATTA] Context aggiornato con le nuove tratte.");
         } catch (SQLException e) {
             System.err.println("[ADD_TRATTA ERROR] Errore durante il salvataggio della tratta: " + e.getMessage());
             e.printStackTrace();

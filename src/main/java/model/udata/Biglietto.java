@@ -17,6 +17,7 @@ public class Biglietto {
     private Long id;
     private Long id_utente;
     private String nome; // Nome del percorso: {Prima Fermata} - {Ultima Fermata}
+    private String codiceBiglietto; // Codice formato OM0000001
     private List<Long> id_tratte;
     private List<Integer> numero_fermate;
     private LocalTime dataAcquisto;
@@ -230,6 +231,14 @@ public class Biglietto {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getCodiceBiglietto() {
+        return codiceBiglietto;
+    }
+
+    public void setCodiceBiglietto(String codiceBiglietto) {
+        this.codiceBiglietto = codiceBiglietto;
     }
 
     public List<Long> getId_tratte() {

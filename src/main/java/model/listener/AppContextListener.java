@@ -6,6 +6,7 @@ import jakarta.servlet.annotation.WebListener;
 import model.dao.AvvisiDAO;
 import model.dao.FermataDAO;
 import model.dao.TrattaDAO;
+import model.pathfinding.GrafoTrasporti;
 import model.sdata.Avvisi;
 import model.sdata.Fermata;
 import model.sdata.Tratta;
@@ -41,6 +42,13 @@ public class AppContextListener implements ServletContextListener {
             sce.getServletContext().setAttribute("fermate", fermate);
             sce.getServletContext().setAttribute("avvisi", avvisi);
             sce.getServletContext().setAttribute("tratteMap", trattaMap);
+
+            //Mappatura completa
+            GrafoTrasporti grafo = new GrafoTrasporti();
+            grafo.costruisciGrafo(tratte);
+
+            //Salvataggio Mappatura
+            sce.getServletContext().setAttribute("grafo", grafo);
 
             LOGGER.info("Dati inizializzati con successo nel ServletContext.");
         } catch (SQLException e) {

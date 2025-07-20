@@ -1,5 +1,6 @@
 package control.search;
 
+import model.pathfinding.GrafoTrasporti;
 import model.sdata.Tratta;
 import model.sdata.FermataTratta;
 import model.sdata.Fermata;
@@ -47,6 +48,7 @@ public class RicercaPercorsiServlet extends HttpServlet {
             // Recupera tutte le tratte dal context
             @SuppressWarnings("unchecked")
             List<Tratta> tutteLeTratte = (List<Tratta>) getServletContext().getAttribute("tratte");
+            GrafoTrasporti grafo = (GrafoTrasporti) getServletContext().getAttribute("grafo");
             if (tutteLeTratte == null) {
                 tutteLeTratte = TrattaDAO.getAll();
             }
@@ -82,8 +84,8 @@ public class RicercaPercorsiServlet extends HttpServlet {
                 
                 // Se abbiamo trovato entrambe le fermate, usa il pathfinding
                 if (fermataPartenza != null && fermataArrivo != null) {
-                    Percorso percorsoComplesso = Pathfinder.find(
-                        fermataPartenza, fermataArrivo, tutteLeTratte, orarioPartenza
+                    Percorso percorsoComplesso = Pathfinder.findwithcontext(
+                        fermataPartenza, fermataArrivo, orarioPartenza,grafo // questo è con il context
                     );
                     if (percorsoComplesso != null) {
                         percorsi.add(percorsoComplesso);

@@ -88,7 +88,7 @@
             </div>
             
             <div class="registration-prompt">
-                <p>Non sei ancora registrato? <a href="${pageContext.request.contextPath}/register">Registrati ora!</a></p>
+                <p style="color: white">Non sei ancora registrato? <a href="${pageContext.request.contextPath}/register">Registrati ora!</a></p>
             </div>
         </div>
     </div>

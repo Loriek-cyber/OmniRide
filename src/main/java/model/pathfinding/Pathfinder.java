@@ -27,6 +27,10 @@ public class Pathfinder {
         return calcolaPercorso(grafo, f1, f2, start);
     }
 
+    public static Percorso findwithcontext(Fermata f1, Fermata f2, LocalTime start, GrafoTrasporti grafo) {
+        return calcolaPercorso(grafo, f1, f2, start);
+    }
+
     /**
      * Trova il percorso migliore partendo dall'ora corrente.
      */

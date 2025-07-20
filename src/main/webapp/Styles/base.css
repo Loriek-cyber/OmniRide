@@ -106,9 +106,11 @@ main {
     flex: 1;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     padding: 2rem 1rem;
     background: #32cd32; /* Lime */
+    min-height: calc(100vh - 200px); /* Ensure enough space for header/footer */
+    overflow-y: auto; /* Allow scrolling if content is too tall */
 }
 
 /* Stili per elementi generici */
