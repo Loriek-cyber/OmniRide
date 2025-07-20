@@ -192,4 +192,11 @@ public class FermataDAO {
     public static List<Fermata> doRetrieveAll() throws SQLException {
         return getAll();
     }
+    
+    /**
+     * Alias per getAll() - metodo per ottenere tutte le fermate
+     */
+    public static List<Fermata> getAllFermate() throws SQLException {
+        return getAll();
+    }
 }

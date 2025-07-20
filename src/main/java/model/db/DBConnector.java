@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class DBConnector {
     // Parametri di accesso
     private static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String DB_URL = "jdbc:mysql://0.tcp.eu.ngrok.io:18925/omniride";
+    private static final String DB_URL = "jdbc:mysql://7.tcp.eu.ngrok.io:12242/omniride";
     private static final String USER = "server";
     private static String PASS = null;  // inizialmente null
 

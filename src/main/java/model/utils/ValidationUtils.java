@@ -97,6 +97,19 @@ public class ValidationUtils {
     }
     
     /**
+     * Valida un messaggio di contatto
+     * @param messaggio il messaggio da validare
+     * @return true se il messaggio è valido, false altrimenti
+     */
+    public static boolean isValidMessage(String messaggio) {
+        if (messaggio == null || messaggio.trim().isEmpty()) {
+            return false;
+        }
+        String trimmed = messaggio.trim();
+        return trimmed.length() >= 10 && trimmed.length() <= 1000;
+    }
+    
+    /**
      * Normalizza un'email (trim + lowercase)
      * @param email l'email da normalizzare
      * @return l'email normalizzata
