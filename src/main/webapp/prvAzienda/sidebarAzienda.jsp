@@ -29,13 +29,8 @@
       </a>
 </li>
     <li class="nav-item">
-      <a href="${pageContext.request.contextPath}/prvAzienda/employeeManagement.jsp" class="nav-link" data-page="employeeManagement">
+      <a href="${pageContext.request.contextPath}prvAzienda/employees" class="nav-link" data-page="employeeManagement">
         <i class="fas fa-users"></i> Gestione Dipendenti
-      </a>
-    </li>
-    <li class="nav-item">
-      <a href="${pageContext.request.contextPath}/prvAzienda/routes" class="nav-link" data-page="gestisciTratte">
-        <i class="fas fa-route"></i> Gestione Tratte
       </a>
     </li>
     <li class="nav-item">
@@ -44,18 +39,8 @@
       </a>
     </li>
     <li class="nav-item">
-      <a href="${pageContext.request.contextPath}/prvAzienda/statistiche.jsp" class="nav-link" data-page="statistiche">
+      <a href="${pageContext.request.contextPath}/prvAzienda/statistiche" class="nav-link" data-page="statistiche">
         <i class="fas fa-chart-bar"></i> Statistiche
-      </a>
-    </li>
-    <li class="nav-item">
-      <a href="${pageContext.request.contextPath}/prvAzienda/comunicazioni.jsp" class="nav-link" data-page="comunicazioni">
-        <i class="fas fa-bullhorn"></i> Comunicazioni
-      </a>
-    </li>
-    <li class="nav-item">
-      <a href="${pageContext.request.contextPath}/prvAzienda/employeeManagement.jsp" class="nav-link" data-page="employeeManagement">
-        <i class="fas fa-users"></i> Gestione Dipendenti
       </a>
     </li>
   </ul>

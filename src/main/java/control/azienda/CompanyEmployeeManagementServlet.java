@@ -16,7 +16,7 @@ import model.udata.Azienda;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/prvAzienda/employees")
+@WebServlet(name = "CompanyEmployeeManagementServlet", value = "/prvAzienda/employees")
 public class CompanyEmployeeManagementServlet extends HttpServlet {
 
     @Override
@@ -174,7 +174,7 @@ public class CompanyEmployeeManagementServlet extends HttpServlet {
             DipendentiDAO.create(newEmployee);
             
             request.setAttribute("success", "Dipendenti " + utente.getNome() + " " + utente.getCognome() + " assunto con successo!");
-            response.sendRedirect(request.getContextPath() + "/prvAzienda/employees");
+            request.getRequestDispatcher("/prvAzienda/employeeManagement.jsp").forward(request, response);
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -200,7 +200,7 @@ public class CompanyEmployeeManagementServlet extends HttpServlet {
             DipendentiDAO.delete(userId, companyId);
             
             request.setAttribute("success", "Dipendenti licenziato con successo!");
-            response.sendRedirect(request.getContextPath() + "/prvAzienda/employees");
+            request.getRequestDispatcher("/prvAzienda/employeeManagement.jsp").forward(request, response);
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -232,7 +232,7 @@ public class CompanyEmployeeManagementServlet extends HttpServlet {
                 request.setAttribute("success", "Dipendenti " + status + " con successo!");
             }
             
-            response.sendRedirect(request.getContextPath() + "/prvAzienda/employees");
+            request.getRequestDispatcher("/prvAzienda/employeeManagement.jsp").forward(request, response);
             
         } catch (Exception e) {
             e.printStackTrace();

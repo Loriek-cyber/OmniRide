@@ -209,6 +209,28 @@ public class TrattaDAO {
         return tratte;
     }
     
+    /**
+     * Ottiene il numero di tratte attive per una specifica azienda
+     * @param idAzienda ID dell'azienda
+     * @return Numero di tratte attive
+     * @throws SQLException in caso di errore del database
+     */
+    public static int getTratteAttiveCountByAzienda(Long idAzienda) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Tratta WHERE id_azienda = ? AND attiva = 1";
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setLong(1, idAzienda);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+        return 0;
+    }
+
     public static List<Tratta> getTratteByAzienda(Long idAzienda) throws SQLException {
         List<Tratta> tratte = new ArrayList<>();
         try (Connection con = DBConnector.getConnection();

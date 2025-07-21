@@ -46,10 +46,45 @@ public class BigliettiDAO {
     private static final String DELETE_BIGLIETTO_TRATTA = 
         "DELETE FROM Biglietto_Tratta WHERE id_biglietto = ?";
     private static final String SELECT_BY_TYPE = "Select * from Biglietto where tipo = ?";
+    private static final String SELECT_TOTAL_REVENUE_BY_AZIENDA = "SELECT SUM(b.prezzo_pagato) FROM Biglietto b JOIN Tratta t ON b.id_tratta = t.id WHERE t.id_azienda = ? AND b.stato IN ('ACQUISTATO', 'CONVALIDATO')";
+    private static final String SELECT_TOTAL_TICKETS_SOLD_BY_AZIENDA = "SELECT COUNT(b.id) FROM Biglietto b JOIN Tratta t ON b.id_tratta = t.id WHERE t.id_azienda = ? AND b.stato IN ('ACQUISTATO', 'CONVALIDATO')";
     private static final String SELECT_BY_USER_AND_TYPE = "SELECT * from Biglietto where id_utente = ? AND tipo = ?";
     
     private static final String UPDATE_EXPIRED_TICKETS = 
         "UPDATE Biglietto SET stato = 'SCADUTO' WHERE stato = 'CONVALIDATO' AND data_scadenza < NOW()";
+
+    /**
+     * Calcola il totale dei ricavi per un'azienda.
+     * @param idAzienda ID dell'azienda
+     * @return Totale ricavi
+     * @throws SQLException in caso di errore del database
+     */
+    public static double getTotalRevenueByAzienda(Long idAzienda) throws SQLException {
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SELECT_TOTAL_REVENUE_BY_AZIENDA)) {
+            stmt.setLong(1, idAzienda);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble(1);
+                }
+            }
+        }
+        return 0.0;
+    }
+
+    public static int getTotalTicketsSoldByAzienda(Long idAzienda) throws SQLException {
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SELECT_TOTAL_TICKETS_SOLD_BY_AZIENDA)) {
+            stmt.setLong(1, idAzienda);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+        return 0;
+    }
+
 
     //funzioni basilari
     public static void delete(Biglietto biglietto) {
