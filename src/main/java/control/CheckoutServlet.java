@@ -177,13 +177,20 @@ public class CheckoutServlet extends HttpServlet {
             // Combina gli ID esistenti con i nuovi
             List<Long> guestTicketIds = new ArrayList<>();
             if (!existingIdsStr.isEmpty()) {
-                String[] existingIds = existingIdsStr.split(",");
-                for (String idStr : existingIds) {
-                    try {
-                        guestTicketIds.add(Long.parseLong(idStr.trim()));
-                    } catch (NumberFormatException e) {
-                        // Ignora ID non validi
+                try {
+                    // Decodifica il valore del cookie esistente
+                    String decodedValue = java.net.URLDecoder.decode(existingIdsStr, "UTF-8");
+                    // Usa | come separatore
+                    String[] existingIds = decodedValue.split("\\|");
+                    for (String idStr : existingIds) {
+                        try {
+                            guestTicketIds.add(Long.parseLong(idStr.trim()));
+                        } catch (NumberFormatException e) {
+                            // Ignora ID non validi
+                        }
                     }
+                } catch (Exception e) {
+                    System.err.println("Errore nella decodifica del cookie esistente: " + e.getMessage());
                 }
             }
             
@@ -192,16 +199,25 @@ public class CheckoutServlet extends HttpServlet {
                 guestTicketIds.add(biglietto.getId());
             }
             
-            // Salva nel cookie (max 30 giorni)
+            // Salva nel cookie (max 30 giorni) - Codifica gli ID per evitare caratteri invalidi
             String idsString = guestTicketIds.stream()
                 .map(String::valueOf)
-                .collect(java.util.stream.Collectors.joining(","));
+                .collect(java.util.stream.Collectors.joining("|"));  // Usa | invece di ,
             
-            jakarta.servlet.http.Cookie guestCookie = new jakarta.servlet.http.Cookie("guestTicketIds", idsString);
-            guestCookie.setMaxAge(30 * 24 * 60 * 60); // 30 giorni
-            guestCookie.setPath("/");
-            guestCookie.setHttpOnly(true); // Sicurezza
-            response.addCookie(guestCookie);
+            try {
+                // Codifica il valore del cookie per evitare caratteri invalidi
+                String encodedValue = java.net.URLEncoder.encode(idsString, "UTF-8");
+                
+                jakarta.servlet.http.Cookie guestCookie = new jakarta.servlet.http.Cookie("guestTicketIds", encodedValue);
+                guestCookie.setMaxAge(30 * 24 * 60 * 60); // 30 giorni
+                guestCookie.setPath("/");
+                guestCookie.setHttpOnly(true); // Sicurezza
+                response.addCookie(guestCookie);
+                
+                System.out.println("[CHECKOUT DEBUG] Cookie salvato con valore codificato: " + encodedValue);
+            } catch (Exception e) {
+                System.err.println("Errore nella codifica del cookie: " + e.getMessage());
+            }
             
             System.out.println("[CHECKOUT DEBUG] Salvati " + biglietti.size() + " ID biglietti guest nei cookie. Totale: " + guestTicketIds.size());
         }

@@ -579,3 +579,17 @@
         padding: 15px 25px;
     }
 }
+
+
+.btn checkout-btn{
+    width: auto;
+    background: #fff;
+    color: black;
+    border: 1px limegreen;
+}
+
+.btn-checkout-btn:hover {
+    background: limegreen;
+    color: white;
+    border: white solid 2px;
+}

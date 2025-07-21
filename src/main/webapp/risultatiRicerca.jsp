@@ -12,7 +12,7 @@
 <head>
     <title>Risultati Ricerca - OmniRide</title>
     <jsp:include page="import/metadata.jsp"/>
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/Styles/search-results.css">
+    <link rel="stylesheet" href="${pageContext.request.getContextPath()}/Styles/risultati-ricerca.css">
 </head>
 <body>
     <jsp:include page="import/header.jsp"/>
@@ -129,11 +129,15 @@
                 </div>
             </div>
             
-            <!-- Pulsante per selezionare il ticket (nascosto inizialmente) -->
-            <div class="booking-section" id="bookingSection" style="display: none;">
-                <button type="button" class="btn-primary" onclick="selectTicketType()" id="selectTicketBtn">
-                    🎫 Seleziona Tipo Biglietto
-                </button>
+            <!-- Sezione acquisto biglietti migliorata -->
+            <div class="booking-section modern-booking" id="bookingSection" style="display: none;">
+                
+                <div class="booking-actions">
+                    <button type="button" onclick="selectTicketType()" id="selectTicketBtn">
+                        <i class="fas fa-shopping-cart"></i>
+                        Acquista Biglietto - <span class="btn-price-display" id="btnPrice"></span>
+                    </button>
+                </div>
             </div>
             
             <!-- Form nascosto per inviare i dati -->
@@ -180,6 +184,9 @@
                 // Mostra pulsante booking
                 document.getElementById('bookingSection').style.display = 'block';
                 
+                // Aggiorna prezzo nel pulsante con animazione
+                updatePurchaseButtonPrice(costo);
+                
                 // Aggiorna form
                 document.getElementById('percorsoData').value = JSON.stringify(selectedPercorso);
                 document.getElementById('prezzoData').value = costo.toString();
@@ -219,14 +226,108 @@
             detailsContainer.innerHTML = html;
         }
         
+        // Funzione per aggiornare il prezzo nel pulsante con animazione
+        function updatePurchaseButtonPrice(prezzo) {
+            const priceElement = document.querySelector('.btn-price');
+            if (priceElement) {
+                // Aggiungi classe di animazione
+                priceElement.classList.add('updating');
+                
+                // Aggiorna il prezzo dopo un breve delay per l'animazione
+                setTimeout(() => {
+                    priceElement.textContent = '€' + prezzo.toFixed(2);
+                    priceElement.classList.remove('updating');
+                }, 150);
+            }
+        }
+        
         function selectTicketType() {
             if (!selectedPercorso) {
-                alert('Seleziona prima un percorso');
+                showNotification('⚠️ Seleziona prima un percorso dalla lista', 'warning');
                 return;
             }
             
+            // Aggiungi effetto di loading al pulsante
+            const purchaseBtn = document.getElementById('selectTicketBtn');
+            const originalContent = purchaseBtn.innerHTML;
+            
+            purchaseBtn.innerHTML = `
+                <div class="btn-content">
+                    <div class="btn-icon">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                    <div class="btn-text-section">
+                        <div class="btn-main-text">Caricamento...</div>
+                        <div class="btn-sub-text">Preparazione acquisto</div>
+                    </div>
+                    <div class="btn-price-section">
+                        <div class="btn-price">€${selectedPercorso.costo.toFixed(2)}</div>
+                        <div class="btn-price-label">totale</div>
+                    </div>
+                </div>
+                <div class="btn-shine"></div>
+            `;
+            
+            purchaseBtn.disabled = true;
+            
             console.log('Invio a selectTicketType:', selectedPercorso);
-            document.getElementById('ticketForm').submit();
+            
+            // Simula un breve caricamento per UX
+            setTimeout(() => {
+                document.getElementById('ticketForm').submit();
+            }, 500);
+        }
+        
+        // Funzione per mostrare notifiche eleganti
+        function showNotification(message, type = 'info') {
+            // Rimuovi notifiche esistenti
+            const existing = document.querySelector('.modern-notification');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = `modern-notification notification-${type}`;
+            
+            const colors = {
+                success: { bg: 'linear-gradient(135deg, #32cd32 0%, #228b22 100%)', icon: 'fa-check-circle' },
+                error: { bg: 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)', icon: 'fa-exclamation-circle' },
+                warning: { bg: 'linear-gradient(135deg, #ffc107 0%, #e0a800 100%)', icon: 'fa-exclamation-triangle' },
+                info: { bg: 'linear-gradient(135deg, #17a2b8 0%, #138496 100%)', icon: 'fa-info-circle' }
+            };
+            
+            const config = colors[type] || colors.info;
+            
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas ${config.icon}"></i>
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="close-btn">&times;</button>
+                </div>
+            `;
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 90px;
+                right: 20px;
+                background: ${config.bg};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 12px;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+                z-index: 10000;
+                max-width: 400px;
+                animation: slideInRight 0.3s ease-out;
+                font-weight: 500;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto rimozione dopo 4 secondi
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.style.animation = 'slideOutRight 0.3s ease-in';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, 4000);
         }
     </script>
     

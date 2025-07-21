@@ -259,8 +259,12 @@ public class BigliettiDAO {
         List<Biglietto> biglietti = new ArrayList<>();
         
         try (Connection conn = DBConnector.getConnection()) {
-            // Query ottimizzata: usa la data di scadenza direttamente nella query
-            String query = "SELECT * FROM Biglietto WHERE id_utente = ? AND stato IN ('ACQUISTATO', 'CONVALIDATO') AND (data_scadenza IS NULL OR data_scadenza > NOW()) ORDER BY data_acquisto DESC";
+            // Include sia i biglietti acquistati (inattivi) che quelli convalidati (attivi)
+            // Per i biglietti acquistati, non verifichiamo la scadenza perché non sono ancora attivati
+            String query = "SELECT * FROM Biglietto WHERE id_utente = ? AND " +
+                          "(stato = 'ACQUISTATO' OR " +
+                          "(stato = 'CONVALIDATO' AND (data_scadenza IS NULL OR data_scadenza > NOW()))) " +
+                          "ORDER BY data_acquisto DESC";
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
                 stmt.setLong(1, userId);
                 

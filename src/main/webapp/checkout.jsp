@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <jsp:include page="import/metadata.jsp"/>
 <!DOCTYPE html>
 <html lang="it">
@@ -87,7 +88,7 @@
                                                 <input type="radio" name="savedCard" id="card_${card.id}" value="${card.id}">
                                                 <label for="card_${card.id}">
                                                     <div class="card-info">
-                                                        <i class="fab fa-${card.tipo.toLowerCase()}"></i>
+                                                        <i class="fab fa-${fn:toLowerCase(card.tipo)}"></i>
                                                         <span class="card-number">•••• •••• •••• ${card.ultimeQuattroCifre}</span>
                                                         <span class="card-expiry">${card.scadenza}</span>
                                                     </div>

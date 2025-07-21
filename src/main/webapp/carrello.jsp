@@ -188,17 +188,6 @@
                                 <input type="text" id="nome_intestatario" name="nome_intestatario" 
                                        placeholder="Mario Rossi" required>
                             </div>
-                            
-                            <!-- Opzione per salvare la carta (solo per utenti loggati) -->
-                            <c:if test="${not empty sessionScope.utente}">
-                                <div class="form-group checkbox-group">
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="save_card" name="save_card" value="true" checked>
-                                        <span class="checkbox-custom"></span>
-                                        Salva questa carta per acquisti futuri
-                                    </label>
-                                </div>
-                            </c:if>
                         </div>
                     </div>
                     
@@ -223,12 +212,8 @@
                         <form id="checkout-form" action="${pageContext.request.contextPath}/checkout" method="post">
                             <input type="hidden" id="selected_payment_method" name="selected_payment_method" value="">
                             <input type="hidden" id="selected_card_data" name="selected_card_data" value="">
-                            <button type="submit" class="btn checkout-btn" 
-                                    style="background-color: white; border: 2px solid lime; color: black; 
-                                           transition: all 0.3s ease; font-weight: bold;"
-                                    onmouseover="this.style.transform='scale(1.05)'; this.style.borderColor='#32ff32'; this.style.backgroundColor='#f9fff9';"
-                                    onmouseout="this.style.transform='scale(1)'; this.style.borderColor='lime'; this.style.backgroundColor='white';">
-                                <i class="fas fa-shopping-cart" style="color: lime;"></i> Procedi all'Acquisto
+                            <button type="submit" class="btn checkout-btn">
+                                    <i class="fas fa-shopping-cart" style="color: lime;"></i> Procedi all'Acquisto
                             </button>
                         </form>
                     </div>

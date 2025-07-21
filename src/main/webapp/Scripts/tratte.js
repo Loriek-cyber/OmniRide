@@ -62,31 +62,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const detailsHTML = `
             <div class="tratta-details">
-                <div class="tratta-title">${tratta.nome}</div>
+                <div class="tratta-title-section">
+                    <div class="tratta-title">
+                        <i class="fas fa-route"></i>
+                        ${tratta.nome}
+                    </div>
+                    <div class="tratta-price">
+                        <span class="price-label">Prezzo biglietto:</span>
+                        <span class="price-value">€${tratta.prezzo.toFixed(2)}</span>
+                    </div>
+                </div>
                 
-                <div class="schedule-section">
-                    <div class="section-title">Orari e Fermate</div>
+                <div class="schedule-section modern-card">
+                    <div class="section-header">
+                        <i class="fas fa-clock"></i>
+                        <span class="section-title">Orari e Fermate</span>
+                    </div>
                     <div class="schedule-table-container">
-                        <table class="schedule-table">
+                        <table class="schedule-table modern-table">
                             <thead>
                                 <tr>
-                                    <th class="stop-header">Fermata</th>
+                                    <th class="stop-header">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        Fermata
+                                    </th>
                                     ${orariConTempi.map(o => `
-                                        <th class="time-header">${o.orarioOriginale}</th>
+                                        <th class="time-header">
+                                            <i class="fas fa-clock"></i>
+                                            ${o.orarioOriginale}
+                                        </th>
                                     `).join('')}
                                 </tr>
                             </thead>
                             <tbody>
                                 ${tratta.fermate.map((fermata, fermataIndex) => `
-                                    <tr class="${fermataIndex % 2 === 0 ? 'even-row' : 'odd-row'}">
+                                    <tr class="${fermataIndex % 2 === 0 ? 'even-row' : 'odd-row'} table-row" data-animation-delay="${fermataIndex * 0.1}s">
                                         <td class="stop-cell">
                                             <div class="stop-info">
-                                                <span class="stop-icon"><img src="${window.contextPath}/icons/pin.svg"></span>
+                                                <span class="stop-icon">
+                                                    <i class="fas fa-circle"></i>
+                                                </span>
                                                 <span class="stop-name">${fermata}</span>
+                                                <span class="stop-number">${fermataIndex + 1}</span>
                                             </div>
                                         </td>
                                         ${orariConTempi.map(o => `
-                                            <td class="time-cell">${o.tempiArrivo[fermataIndex]}</td>
+                                            <td class="time-cell time-highlight">${o.tempiArrivo[fermataIndex]}</td>
                                         `).join('')}
                                     </tr>
                                 `).join('')}
@@ -95,19 +116,28 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                 </div>
                 
-                <div class="info-section">
-                    <div class="info-card">
-                        <div class="info-icon"><img src="${window.contextPath}/icons/pin.svg"></div>
-                        <div class="info-content">
-                            <div class="info-label">Fermate Totali</div>
-                            <div class="info-value">${tratta.fermate.length}</div>
+                <div class="stats-section">
+                    <div class="stat-card fermate-card">
+                        <div class="stat-content">
+                            <div class="stat-label">Fermate Totali:${tratta.fermate.length}</div>
                         </div>
                     </div>
-                    <div class="info-card">
-                        <div class="info-icon"><img src="${window.contextPath}/icons/clock.svg"></div>
-                        <div class="info-content">
-                            <div class="info-label">Orari Disponibili</div>
-                            <div class="info-value">${tratta.orari.length}</div>
+                    
+                    <div class="stat-card orari-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-label">Orari Disponibili:${tratta.orari.length}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card prezzo-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-euro-sign"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-label">Prezzo Base:${tratta.prezzo.toFixed(2)}</div>
                         </div>
                     </div>
                 </div>
@@ -115,12 +145,27 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
 
         detailsContainer.innerHTML = detailsHTML;
-        // Aggiungi pulsante "Aggiungi al Carrello"
+        
+        // Aggiungi pulsante "Acquista Biglietto" migliorato
         detailsContainer.insertAdjacentHTML('beforeend', `
-    <div class="add-to-cart-button">
-        <button class="btn-cart-custom" onclick="addToCart(${tratta.id})">Aggiungi al Carrello</button>
-    </div>`);
-
+            <div class="add-to-cart-button">
+                <button class="btn-cart-custom modern-purchase-btn" onclick="addToCart(${tratta.id})">
+                    <span class="btn-text">Acquista Biglietto</span>
+                    <span class="btn-price">€${tratta.prezzo.toFixed(2)}</span>
+                </button>
+            </div>
+        `);
+        
+        // Aggiungi animazioni alle righe della tabella
+        setTimeout(() => {
+            const rows = detailsContainer.querySelectorAll('.table-row');
+            rows.forEach((row, index) => {
+                setTimeout(() => {
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateX(0)';
+                }, index * 100);
+            });
+        }, 100);
 
         // Funzione per aggiungere la tratta al carrello
         window.addToCart = function(trattaId) {

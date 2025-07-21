@@ -237,11 +237,30 @@
         }
         
         .guest-ticket-item {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 10px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .guest-ticket-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+            border-radius: 2px 0 0 2px;
+        }
+        
+        .guest-ticket-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.15);
+            border-color: #ffc107;
         }
         
         .guest-ticket-item h4 {
@@ -257,27 +276,61 @@
         
         #guestTicketsContainer {
             display: none;
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff9e6 0%, #fffbf0 100%);
+            border: 2px solid #32cd32;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(50, 205, 50, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #guestTicketsContainer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #32cd32 0%, #228b22 100%);
         }
         
         #claimGuestTicketsBtn {
-            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            background: linear-gradient(135deg, #32cd32 0%, #228b22 100%);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 15px 30px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
+            font-weight: 600;
             transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #claimGuestTicketsBtn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
         }
         
         #claimGuestTicketsBtn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #228b22 0%, #1a6b1a 100%);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+            box-shadow: 0 8px 25px rgba(50, 205, 50, 0.4);
+        }
+        
+        #claimGuestTicketsBtn:hover::before {
+            left: 100%;
         }
         
         #claimGuestTicketsBtn:disabled {

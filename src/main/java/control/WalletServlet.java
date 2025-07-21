@@ -30,15 +30,23 @@ public class WalletServlet extends HttpServlet {
             if (cookies != null) {
                 for (jakarta.servlet.http.Cookie cookie : cookies) {
                     if ("guestTicketIds".equals(cookie.getName())) {
-                        String idsString = cookie.getValue();
-                        if (idsString != null && !idsString.isEmpty()) {
-                            String[] idStrings = idsString.split(",");
-                            for (String idStr : idStrings) {
-                                try {
-                                    guestTicketIds.add(Long.parseLong(idStr.trim()));
-                                } catch (NumberFormatException e) {
-                                    System.err.println("ID biglietto non valido nel cookie: " + idStr);
+                        String encodedValue = cookie.getValue();
+                        if (encodedValue != null && !encodedValue.isEmpty()) {
+                            try {
+                                // Decodifica il valore del cookie
+                                String idsString = java.net.URLDecoder.decode(encodedValue, "UTF-8");
+                                
+                                // Usa | come separatore invece di ,
+                                String[] idStrings = idsString.split("\\|");
+                                for (String idStr : idStrings) {
+                                    try {
+                                        guestTicketIds.add(Long.parseLong(idStr.trim()));
+                                    } catch (NumberFormatException e) {
+                                        System.err.println("ID biglietto non valido nel cookie: " + idStr);
+                                    }
                                 }
+                            } catch (Exception e) {
+                                System.err.println("Errore nella decodifica del cookie: " + e.getMessage());
                             }
                         }
                         break;
@@ -64,15 +72,22 @@ public class WalletServlet extends HttpServlet {
                         
                         String updatedIdsString = validIds.stream()
                             .map(String::valueOf)
-                            .collect(java.util.stream.Collectors.joining(","));
+                            .collect(java.util.stream.Collectors.joining("|"));  // Usa | invece di ,
                         
-                        jakarta.servlet.http.Cookie updatedCookie = new jakarta.servlet.http.Cookie("guestTicketIds", updatedIdsString);
-                        updatedCookie.setMaxAge(30 * 24 * 60 * 60); // 30 giorni
-                        updatedCookie.setPath("/");
-                        updatedCookie.setHttpOnly(true);
-                        resp.addCookie(updatedCookie);
-                        
-                        System.out.println("[WALLET DEBUG] Cookie aggiornato con " + validIds.size() + " ID validi");
+                        try {
+                            // Codifica il valore del cookie aggiornato
+                            String encodedValue = java.net.URLEncoder.encode(updatedIdsString, "UTF-8");
+                            
+                            jakarta.servlet.http.Cookie updatedCookie = new jakarta.servlet.http.Cookie("guestTicketIds", encodedValue);
+                            updatedCookie.setMaxAge(30 * 24 * 60 * 60); // 30 giorni
+                            updatedCookie.setPath("/");
+                            updatedCookie.setHttpOnly(true);
+                            resp.addCookie(updatedCookie);
+                            
+                            System.out.println("[WALLET DEBUG] Cookie aggiornato con " + validIds.size() + " ID validi");
+                        } catch (Exception e) {
+                            System.err.println("Errore nella codifica del cookie aggiornato: " + e.getMessage());
+                        }
                     }
                 } catch (Exception e) {
                     System.err.println("Errore nel recupero dei biglietti guest: " + e.getMessage());
@@ -244,16 +259,23 @@ public class WalletServlet extends HttpServlet {
                         // Verifica che il biglietto appartenga all'utente
                         Utente utente = (Utente) session.getAttribute("utente");
                         if (biglietto.getId_utente().equals(utente.getId())) {
-                            // Attiva il biglietto
-                            if (biglietto.attiva()) {
-                                // Aggiorna nel database
-                                BigliettiDAO.update(biglietto);
-                                req.setAttribute("success", "Biglietto attivato con successo!");
+                            // Verifica che il biglietto possa essere attivato
+                            if (biglietto.getStato() == Biglietto.StatoBiglietto.ACQUISTATO) {
+                                // Attiva il biglietto
+                                if (biglietto.attiva()) {
+                                    // Aggiorna nel database
+                                    BigliettiDAO.update(biglietto);
+                                    session.setAttribute("successMessage", "Biglietto attivato con successo! Ora è valido e il countdown è iniziato.");
+                                } else {
+                                    session.setAttribute("errorMessage", "Errore tecnico nell'attivazione del biglietto.");
+                                }
+                            } else if (biglietto.getStato() == Biglietto.StatoBiglietto.CONVALIDATO) {
+                                session.setAttribute("errorMessage", "Questo biglietto è già attivo.");
                             } else {
-                                req.setAttribute("error", "Impossibile attivare il biglietto. Potrebbe essere già attivo o scaduto.");
+                                session.setAttribute("errorMessage", "Questo biglietto non può essere attivato (stato: " + biglietto.getStato() + ")");
                             }
                         } else {
-                            req.setAttribute("error", "Non autorizzato ad attivare questo biglietto.");
+                            session.setAttribute("errorMessage", "Non autorizzato ad attivare questo biglietto.");
                         }
                     } else {
                         req.setAttribute("error", "Biglietto non trovato.");

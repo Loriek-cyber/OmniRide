@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <!DOCTYPE html>
 <html lang="it">
@@ -49,11 +50,25 @@
                                         <p><strong>Codice:</strong> <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px; font-family: monospace;">${not empty biglietto.codiceBiglietto ? biglietto.codiceBiglietto : 'OM'.concat(String.format("%07d", biglietto.id))}</code></p>
                                     </div>
                                     
-                                    <!-- QR Code Container -->
-                                    <div class="qr-container" style="text-align: center; margin: 15px 0;">
-                                        <div class="qr-code" id="qr-${biglietto.id}" style="width:100px;height:100px;margin:0 auto 10px;"></div>
-                                        <div class="qr-code-text" style="font-family: monospace; font-size: 12px; color: #666;">${not empty biglietto.codiceBiglietto ? biglietto.codiceBiglietto : 'OM'.concat(String.format("%07d", biglietto.id))}</div>
-                                    </div>
+                    <!-- QR Code Container Migliorato -->
+                    <div class="qr-container modern-qr">
+                        <div class="qr-wrapper">
+                            <div class="qr-code" id="qr-${biglietto.id}"></div>
+                            <div class="qr-overlay">
+                                <div class="qr-status ${fn:toLowerCase(biglietto.stato)}">
+                                    <c:choose>
+                                        <c:when test="${biglietto.stato eq 'CONVALIDATO'}">✓</c:when>
+                                        <c:when test="${biglietto.stato eq 'SCADUTO'}">✕</c:when>
+                                        <c:otherwise>●</c:otherwise>
+                                    </c:choose>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="qr-code-info">
+                            <div class="qr-code-text">${not empty biglietto.codiceBiglietto ? biglietto.codiceBiglietto : 'OM'.concat(String.format("%07d", biglietto.id))}</div>
+                            <div class="qr-scan-hint">Scansiona per convalidare</div>
+                        </div>
+                    </div>
                                     
                                     <div class="ticket-actions">
                                         <button class="btn-qr" onclick="downloadQRFromDB('${not empty biglietto.codiceBiglietto ? biglietto.codiceBiglietto : 'OM'.concat(String.format("%07d", biglietto.id))}', 'qr-${biglietto.id}')" title="Scarica QR Code">
@@ -171,10 +186,20 @@ document.addEventListener('DOMContentLoaded', function() {
                             <p><strong>Codice:</strong> <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px; font-family: monospace;">${codice}</code></p>
                         </div>
                         
-                        <!-- QR Code Container -->
-                        <div class="qr-container" style="text-align: center; margin: 15px 0;">
-                            <div class="qr-code" id="qr-guest-${index}" style="width:100px;height:100px;margin:0 auto 10px;"></div>
-                            <div class="qr-code-text" style="font-family: monospace; font-size: 12px; color: #666;">${codice}</div>
+                                        <!-- QR Code Container Migliorato -->
+                        <div class="qr-container modern-qr">
+                            <div class="qr-wrapper">
+                                <div class="qr-code" id="qr-guest-${index}"></div>
+                                <div class="qr-overlay">
+                                    <div class="qr-status " id="status-${index}">
+                                        <span class="status-icon">●</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="qr-code-info">
+                                <div class="qr-code-text">${codice}</div>
+                                <div class="qr-scan-hint">Scansiona per convalidare</div>
+                            </div>
                         </div>
                         
                         <div class="ticket-actions">
@@ -196,12 +221,40 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 tickets.forEach((ticket, index) => {
                     const qrElement = document.getElementById(`qr-guest-${index}`);
+                    const statusElement = document.getElementById(`status-${index}`);
+                    
+                    // Genera QR code
                     if (qrElement && qrElement.innerHTML === '') {
                         new QRCode(qrElement, {
                             text: ticket.codice || 'OMR' + ticket.id,
-                            width: 100,
-                            height: 100
+                            width: 120,
+                            height: 120,
+                            colorDark: '#228b22',
+                            colorLight: '#ffffff',
+                            correctLevel: QRCode.CorrectLevel.H
                         });
+                    }
+                    
+                    // Aggiorna stato del QR
+                    if (statusElement) {
+                        const stato = ticket.stato || 'ACQUISTATO';
+                        const statusIcon = statusElement.querySelector('.status-icon');
+                        const statusClass = getStatusClass(stato);
+                        
+                        statusElement.className = `qr-status ${statusClass}`;
+                        
+                        if (statusIcon) {
+                            switch(stato) {
+                                case 'CONVALIDATO':
+                                    statusIcon.textContent = '✓';
+                                    break;
+                                case 'SCADUTO':
+                                    statusIcon.textContent = '✕';
+                                    break;
+                                default:
+                                    statusIcon.textContent = '●';
+                            }
+                        }
                     }
                 });
             }, 100);
@@ -223,6 +276,9 @@ document.addEventListener('DOMContentLoaded', function() {
             default: return 'inactive';
         }
     }
+    
+    // Espone la funzione globalmente per uso in altri script
+    window.getStatusClass = getStatusClass;
     
     // Funzione per rimuovere un biglietto ospite
     window.removeGuestTicket = function(ticketIndex) {
@@ -332,16 +388,34 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         const qrElements = document.querySelectorAll('[id^="qr-"]');
         qrElements.forEach(qrElement => {
-            if (qrElement.innerHTML === '') {
-                const ticketCode = qrElement.parentElement.querySelector('.qr-code-text').textContent;
-                new QRCode(qrElement, {
-                    text: ticketCode,
-                    width: 100,
-                    height: 100
-                });
+            if (qrElement.innerHTML === '' && !qrElement.classList.contains('qr-generated')) {
+                // Trova il codice del biglietto
+                let ticketCode = '';
+                const qrContainer = qrElement.closest('.modern-qr');
+                if (qrContainer) {
+                    const codeElement = qrContainer.querySelector('.qr-code-text');
+                    if (codeElement) {
+                        ticketCode = codeElement.textContent.trim();
+                    }
+                }
+                
+                if (ticketCode) {
+                    console.log('Generando QR per:', ticketCode);
+                    new QRCode(qrElement, {
+                        text: ticketCode,
+                        width: 120,
+                        height: 120,
+                        colorDark: '#228b22',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                    qrElement.classList.add('qr-generated');
+                } else {
+                    console.warn('Codice biglietto non trovato per elemento:', qrElement.id);
+                }
             }
         });
-    }, 100);
+    }, 500);
     
     // Carica e visualizza i biglietti al caricamento della pagina (solo se non ci sono biglietti dal server)
     if (!(isGuest && serverBiglietti > 0)) {

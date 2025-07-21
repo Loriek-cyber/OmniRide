@@ -180,7 +180,7 @@ public class AdminUserManagementServlet extends HttpServlet {
             user.setRuolo(ruolo);
             
             // Se è stata fornita una nuova password
-            String newPassword = request.getParameter("newPassword");
+            String newPassword = request.getParameter("password");
             if (newPassword != null && !newPassword.trim().isEmpty()) {
                 user.setPasswordHash(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
             }

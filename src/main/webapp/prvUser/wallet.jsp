@@ -51,15 +51,36 @@
                                     </div>
                                     
                                     <div class="ticket-actions">
-                                        <c:if test="${biglietto.stato eq 'ACQUISTATO'}">
-                                            <form action="${pageContext.request.contextPath}/wallet" method="post" style="display: inline;">
-                                                <input type="hidden" name="action" value="activateTicket">
-                                                <input type="hidden" name="idBiglietto" value="${biglietto.id}">
-                                                <button type="submit" class="btn-activate">
-                                                    <i class="fas fa-play"></i> Attiva Biglietto
-                                                </button>
-                                            </form>
-                                        </c:if>
+                                        <c:choose>
+                                            <c:when test="${biglietto.stato eq 'ACQUISTATO'}">
+                                                <!-- Biglietto inattivo - Mostra pulsante per attivare -->
+                                                <form action="${pageContext.request.contextPath}/wallet" method="post" style="display: inline;" class="activate-form">
+                                                    <input type="hidden" name="action" value="activateTicket">
+                                                    <input type="hidden" name="idBiglietto" value="${biglietto.id}">
+                                                    <button type="submit" class="btn-activate" onclick="return confirm('Sei sicuro di voler attivare questo biglietto? Una volta attivato non può più essere disattivato.');">
+                                                        <i class="fas fa-play"></i> Attiva Biglietto
+                                                    </button>
+                                                </form>
+                                                <small class="activation-note">Il biglietto verrà attivato e inizierà il countdown</small>
+                                            </c:when>
+                                            <c:when test="${biglietto.stato eq 'CONVALIDATO'}">
+                                                <!-- Biglietto attivo - Mostra informazioni di validità -->
+                                                <div class="active-ticket-info">
+                                                    <span class="active-badge"><i class="fas fa-check-circle"></i> Biglietto Attivo</span>
+                                                    <c:if test="${biglietto.dataFine != null}">
+                                                        <small class="validity-info">Valido fino alle ${biglietto.dataFine}</small>
+                                                    </c:if>
+                                                </div>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <!-- Biglietto scaduto o annullato -->
+                                                <div class="expired-ticket-info">
+                                                    <span class="expired-badge"><i class="fas fa-times-circle"></i> ${biglietto.stato}</span>
+                                                </div>
+                                            </c:otherwise>
+                                        </c:choose>
+                                        
+                                        <!-- Pulsante QR sempre disponibile -->
                                         <button class="btn-qr" onclick="downloadQR('${not empty biglietto.codiceBiglietto ? biglietto.codiceBiglietto : 'OM'.concat(String.format("%07d", biglietto.id))}', 'qr-${biglietto.id}')" title="Scarica QR Code">
                                             <i class="fas fa-download"></i> Scarica QR
                                         </button>
@@ -255,16 +276,29 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         const qrElements = document.querySelectorAll('[id^="qr-"]');
         qrElements.forEach(qrElement => {
-            if (qrElement.innerHTML === '') {
+            if (qrElement.innerHTML === '' || qrElement.children.length === 0) {
                 const ticketCode = qrElement.parentElement.querySelector('.qr-code-text').textContent;
-                new QRCode(qrElement, {
-                    text: ticketCode,
-                    width: 100,
-                    height: 100
-                });
+                try {
+                    // Pulisci il contenitore prima di creare un nuovo QR
+                    qrElement.innerHTML = '';
+                    
+                    new QRCode(qrElement, {
+                        text: ticketCode,
+                        width: 120,
+                        height: 120,
+                        colorDark: '#2d5016',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+                    
+                    console.log('QR generato per:', ticketCode);
+                } catch (error) {
+                    console.error('Errore generazione QR:', error);
+                    qrElement.innerHTML = '<div class="qr-error">QR non disponibile</div>';
+                }
             }
         });
-    }, 100);
+    }, 500);
 });
 
 // Funzione per scaricare QR code (utenti registrati)
