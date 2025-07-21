@@ -1,2 +1,2 @@
 # OmniRidi 🐬
-OmniRide 🗺️ è un sito per trovare il percorso più veloce attraverso i servizzi pubblici.
+OmniRide 🗺️ È un sito per trovare il percorso più veloce attraverso i servizi pubblici.
