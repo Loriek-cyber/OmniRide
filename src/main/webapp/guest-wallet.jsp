@@ -7,6 +7,7 @@
     <jsp:include page="import/metadata.jsp"/>
     <title>Biglietti Ospite - Omniride</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/base.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/guestCheckout.css">
 </head>
 <body class="user-dashboard-layout" data-page="guest-wallet">
 <jsp:include page="import/header.jsp"/>

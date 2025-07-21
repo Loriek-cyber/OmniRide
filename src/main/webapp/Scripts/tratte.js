@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // Mostra dettagli tratta
         if (typeof tratteData !== 'undefined' && tratteData[index]) {
             showTrattaDetails(tratteData[index]);
+            // Scroll to details on mobile
+            setTimeout(() => scrollToDetailsOnMobile(), 300);
         }
     };
 
@@ -210,21 +212,101 @@ document.addEventListener("DOMContentLoaded", () => {
         return date.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
     }
 
-    // Gestione hover effects
+    // Enhanced interaction for both desktop and mobile
     document.querySelectorAll('.tratta-item').forEach(item => {
+        // Mouse events for desktop
         item.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateX(5px)';
+            if (window.innerWidth > 768) {
+                this.style.transform = 'translateX(5px)';
+            }
         });
 
         item.addEventListener('mouseleave', function() {
-            if (!this.classList.contains('selected')) {
+            if (!this.classList.contains('selected') && window.innerWidth > 768) {
                 this.style.transform = 'translateX(0)';
             }
         });
+
+        // Touch events for mobile
+        item.addEventListener('touchstart', function(e) {
+            this.classList.add('touch-active');
+            e.preventDefault();
+        });
+
+        item.addEventListener('touchend', function(e) {
+            this.classList.remove('touch-active');
+            // Simulate click after touch
+            setTimeout(() => {
+                const index = this.getAttribute('data-tratta-id');
+                if (index !== null) {
+                    selectTratta(parseInt(index));
+                }
+            }, 100);
+            e.preventDefault();
+        });
+
+        item.addEventListener('touchcancel', function() {
+            this.classList.remove('touch-active');
+        });
     });
+
+    // Responsive layout adjustments
+    function adjustLayoutForScreen() {
+        const layout = document.querySelector('.tratte-layout');
+        const listContainer = document.querySelector('.tratte-list-container');
+        const detailsContainer = document.querySelector('.tratta-details-container');
+
+        if (window.innerWidth <= 768) {
+            // Mobile adjustments
+            if (listContainer) {
+                listContainer.style.maxHeight = '40vh';
+            }
+            if (detailsContainer) {
+                detailsContainer.style.maxHeight = 'none';
+            }
+        } else {
+            // Desktop adjustments
+            if (listContainer) {
+                listContainer.style.maxHeight = '80vh';
+            }
+            if (detailsContainer) {
+                detailsContainer.style.maxHeight = '80vh';
+            }
+        }
+    }
+
+    // Call on load and resize
+    adjustLayoutForScreen();
+    window.addEventListener('resize', debounce(adjustLayoutForScreen, 250));
 
     // Seleziona automaticamente la prima tratta se disponibile
     if (typeof tratteData !== 'undefined' && tratteData.length > 0) {
         selectTratta(0);
     }
 });
+
+// Debounce utility function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Smooth scroll to details on mobile after selection
+function scrollToDetailsOnMobile() {
+    if (window.innerWidth <= 768) {
+        const detailsContainer = document.querySelector('.tratta-details-container');
+        if (detailsContainer) {
+            detailsContainer.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+    }
+}

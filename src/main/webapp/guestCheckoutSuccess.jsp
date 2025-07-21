@@ -6,6 +6,7 @@
 <head>
     <jsp:include page="/import/metadata.jsp"/>
     <title>Acquisto Completato - OmniRide</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/guestCheckout.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
@@ -103,28 +104,6 @@
             </a>
             
             <a href="${pageContext.request.contextPath}/register" class="btn btn-primary" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">👤 Registrati Ora</a>
-        </div>
-    </div>
-
-    <!-- Additional information section -->
-    <div style="background: #f8f9fa; border-radius: 8px; padding: 2rem; margin-top: 2rem;">
-        <h3>📞 Hai bisogno di aiuto?</h3>
-        <p style="margin-bottom: 1rem; color: #636e72;">
-            Se hai domande sui tuoi biglietti o necessiti di assistenza, contattaci:
-        </p>
-        <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
-            <div style="text-align: center;">
-                <strong>📞 Telefono</strong><br>
-                <span style="color: #32cd32; font-size: 1.1rem;">+39 02 1234 5678</span>
-            </div>
-            <div style="text-align: center;">
-                <strong>📧 Email</strong><br>
-                <span style="color: #32cd32; font-size: 1.1rem;">supporto@omniride.it</span>
-            </div>
-            <div style="text-align: center;">
-                <strong>🕒 Orari</strong><br>
-                <span style="color: #636e72;">Lun-Ven: 8:00-20:00</span>
-            </div>
         </div>
     </div>
 </main>
