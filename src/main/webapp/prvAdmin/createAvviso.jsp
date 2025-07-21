@@ -6,106 +6,7 @@
     <title>Crea Nuovo Avviso - Admin</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/base.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/admin.css">
-    <style>
-        .admin-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .form-container {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #333;
-        }
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        .form-control:focus {
-            border-color: #007bff;
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
-        }
-        .form-control textarea {
-            min-height: 120px;
-            resize: vertical;
-            font-family: inherit;
-        }
-        .btn {
-            padding: 12px 20px;
-            margin: 5px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-        }
-        .btn-primary { background-color: #007bff; color: white; }
-        .btn-secondary { background-color: #6c757d; color: white; }
-        .message {
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-        .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .tratte-selection {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 10px;
-            background: white;
-        }
-        .tratta-item {
-            display: flex;
-            align-items: center;
-            padding: 8px;
-            margin: 2px 0;
-            background: #f8f9fa;
-            border-radius: 4px;
-        }
-        .tratta-item:hover {
-            background: #e9ecef;
-        }
-        .tratta-item input[type="checkbox"] {
-            margin-right: 10px;
-        }
-        .tratta-nome {
-            font-weight: 500;
-        }
-        .tratta-azienda {
-            font-size: 12px;
-            color: #6c757d;
-            margin-left: 10px;
-        }
-        .selection-actions {
-            margin-top: 10px;
-        }
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 14px;
-        }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/avvisi.css">
 </head>
 <body>
     <div class="admin-container">
@@ -147,9 +48,7 @@
                                 </c:forEach>
                             </c:when>
                             <c:otherwise>
-                                <p style="color: #6c757d; text-align: center; padding: 20px;">
-                                    ⚠️ Nessuna tratta disponibile nel sistema
-                                </p>
+                                <p class="tratte-empty">⚠️ Nessuna tratta disponibile nel sistema</p>
                             </c:otherwise>
                         </c:choose>
                     </div>
@@ -164,7 +63,7 @@
                     <small>💡 Seleziona le tratte interessate dall'avviso. Se non selezioni nessuna tratta, l'avviso sarà generale</small>
                 </div>
                 
-                <div class="form-group" style="text-align: center; margin-top: 30px;">
+                <div class="form-group text-center mt-30">
                     <button type="submit" class="btn btn-primary">📢 Pubblica Avviso</button>
                     <a href="${pageContext.request.contextPath}/prvAdmin/avvisi" class="btn btn-secondary">❌ Annulla</a>
                 </div>
@@ -212,12 +111,12 @@
             if (!counter) {
                 counter = document.createElement('div');
                 counter.id = 'char-counter';
-                counter.style.cssText = 'font-size: 12px; color: #6c757d; text-align: right; margin-top: 5px;';
+                counter.className = 'char-counter';
                 this.parentNode.appendChild(counter);
             }
             
             counter.textContent = `${currentLength}/${maxLength} caratteri`;
-            counter.style.color = remaining < 50 ? '#dc3545' : '#6c757d';
+            counter.className = 'char-counter' + (remaining < 50 ? ' warning' : '');
         });
     </script>
 </body>

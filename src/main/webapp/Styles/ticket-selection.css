@@ -6,15 +6,15 @@
 }
 
 .route-info {
-    background: #e9ecef;
+    background: #f8f9fa;
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 20px;
-    border-left: 3px solid #007bff;
+    border-left: 3px solid var(--primary-color);
 }
 
 .route-info h4 {
-    color: #007bff;
+    color: var(--primary-color);
     margin-bottom: 10px;
     font-size: 1.1em;
 }
@@ -32,35 +32,35 @@
 }
 
 .ticket-card {
-    border: 1px solid #ddd;
+    border: 1.5px solid #dee2e6;
     border-radius: 8px;
     padding: 1em;
     background: #fff;
     transition: all 0.3s ease;
     cursor: pointer;
     position: relative;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 5px rgba(0,0,0,0.07);
 }
 
 .ticket-card:hover {
-    border-color: #007bff;
-    background: #f8f9ff;
+    border-color: var(--primary-color);
+    background: #f3fff3;
     transform: translateY(-2px);
-    box-shadow: 0 3px 15px rgba(0,123,255,0.15);
+    box-shadow: 0 3px 15px rgba(50,205,50,0.13);
 }
 
 .ticket-card.selected {
-    border-color: #007bff;
-    background: #e3f2fd;
-    box-shadow: 0 3px 15px rgba(0,123,255,0.2);
+    border-color: var(--primary-color);
+    background: #eaffea;
+    box-shadow: 0 3px 15px rgba(50,205,50,0.18);
 }
 
 .ticket-card.selected::before {
-    content: "✓";
+    content: "\2713";
     position: absolute;
     top: 8px;
     right: 8px;
-    background: #007bff;
+    background: var(--primary-color);
     color: white;
     border-radius: 50%;
     width: 20px;
@@ -95,11 +95,11 @@
 .ticket-price {
     font-size: 1.3em;
     font-weight: bold;
-    color: #007bff;
+    color: var(--primary-color);
     text-align: center;
     margin: 12px 0;
     padding: 8px;
-    background: #f0f8ff;
+    background: #eaffea;
     border-radius: 6px;
 }
 
@@ -190,12 +190,12 @@
 }
 
 .btn-primary {
-    background: #007bff;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     color: white;
 }
 
 .btn-primary:hover {
-    background: #0056b3;
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #1e7e34 100%);
 }
 
 .btn-success {

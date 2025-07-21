@@ -19,7 +19,7 @@
     <div class="main-content-right">
         <div class="content-wrapper">
             <c:if test="${not empty errorMessage}">
-                <div class="error-message" style="background-color: #fee; border: 1px solid #f44; padding: 10px; margin-bottom: 20px; border-radius: 5px;">
+                <div class="error-message">
                     <strong>Errore:</strong> ${errorMessage}
                     <c:if test="${not empty errorDetails}">
                         <br><small>${errorDetails}</small>
@@ -88,7 +88,7 @@
             </div>
             
             <div class="registration-prompt">
-                <p style="color: white">Non sei ancora registrato? <a href="${pageContext.request.contextPath}/register">Registrati ora!</a></p>
+                <p class="registration-prompt-text">Non sei ancora registrato? <a href="${pageContext.request.contextPath}/register">Registrati ora!</a></p>
             </div>
         </div>
     </div>

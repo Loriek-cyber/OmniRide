@@ -80,7 +80,7 @@
                 <a href="${pageContext.request.contextPath}/visualizzaTratte" class="btn btn-secondary">
                     ← Torna alle Tratte
                 </a>
-                <button type="submit" class="btn btn-primary btn-large" id="addToCartBtn" disabled style="flex: 1; max-width: 300px; margin-left: 15px;">
+                <button type="submit" class="btn btn-primary btn-large" id="addToCartBtn" disabled>
                     <i class="fas fa-shopping-cart"></i>
                     Aggiungi al Carrello
                 </button>

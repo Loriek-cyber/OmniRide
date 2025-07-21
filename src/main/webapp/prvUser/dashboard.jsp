@@ -33,6 +33,7 @@
                         <div class="dashboard-actions">
                             <a href="${pageContext.request.contextPath}/updateProfile" class="btn">Modifica Profilo</a>
                             <a href="${pageContext.request.contextPath}/wallet" class="btn">I Miei Biglietti</a>
+                            <a href="${pageContext.request.contextPath}/storicoBiglietti" class="btn btn-primary">Storico Acquisti</a>
                             <a href="${pageContext.request.contextPath}/visualizzaTrattep" class="btn">Cerca Tratte</a>
                         </div>
                     </c:if>

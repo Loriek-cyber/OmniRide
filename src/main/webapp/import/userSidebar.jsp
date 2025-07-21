@@ -52,6 +52,13 @@
             </a>
         </div>
         
+        <div class="nav-item">
+            <a href="${pageContext.request.contextPath}/storicoPagamenti" class="nav-link" data-page="storico">
+                <span class="nav-icon">💳</span>
+                Storico Pagamenti
+            </a>
+        </div>
+        
         <div class="nav-divider"></div>
 
         <div class="nav-item">

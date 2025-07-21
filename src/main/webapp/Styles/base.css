@@ -224,3 +224,15 @@ main form,
     text-align: center;
 }
 
+.error-message {
+    background-color: #fee;
+    border: 1px solid #f44;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.registration-prompt-text {
+    color: white;
+}
+

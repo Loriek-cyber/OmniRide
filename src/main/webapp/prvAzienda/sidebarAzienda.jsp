@@ -27,6 +27,16 @@
       <a href="${pageContext.request.contextPath}/prvAzienda/gestisciTratte" class="nav-link" data-page="gestisciTratte">
         <i class="fas fa-route"></i> Gestione Tratte
       </a>
+</li>
+    <li class="nav-item">
+      <a href="${pageContext.request.contextPath}/prvAzienda/employeeManagement.jsp" class="nav-link" data-page="employeeManagement">
+        <i class="fas fa-users"></i> Gestione Dipendenti
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="${pageContext.request.contextPath}/prvAzienda/routes" class="nav-link" data-page="gestisciTratte">
+        <i class="fas fa-route"></i> Gestione Tratte
+      </a>
     </li>
     <li class="nav-item">
       <a href="${pageContext.request.contextPath}/prvAzienda/addTratta.jsp" class="nav-link" data-page="addTratta">

@@ -8,127 +8,7 @@
     <title>Gestione Dipendenti - Omniride</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/base.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/dashboard.css">
-    <style>
-        .admin-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-        .btn {
-            padding: 10px 20px;
-            margin: 5px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn-primary { background-color: #007bff; color: white; }
-        .btn-success { background-color: #28a745; color: white; }
-        .btn-danger { background-color: #dc3545; color: white; }
-        .btn-warning { background-color: #ffc107; color: black; }
-        .btn-secondary { background-color: #6c757d; color: white; }
-        
-        .employees-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        .employees-table th, .employees-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        .employees-table th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-        .employees-table tr:hover {
-            background-color: #f5f5f5;
-        }
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .status-active { background-color: #28a745; color: white; }
-        .status-inactive { background-color: #dc3545; color: white; }
-        .role-badge {
-            background: #17a2b8;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        
-        .message {
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-        .message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .search-container {
-            margin-bottom: 20px;
-        }
-        .search-input {
-            padding: 10px;
-            width: 300px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        
-        .hire-form {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .form-row {
-            display: flex;
-            gap: 15px;
-            align-items: end;
-        }
-        
-        .form-group {
-            flex: 1;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/employee-management.css">
 </head>
 <body>
     <jsp:include page="/import/header.jsp"/>
@@ -189,14 +69,14 @@
         </div>
         
         <!-- Statistiche rapide -->
-        <div class="stats-container" style="display: flex; gap: 20px; margin-bottom: 30px;">
-            <div class="stat-card" style="padding: 20px; background: #f8f9fa; border-radius: 8px; flex: 1;">
+        <div class="stats-container">
+            <div class="stat-card stat-total">
                 <h3>👥 Dipendenti Totali</h3>
-                <p style="font-size: 24px; font-weight: bold; color: #007bff;">${fn:length(employees)}</p>
+                <p class="stat-number stat-total-number">${fn:length(employees)}</p>
             </div>
-            <div class="stat-card" style="padding: 20px; background: #f8f9fa; border-radius: 8px; flex: 1;">
+            <div class="stat-card stat-active">
                 <h3>✅ Dipendenti Attivi</h3>
-                <p style="font-size: 24px; font-weight: bold; color: #28a745;">
+                <p class="stat-number stat-active-number">
                     <c:set var="activeCount" value="0"/>
                     <c:forEach var="employee" items="${employees}">
                         <c:if test="${employee.attivo}">
@@ -206,9 +86,9 @@
                     ${activeCount}
                 </p>
             </div>
-            <div class="stat-card" style="padding: 20px; background: #f8f9fa; border-radius: 8px; flex: 1;">
+            <div class="stat-card stat-inactive">
                 <h3>⏸️ Dipendenti Sospesi</h3>
-                <p style="font-size: 24px; font-weight: bold; color: #dc3545;">
+                <p class="stat-number stat-inactive-number">
                     <c:set var="inactiveCount" value="0"/>
                     <c:forEach var="employee" items="${employees}">
                         <c:if test="${!employee.attivo}">
@@ -280,7 +160,7 @@
         </table>
         
         <c:if test="${empty employees}">
-            <div style="text-align: center; padding: 50px; color: #6c757d;">
+            <div class="empty-employees">
                 <h3>👷 Nessun dipendente trovato</h3>
                 <p>La tua azienda non ha ancora dipendenti.</p>
                 <p><strong>💡 Suggerimento:</strong> Usa il form sopra per assumere il tuo primo dipendente inserendo la sua email!</p>
@@ -327,7 +207,7 @@
 
         // Animazioni per le statistiche
         document.addEventListener('DOMContentLoaded', function() {
-            const statNumbers = document.querySelectorAll('.stat-card p');
+            const statNumbers = document.querySelectorAll('.stat-number');
             statNumbers.forEach(stat => {
                 const target = parseInt(stat.textContent);
                 if (!isNaN(target)) {

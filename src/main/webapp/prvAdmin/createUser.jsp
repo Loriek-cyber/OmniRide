@@ -6,70 +6,7 @@
     <title>Crea Nuovo Utente - Admin</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/base.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/admin.css">
-    <style>
-        .admin-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .form-container {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #333;
-        }
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        .form-control:focus {
-            border-color: #007bff;
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
-        }
-        .btn {
-            padding: 12px 20px;
-            margin: 5px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-        }
-        .btn-primary { background-color: #007bff; color: white; }
-        .btn-secondary { background-color: #6c757d; color: white; }
-        .message {
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-        .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .form-row {
-            display: flex;
-            gap: 20px;
-        }
-        .form-row .form-group {
-            flex: 1;
-        }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/user-management.css">
 </head>
 <body>
     <div class="admin-container">
@@ -120,7 +57,7 @@
                     </select>
                 </div>
                 
-                <div class="form-group" style="text-align: center; margin-top: 30px;">
+                <div class="form-group text-center mt-30">
                     <button type="submit" class="btn btn-primary">✅ Crea Utente</button>
                     <a href="${pageContext.request.contextPath}/prvAdmin/users" class="btn btn-secondary">❌ Annulla</a>
                 </div>
