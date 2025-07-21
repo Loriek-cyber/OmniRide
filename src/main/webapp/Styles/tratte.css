@@ -1,10 +1,14 @@
-/* Layout principale a due colonne */
+/* Layout principale a due colonne con design moderno */
 .tratte-layout {
     display: flex;
-    gap: var(--space-xl);
-    padding: var(--space-xl);
-    max-width: 1200px;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1400px;
     margin: 0 auto;
+    min-height: 85vh;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
 }
 
 /* Colonna sinistra - Lista tratte */
@@ -87,11 +91,6 @@
     border: 2px solid white;
 }
 
-.tratta-item.selected .tratta-actions .btn-primary:hover {
-    background-color: #f8f9fa;
-    color: #28a745;
-    border-color: #f8f9fa;
-}
 
 .tratta-header {
     display: flex;

@@ -37,24 +37,12 @@
                     <div class="info-section">
                                 <div class="tratta-stat">
                                     <span class="stat-icon">Fermate:</span>
-                                    <span class="stat-value">${fn:length(tratta.fermataTrattaList)} fermate</span>
+                                    <span class="stat-value">${fn:length(tratta.fermataTrattaList)}</span>
                                 </div>
                                 <div class="tratta-stat">
                                     <span class="stat-icon">Orari:</span>
-                                    <span class="stat-value">${fn:length(tratta.orari)} orari</span>
+                                    <span class="stat-value">${fn:length(tratta.orari)}</span>
                                 </div>
-                            </div>
-                            
-                            <div class="tratta-preview">
-                                <c:forEach var="fermata" items="${tratta.fermataTrattaList}" varStatus="fermataStatus">
-                                    <c:if test="${fermataStatus.index < 3}">
-                                        <span class="fermata-preview">${fermata.fermata.nome}</span>
-                                        <c:if test="${!fermataStatus.last && fermataStatus.index < 2}"> → </c:if>
-                                    </c:if>
-                                </c:forEach>
-                                <c:if test="${fn:length(tratta.fermataTrattaList) > 3}">
-                                    <span class="more-stops">... +${fn:length(tratta.fermataTrattaList) - 3} altre</span>
-                                </c:if>
                             </div>
                         </div>
                     </c:forEach>

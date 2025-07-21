@@ -186,9 +186,6 @@
                             </span>
                         </td>
                         <td>
-                            <a href="${pageContext.request.contextPath}/prvAdmin/routes?action=edit&id=${route.id}" 
-                               class="btn btn-warning btn-sm">✏️ Modifica</a>
-                            
                             <form style="display: inline;" method="post" action="${pageContext.request.contextPath}/prvAdmin/routes">
                                 <input type="hidden" name="action" value="toggle">
                                 <input type="hidden" name="id" value="${route.id}">

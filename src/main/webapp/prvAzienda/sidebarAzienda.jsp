@@ -29,11 +29,6 @@
       </a>
 </li>
     <li class="nav-item">
-      <a href="${pageContext.request.contextPath}prvAzienda/employees" class="nav-link" data-page="employeeManagement">
-        <i class="fas fa-users"></i> Gestione Dipendenti
-      </a>
-    </li>
-    <li class="nav-item">
       <a href="${pageContext.request.contextPath}/prvAzienda/addTratta.jsp" class="nav-link" data-page="addTratta">
         <i class="fas fa-plus-circle"></i> Aggiungi Tratta
       </a>

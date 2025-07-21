@@ -25,7 +25,7 @@
         </div>
         
         <div class="nav-item">
-            <a href="${pageContext.request.contextPath}/biglietti.jsp" class="nav-link" data-page="biglietti">
+            <a href="${pageContext.request.contextPath}/wallet" class="nav-link" data-page="biglietti">
                 <span class="nav-icon">▶</span>
                 I Miei Biglietti
             </a>
@@ -53,8 +53,8 @@
         </div>
         
         <div class="nav-item">
-            <a href="${pageContext.request.contextPath}/storicoPagamenti" class="nav-link" data-page="storico">
-                <span class="nav-icon">💳</span>
+            <a href="${pageContext.request.contextPath}/storicoBiglietti" class="nav-link" data-page="storico">
+                <span class="nav-icon">▶</span>
                 Storico Pagamenti
             </a>
         </div>
