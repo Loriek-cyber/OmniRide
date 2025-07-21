@@ -1,3 +1,83 @@
+/* ===== DESIGN SYSTEM BASE ===== */
+
+/* CSS Variables per consistenza */
+:root {
+    /* Colori primari */
+    --primary-color: #32cd32;
+    --primary-dark: #228b22;
+    --primary-light: #59a300;
+    --primary-lighter: #81c784;
+    
+    /* Colori secondari */
+    --secondary-color: #667eea;
+    --secondary-dark: #764ba2;
+    
+    /* Colori di stato */
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+    
+    /* Grigi */
+    --gray-50: #f8f9fa;
+    --gray-100: #e9ecef;
+    --gray-200: #dee2e6;
+    --gray-300: #ced4da;
+    --gray-400: #adb5bd;
+    --gray-500: #6c757d;
+    --gray-600: #495057;
+    --gray-700: #343a40;
+    --gray-800: #212529;
+    --gray-900: #1a1a1a;
+    
+    /* Testi */
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
+    
+    /* Backgrounds */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-accent: linear-gradient(135deg, #f8f9fa 0%, #e9f7e9 100%);
+    
+    /* Ombre */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    
+    /* Border radius */
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 20px;
+    --radius-full: 50%;
+    
+    /* Spacing */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    
+    /* Typography */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-base: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
 /* Reset e font moderni */
 * {
     box-sizing: border-box;
@@ -7,10 +87,11 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: limegreen;
-    color: #1a1a1a;
+    font-family: var(--font-family);
+    background: var(--primary-color);
+    color: var(--text-primary);
     line-height: 1.6;
+    font-size: var(--font-size-base);
 }
 
 /* Layout flessibile verticale */
@@ -23,11 +104,13 @@ body {
 /* Main contenuto */
 main {
     flex: 1;
-    display: flex;
+    display: block;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     padding: 2rem 1rem;
     background: #32cd32; /* Lime */
+    min-height: calc(100vh - 200px); /* Ensure enough space for header/footer */
+    overflow-y: auto; /* Allow scrolling if content is too tall */
 }
 
 /* Stili per elementi generici */
@@ -133,5 +216,23 @@ main form,
     .hero-image img {
         max-width: 300px;
     }
+}
+
+
+.title{
+    color: white;
+    text-align: center;
+}
+
+.error-message {
+    background-color: #fee;
+    border: 1px solid #f44;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.registration-prompt-text {
+    color: white;
 }
 

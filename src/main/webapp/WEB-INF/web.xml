@@ -19,9 +19,7 @@
     <!-- as the default entry point when a directory is requested. The server  -->
     <!-- will look for these files in the specified order.                     -->
     <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
-        <welcome-file>index.html</welcome-file>
-        <welcome-file>index.htm</welcome-file>
+        <welcome-file>home</welcome-file>
     </welcome-file-list>
 
     <!-- ===================================================================== -->
@@ -32,7 +30,14 @@
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
-
+    
+    <!-- ===================================================================== -->
+    <!-- Context Listener Configuration                                        -->
+    <!-- ===================================================================== -->
+    <!-- The listener initializes application-wide data at startup             -->
+    <listener>
+        <listener-class>model.listener.AppContextListener</listener-class>
+    </listener>
+    
     <!-- Add other configurations like Servlets, Filters, and Listeners here -->
-
 </web-app>

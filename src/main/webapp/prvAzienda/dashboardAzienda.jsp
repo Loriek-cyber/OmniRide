@@ -11,76 +11,11 @@
 <body>
     <jsp:include page="/import/header.jsp"/>
     <div class="dashboard-layout">
-        <!-- Sidebar -->
-        <nav class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <h3>Dashboard Azienda</h3>
-                <div class="company-name">
-                    <c:out value="${sessionScope.utente.nome} ${sessionScope.utente.cognome}"/>
-                </div>
-            </div>
-            
-            <ul class="sidebar-nav">
-                <li class="nav-item">
-                    <a href="#sezione1" class="nav-link active" onclick="showSection(1)">
-                        Panoramica
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#sezione2" class="nav-link" onclick="showSection(2)">
-                        Gestione Tratte
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#sezione3" class="nav-link" onclick="showSection(3)">
-                        Gestione Fermate
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#sezione4" class="nav-link" onclick="showSection(4)">
-                        Statistiche
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#sezione5" class="nav-link" onclick="showSection(5)">
-                        Orari e Programmazione
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#sezione6" class="nav-link" onclick="showSection(6)">
-                        Gestione Flotta
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#sezione7" class="nav-link" onclick="showSection(7)">
-                        Report Finanziari
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#sezione8" class="nav-link" onclick="showSection(8)">
-                        Gestione Dipendenti
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#sezione9" class="nav-link" onclick="showSection(9)">
-                        Comunicazioni
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#sezione10" class="nav-link" onclick="showSection(10)">
-                        Impostazioni
-                    </a>
-                </li>
-            </ul>
-        </nav>
-
-        <!-- Overlay per mobile -->
-        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
-
+        <jsp:include page="sidebarAzienda.jsp"/>
         <!-- Contenuto principale -->
         <main class="main-content">
             <!-- Toggle button per mobile -->
-            <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+            <button id="sidebarToggle" class="sidebar-toggle">☰</button>
 
             <!-- Sezione 1: Panoramica -->
             <div id="content-sezione1" class="content-section active">
@@ -92,20 +27,12 @@
                 <!-- Statistiche rapide -->
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-value">12</div>
+                        <div class="stat-value"><c:out value="${tratteAttive}" default="0"/></div>
                         <div class="stat-label">Tratte Attive</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value">45</div>
-                        <div class="stat-label">Fermate Gestite</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">1,234</div>
-                        <div class="stat-label">Passeggeri Oggi</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">€2,450</div>
-                        <div class="stat-label">Ricavi Mensili</div>
+                        <div class="stat-value">€<c:out value="${ricaviStimati}" default="0.00"/></div>
+                        <div class="stat-label">Ricavi Stimati</div>
                     </div>
                 </div>
 
@@ -117,14 +44,22 @@
                         <div class="section-description">
                             Visualizza e modifica le tratte della tua azienda, aggiungi nuove rotte e gestisci gli orari.
                         </div>
+                        <div class="section-actions">
+                            <a href="${pageContext.request.contextPath}/prvAzienda/addTratta" class="btn btn-primary">Aggiungi Tratta</a>
+                            <a href="${pageContext.request.contextPath}/prvAzienda/gestisciTratte" class="btn btn-secondary">Visualizza Tutte</a>
+                        </div>
                     </div>
                     <div class="section-card">
                         <div class="section-number">Accesso Rapido 2</div>
-                        <div class="section-title">Statistiche in Tempo Reale</div>
+                        <div class="section-title">Gestione Fermate</div>
                         <div class="section-description">
-                            Monitora le performance delle tue tratte, il numero di passeggeri e i ricavi giornalieri.
+                            Aggiungi nuove fermate, modifica quelle esistenti e gestisci la rete di trasporti.
+                        </div>
+                        <div class="section-actions">
+                            <a href="${pageContext.request.contextPath}/prvAzienda/addFermata" class="btn btn-primary">Aggiungi Fermata</a>
                         </div>
                     </div>
+
                 </div>
             </div>
 
@@ -151,73 +86,6 @@
             </c:forEach>
         </main>
     </div>
-
-    <script>
-        // Gestione navigazione sidebar
-        function showSection(sectionNumber) {
-            // Nascondi tutte le sezioni
-            const allSections = document.querySelectorAll('.content-section');
-            allSections.forEach(section => {
-                section.style.display = 'none';
-            });
-
-            // Rimuovi classe active da tutti i link
-            const allLinks = document.querySelectorAll('.nav-link');
-            allLinks.forEach(link => {
-                link.classList.remove('active');
-            });
-
-            // Mostra la sezione selezionata
-            const targetSection = document.getElementById(`content-sezione${sectionNumber}`);
-            if (targetSection) {
-                targetSection.style.display = 'block';
-            }
-
-            // Aggiungi classe active al link corrente
-            const targetLink = document.querySelector(`a[onclick="showSection(${sectionNumber})"]`);
-            if (targetLink) {
-                targetLink.classList.add('active');
-            }
-
-            // Chiudi sidebar su mobile dopo la selezione
-            if (window.innerWidth <= 768) {
-                toggleSidebar();
-            }
-        }
-
-        // Gestione toggle sidebar per mobile
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
-
-        // Chiudi sidebar quando si clicca fuori (solo mobile)
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const toggle = document.querySelector('.sidebar-toggle');
-            
-            if (window.innerWidth <= 768 && 
-                !sidebar.contains(event.target) && 
-                !toggle.contains(event.target) && 
-                sidebar.classList.contains('active')) {
-                toggleSidebar();
-            }
-        });
-
-        // Gestione resize window
-        window.addEventListener('resize', function() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            
-            if (window.innerWidth > 768) {
-                sidebar.classList.remove('active');
-                overlay.classList.remove('active');
-            }
-        });
-    </script>
-    <jsp:include page="/import/footer.jsp"/>
+    <script src="${pageContext.request.contextPath}/Scripts/commonSidebar.js"></script>
 </body>
 </html>

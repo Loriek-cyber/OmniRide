@@ -16,5 +16,8 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/header.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/responsive.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/tratte.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/addTratta.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/avvisi.css">
 <script src="${pageContext.request.contextPath}/Scripts/header.js"></script>
 <script src="${pageContext.request.contextPath}/Scripts/tratte.js"></script>
+<script src="${pageContext.request.contextPath}/Scripts/addTratta.js"></script>

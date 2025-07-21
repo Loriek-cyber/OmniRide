@@ -50,9 +50,9 @@ public class AvatarServlet extends HttpServlet {
             return;
         }
 
-        UtenteDAO utenteDAO = new UtenteDAO();
+        // Non più necessario creare istanza di UtenteDAO
         try {
-            byte[] avatarData = utenteDAO.getAvatarByUserId(userId);
+            byte[] avatarData = UtenteDAO.getAvatarByUserId(userId);
 
             if (avatarData != null && avatarData.length > 0) {
                 response.setContentType("image/png"); // O "image/jpeg" a seconda del formato delle immagini salvate

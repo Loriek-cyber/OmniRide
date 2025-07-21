@@ -4,13 +4,17 @@
 <html>
 <head>
     <title>Registrazione</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/main.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/base.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/form.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/header.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/footer.css">
 </head>
 <body>
     <jsp:include page="/import/header.jsp"/>
 
-    <div class="form-container">
-        <h2>Crea un nuovo account</h2>
+    <main>
+        <div class="form-container">
+            <h2>Crea un nuovo account</h2>
 
         <%-- Mostra un messaggio di errore se presente --%>
         <c:if test="${not empty errorMessage}">
@@ -82,8 +86,11 @@
             return emailRegex.test(email);
         }
         </script>
-        <p>Hai già un account? <a href="${pageContext.request.contextPath}/login">Accedi</a></p>
-    </div>
+            <div class="form-link">
+                <p>Hai già un account? <a href="${pageContext.request.contextPath}/login">Accedi</a></p>
+            </div>
+        </div>
+    </main>
 
     <jsp:include page="/import/footer.jsp"/>
 </body>

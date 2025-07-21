@@ -8,11 +8,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.dao.udata.SessioneDAO;
+import model.dao.AziendaDAO;
+import model.dao.TrattaDAO;
+import model.dao.FermataDAO;
 import model.udata.Utente;
+import model.udata.Azienda;
+import model.sdata.Tratta;
+import model.sdata.Fermata;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.List;
 
 /**
  * Servlet per gestire la dashboard delle aziende.
@@ -72,11 +79,57 @@ public class DashboardAziendaServlet extends HttpServlet {
             }
         }
 
-        // Imposta attributi per la JSP (se necessario per statistiche future)
-        request.setAttribute("nomeAzienda", utente.getNome() + " " + utente.getCognome());
+        // Carica i dati dell'azienda e delle tratte
+        try {
+            // Ottieni l'azienda dell'utente
+            Azienda azienda = AziendaDAO.fromIDutente(utente.getId());
+            if (azienda != null) {
+                request.setAttribute("azienda", azienda);
+                
+                // Carica le tratte dell'azienda
+                List<Tratta> tratte = TrattaDAO.getTratteByAzienda(azienda.getId());
+                request.setAttribute("tratte", tratte);
+                
+                // Calcola statistiche
+                int tratteAttive = (int) tratte.stream().filter(Tratta::getAttiva).count();
+                request.setAttribute("tratteAttive", tratteAttive);
+                
+                // Calcola altre statistiche
+                int totaleFermate = tratte.stream()
+                    .mapToInt(t -> t.getFermataTrattaList() != null ? t.getFermataTrattaList().size() : 0)
+                    .sum();
+                request.setAttribute("totaleFermate", totaleFermate);
+                
+                int totaleOrari = tratte.stream()
+                    .mapToInt(t -> t.getOrari() != null ? t.getOrari().size() : 0)
+                    .sum();
+                request.setAttribute("totaleOrari", totaleOrari);
+                
+                // Calcola ricavi stimati (per ora basato sul costo delle tratte)
+                double ricaviStimati = tratte.stream()
+                    .filter(Tratta::getAttiva)
+                    .mapToDouble(Tratta::getCosto)
+                    .sum() * 100; // Simulazione ricavi
+                request.setAttribute("ricaviStimati", String.format("%.2f", ricaviStimati));
+                
+                System.out.println("[DASHBOARD] Azienda: " + azienda.getNome() + ", Tratte: " + tratte.size());
+            } else {
+                System.err.println("[DASHBOARD ERROR] Azienda non trovata per l'utente: " + utente.getId());
+                request.setAttribute("errore", "Azienda non trovata per l'utente corrente.");
+            }
+            
+            // Carica tutte le fermate disponibili per eventuali nuove tratte
+            List<Fermata> fermate = FermataDAO.getAll();
+            request.setAttribute("fermate", fermate);
+            
+        } catch (SQLException e) {
+            System.err.println("[DASHBOARD ERROR] Errore durante il caricamento dei dati: " + e.getMessage());
+            e.printStackTrace();
+            request.setAttribute("errore", "Errore durante il caricamento dei dati dell'azienda.");
+        }
         
-        // TODO: In futuro, qui si potrebbero caricare statistiche specifiche dell'azienda
-        // come numero di tratte, fermate gestite, ricavi, etc.
+        // Imposta attributi per la JSP
+        request.setAttribute("nomeAzienda", utente.getNome() + " " + utente.getCognome());
         
         // Forward alla pagina della dashboard azienda
         RequestDispatcher dispatcher = request.getRequestDispatcher("/prvAzienda/dashboardAzienda.jsp");

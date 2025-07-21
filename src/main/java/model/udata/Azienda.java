@@ -8,8 +8,6 @@ public class Azienda implements Serializable {
     private String nome;
     private String tipo;
 
-
-
     public Azienda() {}
 
     public Azienda(Long id, String nome, String tipo) {

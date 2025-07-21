@@ -3,13 +3,16 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+import model.dao.AvvisiDAO;
 import model.dao.udata.SessioneDAO;
+import model.sdata.Avvisi;
 import model.udata.Sessione;
 import model.udata.Utente;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.List;
 
 
 /**
@@ -45,6 +48,10 @@ public class DashboardServlet extends HttpServlet {
         if ("azienda".equals(utente.getRuolo())) {
             // Gli utenti azienda vengono reindirizzati alla loro dashboard specifica
             response.sendRedirect(request.getContextPath() + "/prvAzienda/dashboard");
+            return;
+        } else if ("admin".equals(utente.getRuolo())) {
+            // Gli admin vengono reindirizzati alla dashboard admin
+            response.sendRedirect(request.getContextPath() + "/prvAdmin/dashboard");
             return;
         }
         

@@ -2,16 +2,13 @@ package model.dao;
 import model.db.DBConnector;
 import model.sdata.Coordinate;
 import model.sdata.Fermata;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FermataDAO {
 
-    public static Fermata doRetrieveById(long id) throws SQLException {
+    public static Fermata getById(long id) throws SQLException {
         try (Connection con = DBConnector.getConnection()) {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM Fermata WHERE id = ?");
             ps.setLong(1, id);
@@ -24,7 +21,7 @@ public class FermataDAO {
         }
     }
 
-    public static List<Fermata> doRetrieveAll() throws SQLException {
+    public static List<Fermata> getAll() throws SQLException {
         List<Fermata> fermate = new ArrayList<>();
         try (Connection con = DBConnector.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT * FROM Fermata");
@@ -59,5 +56,191 @@ public class FermataDAO {
         }
         fermata.setAttiva(rs.getBoolean("attiva"));
         return fermata;
+    }
+
+    /**
+     * Inserisce una nuova fermata nel database
+     * @param fermata La fermata da inserire
+     * @return L'ID della fermata inserita, null se l'inserimento fallisce
+     * @throws SQLException Se c'è un errore nel database
+     */
+    public static Long insertFermata(Fermata fermata) throws SQLException {
+        String sql = "INSERT INTO Fermata (nome, indirizzo, latitudine, longitudine, tipo, attiva) VALUES (?, ?, ?, ?, ?, ?)";
+        
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            
+            ps.setString(1, fermata.getNome());
+            ps.setString(2, fermata.getIndirizzo());
+            
+            if (fermata.getCoordinate() != null) {
+                ps.setDouble(3, fermata.getCoordinate().getLatitudine());
+                ps.setDouble(4, fermata.getCoordinate().getLongitudine());
+            } else {
+                ps.setNull(3, Types.DOUBLE);
+                ps.setNull(4, Types.DOUBLE);
+            }
+            
+            ps.setString(5, fermata.getTipo() != null ? fermata.getTipo().name() : Fermata.TipoFermata.FERMATA_NORMALE.name());
+            ps.setBoolean(6, fermata.isAttiva());
+            
+            int affectedRows = ps.executeUpdate();
+            
+            if (affectedRows == 0) {
+                throw new SQLException("Inserimento fermata fallito, nessuna riga modificata.");
+            }
+            
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getLong(1);
+                } else {
+                    throw new SQLException("Inserimento fermata fallito, nessun ID generato.");
+                }
+            }
+        }
+    }
+
+    /**
+     * Aggiorna una fermata esistente
+     * @param fermata La fermata da aggiornare
+     * @return true se l'aggiornamento è riuscito, false altrimenti
+     * @throws SQLException Se c'è un errore nel database
+     */
+    public static boolean updateFermata(Fermata fermata) throws SQLException {
+        String sql = "UPDATE Fermata SET nome = ?, indirizzo = ?, latitudine = ?, longitudine = ?, tipo = ?, attiva = ? WHERE id = ?";
+        
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setString(1, fermata.getNome());
+            ps.setString(2, fermata.getIndirizzo());
+            
+            if (fermata.getCoordinate() != null) {
+                ps.setDouble(3, fermata.getCoordinate().getLatitudine());
+                ps.setDouble(4, fermata.getCoordinate().getLongitudine());
+            } else {
+                ps.setNull(3, Types.DOUBLE);
+                ps.setNull(4, Types.DOUBLE);
+            }
+            
+            ps.setString(5, fermata.getTipo() != null ? fermata.getTipo().name() : Fermata.TipoFermata.FERMATA_NORMALE.name());
+            ps.setBoolean(6, fermata.isAttiva());
+            ps.setLong(7, fermata.getId());
+            
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * Elimina (disattiva) una fermata
+     * @param id L'ID della fermata da eliminare
+     * @return true se l'eliminazione è riuscita, false altrimenti
+     * @throws SQLException Se c'è un errore nel database
+     */
+    public static boolean deleteFermata(Long id) throws SQLException {
+        String sql = "UPDATE Fermata SET attiva = false WHERE id = ?";
+        
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setLong(1, id);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * Recupera solo le fermate attive
+     * @return Lista delle fermate attive
+     * @throws SQLException Se c'è un errore nel database
+     */
+    public static List<Fermata> doRetrieveActive() throws SQLException {
+        List<Fermata> fermate = new ArrayList<>();
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement("SELECT * FROM Fermata WHERE attiva = true");
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Fermata fermata = extractFermataFromResultSet(rs);
+                if (fermata != null) {
+                    fermate.add(fermata);
+                }
+            }
+            return fermate;
+        }
+    }
+
+    // Metodi con nomi standardizzati
+    public static Long create(Fermata fermata) throws SQLException {
+        return insertFermata(fermata);
+    }
+
+    public static boolean update(Fermata fermata) throws SQLException {
+        return updateFermata(fermata);
+    }
+
+    public static boolean delete(Long id) throws SQLException {
+        return deleteFermata(id);
+    }
+
+    // Metodi per compatibilità con codice esistente
+    @Deprecated
+    public static Fermata doRetrieveById(long id) throws SQLException {
+        return getById(id);
+    }
+
+    @Deprecated
+    public static List<Fermata> doRetrieveAll() throws SQLException {
+        return getAll();
+    }
+    
+    /**
+     * Cerca fermate per nome (ricerca case-insensitive)
+     * @param nome Il nome da cercare
+     * @return Lista delle fermate che contengono il nome specificato
+     * @throws SQLException Se c'è un errore nel database
+     */
+    public static List<Fermata> ricercaPerNome(String nome) throws SQLException {
+        List<Fermata> fermate = new ArrayList<>();
+        String sql = "SELECT * FROM Fermata WHERE LOWER(nome) LIKE LOWER(?) AND attiva = true";
+        
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setString(1, "%" + nome + "%");
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Fermata fermata = extractFermataFromResultSet(rs);
+                    if (fermata != null) {
+                        fermate.add(fermata);
+                    }
+                }
+            }
+            return fermate;
+        }
+    }
+    
+    /**
+     * Cerca fermate per nome esatto (ricerca case-insensitive)
+     * @param nome Il nome esatto da cercare
+     * @return Fermata con il nome specifico
+     * @throws SQLException Se c'è un errore nel database
+     */
+    public static Fermata ricercaPerNomeEsatto(String nome) throws SQLException {
+        String sql = "SELECT * FROM Fermata WHERE LOWER(nome) = LOWER(?) AND attiva = true";
+        
+        try (Connection con = DBConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setString(1, nome);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return extractFermataFromResultSet(rs);
+                }
+            }
+
+        }
+        return null;
     }
 }

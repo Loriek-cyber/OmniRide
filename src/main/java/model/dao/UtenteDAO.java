@@ -29,40 +29,37 @@ public class UtenteDAO {
 
     public static Utente findByEmail(String email) throws SQLException  {
         String QRsql="SELECT * FROM Utente WHERE email=?";
-        try(Connection con=DBConnector.getConnection()){
-            //preaprato la query
-            PreparedStatement ps = con.prepareStatement(QRsql);
+        try(Connection con=DBConnector.getConnection();
+            PreparedStatement ps = con.prepareStatement(QRsql)){
             ps.setString(1,email);
-            //eseguito la quety
-            ResultSet rs = ps.executeQuery();
-            /*in poche parole
-            * 1) la query dice che colonna trovare
-            * 2) ps.string(1, email) dice che alla primo punto interrogativo della query deve inserire l'email passata come stringa, questo permete di trovare l'utente e di stampare l'intera riga*/
-            if(rs.next()) {
-                return getUtenteFromSet(rs);
+            try(ResultSet rs = ps.executeQuery()){
+                if(rs.next()) {
+                    return getUtenteFromSet(rs);
+                }
             }
         }
         return null;
     }
 
-    public static Utente findById(Long id) throws SQLException{
+    public static Utente getById(Long id) throws SQLException{
         String QRstr="SELECT * FROM Utente WHERE id=?";
-        try(Connection con=DBConnector.getConnection()){
-          PreparedStatement ps=con.prepareStatement(QRstr);
-          ps.setLong(1, id);
-          ResultSet rs=ps.executeQuery();
-          if(rs.next()) {
-              return getUtenteFromSet(rs);
-          }
+        try(Connection con=DBConnector.getConnection();
+            PreparedStatement ps=con.prepareStatement(QRstr)){
+            ps.setLong(1, id);
+            try(ResultSet rs=ps.executeQuery()){
+                if(rs.next()) {
+                    return getUtenteFromSet(rs);
+                }
+            }
         }
         return null;
     }
 
-    public static List<Utente> getAllUtenti() throws SQLException{
+    public static List<Utente> getAll() throws SQLException{
         String QRstr="SELECT * FROM Utente";
-        try(Connection con=DBConnector.getConnection()){
-            PreparedStatement ps=con.prepareStatement(QRstr);
-            ResultSet rs=ps.executeQuery();
+        try(Connection con=DBConnector.getConnection();
+            PreparedStatement ps=con.prepareStatement(QRstr); 
+            ResultSet rs=ps.executeQuery()){
             List<Utente> Utenti=new ArrayList<>();
             while(rs.next()){
                 Utenti.add(getUtenteFromSet(rs));
@@ -71,12 +68,11 @@ public class UtenteDAO {
         }
     }
 
-
-    public boolean create(Utente nuovoUtente) throws SQLException {
+    public static long create(Utente nuovoUtente) throws SQLException {
         String QRstr="INSERT INTO Utente (nome, cognome, email, password_hash, data_registrazione, ruolo, avatar) " +
                 "VALUES (?,?,?,?,?,?,?) ";
-        try(Connection con=DBConnector.getConnection()){
-            PreparedStatement ps=con.prepareStatement(QRstr);
+        try(Connection con=DBConnector.getConnection();
+            PreparedStatement ps=con.prepareStatement(QRstr, PreparedStatement.RETURN_GENERATED_KEYS)){
             ps.setString(1, nuovoUtente.getNome());
             ps.setString(2, nuovoUtente.getCognome());
             ps.setString(3, nuovoUtente.getEmail());
@@ -85,23 +81,31 @@ public class UtenteDAO {
             ps.setString(6, nuovoUtente.getRuolo());
             ps.setBytes(7, nuovoUtente.getAvatar());
 
-            if(ps.executeUpdate()>=1){
-                return true;
-            }else return false;
+            // Fixed: throw exception when NO rows are affected (insertion failed)
+            if(ps.executeUpdate() < 1){
+                throw new SQLException("Creazione Utente fallita");
+            }
 
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getLong(1);
+                } else {
+                    throw new SQLException("Creazione utente fallita, nessun ID ottenuto.");
+                }
+            }
         }
     }
 
-    public byte[] getAvatarByUserId(Long userId) throws SQLException{
-        return findById(userId).getAvatar();
+    public static byte[] getAvatarByUserId(Long userId) throws SQLException{
+        return getById(userId).getAvatar();
     }
 
     public static boolean update(Utente utenteInSessione) throws SQLException {
         String sql = "UPDATE Utente " +
                 "SET nome=?,cognome=?,email=?,password_hash=?,data_registrazione=?,ruolo=?,avatar=?" +
                 " WHERE id=?";
-        try (Connection conn = DBConnector.getConnection()){
-            PreparedStatement ps = conn.prepareStatement(sql);
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)){
             ps.setLong(8,utenteInSessione.getId());
 
             ps.setString(1, utenteInSessione.getNome());
@@ -117,5 +121,30 @@ public class UtenteDAO {
             }else return false;
         }
 
+    }
+
+    /**
+     * Elimina un utente dal database.
+     *
+     * @param id L'ID dell'utente da eliminare.
+     * @return true se l'eliminazione ha avuto successo.
+     * @throws SQLException in caso di errore del database.
+     */
+    public static boolean delete(Long id) throws SQLException {
+        String sql = "DELETE FROM Utente WHERE id = ?";
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, id);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * Alias per compatibilità con codice esistente.
+     * @deprecated Usare getAll() invece
+     */
+    @Deprecated
+    public static List<Utente> getAllUtenti() throws SQLException {
+        return getAll();
     }
 }
