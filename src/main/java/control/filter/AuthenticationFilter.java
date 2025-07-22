@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Instant;
 
-@WebFilter(filterName = "AuthenticationFilter", urlPatterns = {"/prvUser/*", "/prvAdmin/*"})
+@WebFilter(filterName = "AuthenticationFilter", urlPatterns = {"/prvUser/*", "/prvAdmin/*", "/prvAzienda/*"})
 public class AuthenticationFilter implements Filter {
 
     @Override
@@ -61,6 +61,16 @@ public class AuthenticationFilter implements Filter {
             } else {
                 // Utente non loggato o non admin: accesso negato
                 httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Accesso non autorizzato.");
+            }
+        }
+        // Se la richiesta è per l'area azienda
+        else if (requestURI.startsWith(httpRequest.getContextPath() + "/prvAzienda/")) {
+            if (isLoggedIn) {
+                // Utente loggato: accesso consentito
+                chain.doFilter(request, response);
+            } else {
+                // Utente non loggato: reindirizza al login
+                httpResponse.sendRedirect(httpRequest.getContextPath() + "/login");
             }
         }
         // Se la richiesta è per l'area utente generica

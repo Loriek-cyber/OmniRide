@@ -372,7 +372,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `action=associateGuestTicket&guestTicketId=${encodeURIComponent(guestTicketId)}`
+                body: `action=associateGuestTicket&guestTicketId=`+encodeURIComponent(guestTicketId)
             })
             .then(response => response.json())
             .then(data => {
